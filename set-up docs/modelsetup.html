@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>TANGNET: Stage 2 - Model Prep & Build</title>
+  <style>
+    body {
+      background-color: #111;
+      color: #afff33;
+      font-family: 'Courier New', Courier, monospace;
+      padding: 2rem;
+      line-height: 1.6;
+    }
+    h1, h2 {
+      text-align: center;
+    }
+    .section {
+      max-width: 1000px;
+      margin: 2rem auto;
+      border-left: 4px solid #afff33;
+      padding-left: 1.5rem;
+    }
+    code, pre {
+      background: #222;
+      padding: 0.2rem 0.4rem;
+      color: #7CFC00;
+      border-radius: 4px;
+      display: block;
+      white-space: pre-wrap;
+    }
+    ul {
+      list-style-type: square;
+      margin-left: 2rem;
+    }
+    .footer {
+      text-align: center;
+      margin-top: 4rem;
+      font-size: 0.9rem;
+      color: #66ff99;
+    }
+  </style>
+</head>
+<body>
+  <h1>🧠 TANGNET: STAGE 2 - MODEL PREP & BUILD ⚙️</h1>
+
+  <div class="section">
+    <h2>📦 Dependencies & Environment (for Pi)</h2>
+    <ul>
+      <li>SSH into your Pi</li>
+      <li>Install essential packages:
+        <pre><code>sudo apt update && sudo apt install build-essential cmake git -y</code></pre>
+      </li>
+      <li>Ensure you are in your project folder:
+        <pre><code>cd ~/tangnet/llama.cpp</code></pre>
+      </li>
+    </ul>
+  </div>
+
+  <div class="section">
+    <h2>🛠️ Build llama.cpp for ARM</h2>
+    <ul>
+      <li>Create a build directory:
+        <pre><code>mkdir build && cd build</code></pre>
+      </li>
+      <li>Build with CMake:
+        <pre><code>cmake .. && make -j4</code></pre>
+      </li>
+    </ul>
+  </div>
+
+  <div class="section">
+    <h2>🧠 Download a Small Model (TinyLLaMA or Phi-2)</h2>
+    <ul>
+      <li>Use your main PC to download the model (faster):
+        <pre><code>curl -L -o tinyllama.gguf https://huggingface.co/codellama/CodeLlama-7b-hf/resolve/main/tiny_model.gguf</code></pre>
+      </li>
+      <li>Transfer the file to Pi using SCP:
+        <pre><code>scp tinyllama.gguf pi@&lt;pi-ip&gt;:~/tangnet/llama.cpp</code></pre>
+      </li>
+    </ul>
+  </div>
+
+  <div class="section">
+    <h2>💬 Chat with the Model</h2>
+    <ul>
+      <li>From Pi terminal:
+        <pre><code>./main -m tinyllama.gguf -n 128 -p "Hello, who are you?"</code></pre>
+      </li>
+      <li>If response prints cleanly, you’re ready to script or serve via local web/chat agent.</li>
+    </ul>
+  </div>
+
+  <div class="section">
+    <h2>🧪 Alternate: Use 4060/3070 Systems Instead</h2>
+    <ul>
+      <li>Clone llama.cpp on Windows using WSL or Git Bash:</li>
+        <pre><code>git clone https://github.com/ggerganov/llama.cpp</code></pre>
+      <li>Install CMake from <a href="https://cmake.org/download/">official site</a></li>
+      <li>Build with CUDA support (from build dir):</li>
+        <pre><code>cmake -DLLAMA_CUBLAS=on ..
+make -j</code></pre>
+      <li>Run with:
+        <pre><code>./main -m &lt;model&gt; -p "Hey Rick, what's the plan today?"</code></pre>
+      </li>
+    </ul>
+  </div>
+
+  <div class="footer">
+    Stage 2 complete. The brain is online. 🧬
+  </div>
+</body>
+</html>

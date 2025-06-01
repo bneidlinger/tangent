@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>TANGNET Cluster: Build Manual</title>
+  <style>
+    body {
+      background-color: #111;
+      color: #9fef00;
+      font-family: 'Courier New', Courier, monospace;
+      padding: 2rem;
+    }
+    h1, h2 {
+      text-align: center;
+      margin-bottom: 1rem;
+      color: #afff33;
+    }
+    .section {
+      max-width: 1000px;
+      margin: 2rem auto;
+      border-left: 4px solid #9fef00;
+      padding-left: 1.5rem;
+    }
+    ul {
+      list-style-type: square;
+      margin-left: 2rem;
+    }
+    .footer {
+      text-align: center;
+      margin-top: 4rem;
+      font-size: 0.9rem;
+      color: #66ff99;
+    }
+  </style>
+</head>
+<body>
+  <h1>🧠 TANGNET VAULT-5090: CLUSTER BUILD MANUAL 🛰️</h1>
+  <h2>Phase-by-Phase Setup + Component List</h2>
+
+  <div class="section">
+    <h3>📦 Supplies Checklist</h3>
+    <ul>
+      <li>100× Raspberry Pi 5 (8GB)</li>
+      <li>100× USB-C 27W chargers</li>
+      <li>100× 32–128GB microSD cards</li>
+      <li>100× USB SSDs or NVMe via adapters</li>
+      <li>3× 24-port Gigabit switches</li>
+      <li>~150 Ethernet patch cables</li>
+      <li>Racks or shelving (custom or 3D-printed)</li>
+      <li>UPS unit for Pi cluster and GPU racks</li>
+      <li>10× RTX 5090 GPU rigs (see specs below)</li>
+    </ul>
+  </div>
+
+  <div class="section">
+    <h3>🖥️ GPU Node Specs</h3>
+    <ul>
+      <li>CPU: Ryzen 9/Threadripper or Xeon</li>
+      <li>RAM: 128GB DDR5</li>
+      <li>SSD: 2–4TB NVMe + backup disk</li>
+      <li>PSU: 1000–1500W Platinum</li>
+      <li>GPU: 1–2× RTX 5090 per rig</li>
+      <li>OS: Ubuntu 22.04 LTS</li>
+      <li>Network: 2.5G+ NICs</li>
+    </ul>
+  </div>
+
+  <div class="section">
+    <h3>⚙️ Software Stack</h3>
+    <ul>
+      <li>Pi OS: Raspberry Pi OS Lite or Ubuntu Server ARM</li>
+      <li>GPU OS: Ubuntu 22.04 LTS + NVIDIA CUDA Toolkit</li>
+      <li>Model Runtimes: llama.cpp, vLLM, text-generation-inference</li>
+      <li>Whisper Inference: whisper.cpp, ffmpeg, pyaudio</li>
+      <li>Vector DB: ChromaDB, FAISS, Weaviate</li>
+      <li>Agent Framework: LangChain, LlamaIndex</li>
+      <li>Communication: NATS or MQTT for Pi ↔ GPU messaging</li>
+      <li>Monitoring: Prometheus, Grafana, Netdata</li>
+    </ul>
+  </div>
+
+  <div class="section">
+    <h3>🔧 Setup Procedure</h3>
+    <ul>
+      <li>Flash SD cards, assign static hostnames/IPs</li>
+      <li>Install dependencies: git, tmux, Python 3.10+</li>
+      <li>Deploy llama.cpp on Pi nodes (GGUF Q2_K/Q3_K)</li>
+      <li>Build vLLM/TGI on GPU servers</li>
+      <li>Test Pi-to-GPU API handoff via FastAPI endpoints</li>
+      <li>Configure vector DBs with embedded documents</li>
+      <li>Route input → Whisper → Embed → LLM → Output loop</li>
+    </ul>
+  </div>
+
+  <div class="section">
+    <h3>🧠 Optional Bonus Features</h3>
+    <ul>
+      <li>Voice output (XTTS, Bark, espeak)</li>
+      <li>Web interface control panel with real-time logs</li>
+      <li>AI-to-AI agent task coordination via topics</li>
+      <li>Pi camera input → object detection pipeline</li>
+    </ul>
+  </div>
+
+  <div class="footer">
+    TANGNET isn’t just a build — it’s a bunker-grade synthetic brain. 
+    Powered by Python, paranoia, and post-apocalyptic ambition.
+  </div>
+</body>
+</html>
