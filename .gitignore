@@ -1,0 +1,67 @@
+# OS junk files
+.DS_Store
+Thumbs.db
+
+# Python cache and virtual environments
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+env/
+venv/
+ENV/
+Pipfile.lock
+
+# Node.js
+node_modules/
+npm-debug.log
+
+# Compiled binaries and object files
+*.o
+*.so
+*.exe
+*.out
+*.a
+*.dll
+
+# Archives
+*.zip
+*.tar.gz
+*.tar
+*.gz
+*.7z
+
+# Raspberry Pi image files
+*.img
+*.iso
+
+# Sensitive files
+*.key
+*.pem
+*.crt
+
+# Editor/project files
+*.swp
+*.swo
+*~
+.vscode/
+.idea/
+*.code-workspace
+
+# Llama.cpp binary/model files and repo
+llama.cpp/
+llama.cpp
+*.bin
+*.gguf
+*.ggml
+models/
+*.pth
+*.pt
+*.ckpt
+
+# Custom: Ignore logs and temp files
+*.log
+*.tmp
+
+# If you want to include your docs folder, make sure NOT to ignore it!
+# !docs/

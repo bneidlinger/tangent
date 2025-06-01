@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>TANGNET: Baby Docs</title>
+  <style>
+    body {
+      background-color: #111;
+      color: #afff33;
+      font-family: 'Courier New', Courier, monospace;
+      padding: 2rem;
+      line-height: 1.6;
+    }
+    h1, h2 {
+      text-align: center;
+    }
+    .section {
+      max-width: 1000px;
+      margin: 2rem auto;
+      border-left: 4px solid #afff33;
+      padding-left: 1.5rem;
+    }
+    ul {
+      list-style-type: square;
+      margin-left: 2rem;
+    }
+    code {
+      background: #222;
+      padding: 0.2rem 0.4rem;
+      color: #7CFC00;
+      border-radius: 4px;
+    }
+    .footer {
+      text-align: center;
+      margin-top: 4rem;
+      font-size: 0.9rem;
+      color: #66ff99;
+    }
+  </style>
+</head>
+<body>
+  <h1>🧠 TANGNET: THE BABY DOCS 📘</h1>
+  <h2>Stage 1: Bringing the First Pi Online (CanaKit Edition)</h2>
+
+  <div class="section">
+    <h3>📦 What’s in the Box (CanaKit Essentials)</h3>
+    <ul>
+      <li>Raspberry Pi 5 (8GB)</li>
+      <li>Official power supply (USB-C, 27W)</li>
+      <li>Heatsinks and cooling fan</li>
+      <li>MicroSD card (usually 32GB–128GB)</li>
+      <li>Case enclosure</li>
+      <li>Micro-HDMI to HDMI cable</li>
+    </ul>
+  </div>
+
+  <div class="section">
+    <h3>🔌 Step 1: Assemble Your Pi</h3>
+    <ul>
+      <li>Snap the Pi into the case, install the heatsinks as shown in the CanaKit manual.</li>
+      <li>Connect the fan to the correct GPIO pins (usually 5V and GND).</li>
+      <li>Do <strong>not</strong> plug in the Pi yet — you’ll prepare the microSD card from your laptop first.</li>
+    </ul>
+  </div>
+
+  <div class="section">
+    <h3>💾 Step 2: Flash the OS (From Your Laptop)</h3>
+    <ul>
+      <li>Insert the microSD card into your laptop using an SD card reader.</li>
+      <li>Download <strong>Raspberry Pi Imager</strong> from <a href="https://www.raspberrypi.com/software/">the official site</a>.</li>
+      <li>Open the Imager and choose:</li>
+        <ul>
+          <li><strong>OS:</strong> Raspberry Pi OS Lite (64-bit)</li>
+          <li><strong>Storage:</strong> your microSD card</li>
+        </ul>
+      <li>Click the gear icon ⚙️ before writing to set:</li>
+        <ul>
+          <li>Hostname (e.g. <code>tangnet-node-01</code>)</li>
+          <li>Enable SSH (default user: <code>pi</code>)</li>
+          <li>Set a secure password</li>
+          <li>Configure Wi-Fi (optional)</li>
+          <li>Set locale/timezone</li>
+        </ul>
+      <li>If not using the gear menu, you can also manually configure Wi-Fi:</li>
+      <ul>
+        <li>After flashing, open the <code>boot</code> partition and create a file named <code>wpa_supplicant.conf</code></li>
+        <li>Paste the following (change SSID and password):</li>
+<pre><code>country=US
+ctrl_interface=DIR=/var/run/wpa_supplicant GROUP=netdev
+update_config=1
+
+network={
+  ssid="YourNetworkName"
+  psk="YourSecurePassword"
+  key_mgmt=WPA-PSK
+}
+</code></pre>
+        <li>Save the file and eject the card safely.</li>
+      </ul>
+    </ul>
+  </div>
+
+  <div class="section">
+    <h3>🖥️ Step 2.5: (Optional) Direct Access Troubleshooting</h3>
+    <ul>
+      <li>Connect a monitor via micro-HDMI and a USB keyboard directly to the Pi.</li>
+      <li>Power on the Pi and log in with <code>pi / raspberry</code> or your set password.</li>
+      <li>Check the IP address with:</li>
+      <code>hostname -I</code>
+      <li>If no IP shows, Wi-Fi might not have connected. Verify:</li>
+      <code>cat /etc/wpa_supplicant/wpa_supplicant.conf</code>
+      <li>To edit Wi-Fi config:</li>
+      <code>sudo nano /etc/wpa_supplicant/wpa_supplicant.conf</code>
+      <li>Reboot once set: <code>sudo reboot</code></li>
+    </ul>
+  </div>
+
+  <div class="section">
+    <h3>🔧 Step 3: First Boot and SSH</h3>
+    <ul>
+      <li>Once networked, try SSH from your laptop or desktop:</li>
+      <code>ssh pi@192.168.x.x</code>
+      <li>If using Windows and want to support .local hostnames:</li>
+      <ul>
+        <li>Install Apple Bonjour: <a href="https://support.apple.com/kb/dl999">Bonjour for Windows</a></li>
+      </ul>
+      <li>Update system packages after SSH login:</li>
+      <code>sudo apt update && sudo apt upgrade -y</code>
+      <li>Install basic tools:</li>
+      <code>sudo apt install git python3 python3-pip tmux htop -y</code>
+    </ul>
+  </div>
+
+  <div class="section">
+    <h3>📁 Step 4: Project Ready</h3>
+    <ul>
+      <li>Create your working folder: <code>mkdir ~/tangnet</code></li>
+      <li>Clone llama.cpp: <code>git clone https://github.com/ggerganov/llama.cpp.git ~/tangnet/llama.cpp</code></li>
+      <li>Optional: Set a custom hostname: <code>sudo hostnamectl set-hostname tangnet-node-01</code></li>
+    </ul>
+  </div>
+
+  <div class="section">
+    <h3>🧠 Next Steps</h3>
+    <ul>
+      <li>Compile llama.cpp for ARM</li>
+      <li>Run a tiny LLM (e.g. TinyLLaMA, Phi-2) and chat with it</li>
+      <li>Test audio with Whisper or camera input later</li>
+      <li>Start preparing your node’s specialization (RAG, agent, sensor, etc)</li>
+    </ul>
+  </div>
+
+  <div class="footer">
+    This is TANGNET’s first breath. The vault is opening. ⚡
+  </div>
+</body>
+</html>

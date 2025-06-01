@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>TANGNET: Stage 2 Docs</title>
+  <style>
+    body {
+      background-color: #111;
+      color: #afff33;
+      font-family: 'Courier New', Courier, monospace;
+      padding: 2rem;
+      line-height: 1.6;
+    }
+    h1, h2 {
+      text-align: center;
+    }
+    .section {
+      max-width: 1000px;
+      margin: 2rem auto;
+      border-left: 4px solid #afff33;
+      padding-left: 1.5rem;
+    }
+    ul {
+      list-style-type: square;
+      margin-left: 2rem;
+    }
+    code {
+      background: #222;
+      padding: 0.2rem 0.4rem;
+      color: #7CFC00;
+      border-radius: 4px;
+    }
+    .footer {
+      text-align: center;
+      margin-top: 4rem;
+      font-size: 0.9rem;
+      color: #66ff99;
+    }
+  </style>
+</head>
+<body>
+  <h1>🧠 TANGNET: STAGE 2 — NETWORK COMMS ONLINE 📡</h1>
+  <h2>Pi Initialized — Begin Networked Agent Stack</h2>
+
+  <div class="section">
+    <h3>🌐 Network Roles</h3>
+    <ul>
+      <li>🖥️ <strong>Main Desktop:</strong> RTX 3070, 64GB RAM (Windows)</li>
+      <li>💻 <strong>Laptop:</strong> RTX 4060, 32GB RAM (Windows)</li>
+      <li>🍓 <strong>Raspberry Pi 5 (8GB):</strong> Online and SSH-accessible</li>
+      <li>📶 All devices are on the same LAN — use reserved IPs or static leases if possible</li>
+    </ul>
+  </div>
+
+  <div class="section">
+    <h3>🔗 Step 1: Verify Host Communication</h3>
+    <ul>
+      <li>From the Pi, try pinging your desktop/laptop:</li>
+      <code>ping 192.168.x.x</code>
+      <li>From Windows, ping the Pi by hostname or IP:</li>
+      <code>ping tangnet-node-01.local</code> or <code>ping 192.168.x.x</code>
+      <li>Optional: Set hostname resolution in Windows via <code>C:\Windows\System32\drivers\etc\hosts</code></li>
+    </ul>
+  </div>
+
+  <div class="section">
+    <h3>🔧 Step 2: Install Python & Tools on Windows Hosts</h3>
+    <ul>
+      <li>Install Python 3.10+ from <a href="https://www.python.org">python.org</a></li>
+      <li>Install Git for Windows</li>
+      <li>Clone workspace repo or llama.cpp, whisper.cpp, etc.</li>
+      <li>Set up virtualenvs (optional but clean)</li>
+      <li>Install core Python packages:</li>
+      <code>pip install torch transformers sentence-transformers fastapi</code>
+    </ul>
+  </div>
+
+  <div class="section">
+    <h3>⚙️ Step 3: Pi Roles and Remote Access</h3>
+    <ul>
+      <li>Use Pi as a lightweight agent host (transcription, logging, remote commands)</li>
+      <li>Install required packages for scripts:</li>
+      <code>sudo apt install ffmpeg sox screen python3-pip -y</code>
+      <code>pip3 install requests flask</code>
+      <li>Create a shared folder structure in <code>~/tangnet</code></li>
+    </ul>
+  </div>
+
+  <div class="section">
+    <h3>🧪 Step 4: Test Job Distribution (Manual)</h3>
+    <ul>
+      <li>Create a simple Python script on the Pi that runs a command like:</li>
+      <code>print("Node online. Ready for orders.")</code>
+      <li>From your laptop or desktop, trigger it with <code>paramiko</code> or <code>fabric</code></li>
+      <li>Confirm response and start wiring up agent loop logic</li>
+    </ul>
+  </div>
+
+  <div class="footer">
+    TANGNET now spans multiple nodes. The hive is growing. ⚡
+  </div>
+</body>
+</html>
