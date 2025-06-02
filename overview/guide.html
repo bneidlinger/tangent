@@ -2,83 +2,104 @@
 
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Tangnet Pi Node - User Guide</title>
+  <meta charset="UTF-8">
+  <title>Tangnet LLM Pi Guide</title>
   <style>
     body {
-      background-color: #0b0c10;
-      color: #00ff90;
+      background-color: #0d0d0d;
+      color: #33ff33;
       font-family: 'Courier New', Courier, monospace;
-      padding: 1.5rem;
+      padding: 20px;
     }
-    h1, h2, h3 {
-      color: #00ffe5;
+    h1, h2 {
+      color: #39ff14;
     }
-    code {
-      background: #1f1f1f;
-      color: #00ffaa;
-      padding: 0.3rem;
-      border-radius: 4px;
-      display: block;
-      margin: 0.3rem 0;
+    .section {
+      margin-bottom: 40px;
     }
-    pre {
-      background: #1f1f1f;
-      color: #00ffaa;
-      padding: 1rem;
-      border-radius: 5px;
-      overflow-x: auto;
+    .cmd {
+      background-color: #1a1a1a;
+      padding: 10px;
+      border-left: 5px solid #39ff14;
+      margin: 10px 0;
+      white-space: pre-wrap;
     }
     a {
-      color: #ff70d4;
-      text-decoration: none;
+      color: #00ffff;
     }
   </style>
 </head>
 <body>
-  <h1>&#128125; Tangnet Pi Node User Guide</h1>
-  <p>This guide walks through setup and use of your Raspberry Pi node (nicknamed <strong>Tangnet Node 01</strong>) for local LLM testing. You're running this on a Raspberry Pi 5 with 8GB RAM. Also in the mix:</p>
-  <ul>
-    <li><strong>Main Rig</strong>: RTX 3070, 64GB RAM, Windows</li>
-    <li><strong>Laptop</strong>: RTX 4060, 32GB RAM, Ryzen AI 9 HX 370, Windows</li>
-  </ul>
+  <h1>🧪 Tangnet Local LLM Node Guide</h1>
+  <div class="section">
+    <h2>🖥️ System Overview</h2>
+    <ul>
+      <li><strong>Raspberry Pi 5 (8GB)</strong> — Running TinyLlama LLM</li>
+      <li><strong>Network Address:</strong> <code>192.168.1.31</code></li>
+      <li><strong>Laptop:</strong> RTX 4060, 32GB RAM, Windows</li>
+      <li><strong>Main Rig:</strong> RTX 3070, 64GB RAM, Windows</li>
+    </ul>
+  </div>
 
-  <h2>&#9889; Setup Checklist</h2>
-  <ul>
-    <li>✔ Pi powered via CanaKit with working mouse/keyboard and HDMI</li>
-    <li>✔ Wifi configured via <code>wpa_supplicant.conf</code> (optional: ethernet)</li>
-    <li>✔ SSH, VNC, and local terminal access all working</li>
-    <li>✔ Python 3 and virtualenv set up</li>
-    <li>✔ llama.cpp cloned and built with <code>cmake .. && make -j4</code></li>
-  </ul>
+  <div class="section">
+    <h2>🧠 LLM Runtime (TinyLlama)</h2>
+    <p>Run the model:</p>
+    <div class="cmd">
+~/tangnet/llama.cpp/build/bin/llama-run ~/tangnet/llama.cpp/tinyllama-1.1b-chat-v1.0.Q4_K_M.gguf "Your prompt here"
+    </div>
+    <p>Create a bash alias:</p>
+    <div class="cmd">
+echo "alias tangnet='~/tangnet/llama.cpp/build/bin/llama-run ~/tangnet/llama.cpp/tinyllama-1.1b-chat-v1.0.Q4_K_M.gguf'" >> ~/.bashrc && source ~/.bashrc
+    </div>
+    <p>Then just run:</p>
+    <div class="cmd">
+tangnet "What's the mission?"
+    </div>
+  </div>
 
-  <h2>&#129504; Useful Commands</h2>
-  <h3>Model Download (Huggingface CLI)</h3>
-  <pre><code>source ~/hfenv/bin/activate
-python -m huggingface_hub download TheBloke/TinyLlama-1.1B-Chat-GGUF tinyllama-1.1b-chat-v1.0.Q4_K_M.gguf --local-dir ~/tangnet/llama.cpp</code></pre>
+  <div class="section">
+    <h2>🔐 Connecting to Pi</h2>
+    <p>From laptop or desktop:</p>
+    <div class="cmd">
+ssh brand@192.168.1.31
+    </div>
+    <p>Transfer a file from laptop to Pi:</p>
+    <div class="cmd">
+scp path/to/your/model.gguf brand@192.168.1.31:~/tangnet/llama.cpp/
+    </div>
+    <p>Use VNC Viewer (if enabled):</p>
+    <div class="cmd">
+vncviewer 192.168.1.31:1
+    </div>
+  </div>
 
-  <h3>Run LLaMA Model</h3>
-  <pre><code>~/tangnet/llama.cpp/build/bin/llama-run ~/tangnet/llama.cpp/tinyllama-1.1b-chat-v1.0.Q4_K_M.gguf "Your prompt here"</code></pre>
+  <div class="section">
+    <h2>🔧 Managing the Pi</h2>
+    <p>Start, stop, or reboot properly:</p>
+    <div class="cmd">
+sudo shutdown -h now    # Shutdown safely
+sudo reboot             # Reboot the Pi
+    </div>
+    <p>Check CPU temperature:</p>
+    <div class="cmd">
+vcgencmd measure_temp
+    </div>
+    <p>Monitor processes:</p>
+    <div class="cmd">
+htop
+    </div>
+    <p><strong>Best practice:</strong> Shutdown the Pi if not used daily. Leave on for automation or persistent use.</p>
+  </div>
 
-  <h3>Optional Alias (Add to ~/.bashrc)</h3>
-  <pre><code>alias tangnet='~/tangnet/llama.cpp/build/bin/llama-run ~/tangnet/llama.cpp/tinyllama-1.1b-chat-v1.0.Q4_K_M.gguf'</code></pre>
+  <div class="section">
+    <h2>🧪 Handling the Beast</h2>
+    <p>This Pi is now your edge-node for LLM inference. Treat it with respect. Don’t yank the power — always shut down cleanly. For now, you can power it on when needed, SSH/VNC in, and fire up the llama.</p>
+    <p><strong>Future plans:</strong> hook it into a smart outlet and run a local API!</p>
+  </div>
 
-  <h2>&#128679; Troubleshooting</h2>
-  <ul>
-    <li>If model won’t load, check it with <code>head -c 4 filename.gguf</code> (should start with <code>GGUF</code>)</li>
-    <li>If llama-run fails, confirm build finished without errors and you're in the right path</li>
-    <li>Clear failed files with <code>rm filename.gguf</code> and re-download</li>
-  </ul>
-
-  <h2>&#128736; Tips</h2>
-  <ul>
-    <li>Keep models under 2GB for Pi testing or you'll melt the RAM</li>
-    <li>Use <code>htop</code> or <code>top</code> to monitor usage in real-time</li>
-    <li>Add more swap if building large C++ projects on Pi</li>
-    <li>Keep the Pi cool with a fan from your CanaKit!</li>
-  </ul>
-
-  <p>More to come in the next phase, Morty! We’ll be adding UI overlays, server endpoints, and maybe a multiverse interface for AI bots. Stay squanchy!</p>
+  <div class="section">
+    <h2>🧠 Rick Note:</h2>
+    <p>"Morty, we got a local brain running on a Pi, and it’s not even melting, Morty. That’s like fitting a black hole in a lunchbox. Don’t screw this up."</p>
+  </div>
 </body>
 </html>
