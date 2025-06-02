@@ -1,0 +1,405 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TANGNET Architecture - Current Implementation</title>
+    <style>
+        body {
+            background-color: #0a0a0a;
+            color: #00ffcc;
+            font-family: 'Courier New', Courier, monospace;
+            padding: 2rem;
+            line-height: 1.6;
+            overflow-x: hidden;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        
+        h1 {
+            text-align: center;
+            font-size: 3rem;
+            margin-bottom: 0.5rem;
+            text-shadow: 0 0 20px #00ffcc;
+            animation: pulse 2s infinite;
+        }
+        
+        h2 {
+            color: #00ff88;
+            margin-top: 3rem;
+            border-bottom: 2px solid #00ffcc;
+            padding-bottom: 0.5rem;
+        }
+        
+        h3 {
+            color: #00ccaa;
+            margin-top: 2rem;
+        }
+        
+        .subtitle {
+            text-align: center;
+            color: #009999;
+            margin-bottom: 3rem;
+            font-size: 1.2rem;
+        }
+        
+        .architecture-diagram {
+            background-color: #001a1a;
+            border: 2px solid #00ffcc;
+            border-radius: 10px;
+            padding: 2rem;
+            margin: 2rem 0;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .architecture-diagram::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle, rgba(0,255,204,0.1) 0%, transparent 70%);
+            animation: rotate 20s linear infinite;
+        }
+        
+        @keyframes rotate {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
+        
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.8; }
+        }
+        
+        .component {
+            background-color: #002a2a;
+            border: 1px solid #00ffcc;
+            border-radius: 8px;
+            padding: 1.5rem;
+            margin: 1rem 0;
+            position: relative;
+            z-index: 1;
+            transition: all 0.3s ease;
+        }
+        
+        .component:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 30px rgba(0,255,204,0.3);
+            background-color: #003a3a;
+        }
+        
+        .component h3 {
+            margin-top: 0;
+            color: #00ffcc;
+        }
+        
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 2rem;
+            margin: 2rem 0;
+        }
+        
+        .code-block {
+            background-color: #001515;
+            border: 1px solid #00ffcc;
+            border-radius: 5px;
+            padding: 1rem;
+            overflow-x: auto;
+            font-size: 0.9rem;
+            margin: 1rem 0;
+        }
+        
+        .code-block code {
+            color: #00ff88;
+        }
+        
+        .stats {
+            display: flex;
+            justify-content: space-around;
+            flex-wrap: wrap;
+            margin: 2rem 0;
+        }
+        
+        .stat-item {
+            text-align: center;
+            padding: 1rem;
+            background-color: #001a1a;
+            border: 1px solid #00ffcc;
+            border-radius: 8px;
+            margin: 0.5rem;
+            min-width: 150px;
+        }
+        
+        .stat-value {
+            font-size: 2rem;
+            font-weight: bold;
+            color: #00ffcc;
+            display: block;
+        }
+        
+        .stat-label {
+            color: #009999;
+            font-size: 0.9rem;
+        }
+        
+        .flow-diagram {
+            text-align: center;
+            margin: 2rem 0;
+            font-size: 1.2rem;
+        }
+        
+        .flow-item {
+            display: inline-block;
+            background-color: #002a2a;
+            border: 1px solid #00ffcc;
+            padding: 0.8rem 1.5rem;
+            margin: 0.5rem;
+            border-radius: 20px;
+        }
+        
+        .flow-arrow {
+            color: #00ff88;
+            margin: 0 1rem;
+        }
+        
+        .highlight {
+            color: #00ff88;
+            font-weight: bold;
+        }
+        
+        .footer {
+            text-align: center;
+            margin-top: 4rem;
+            padding-top: 2rem;
+            border-top: 1px solid #00ffcc;
+            color: #009999;
+        }
+        
+        @media (max-width: 768px) {
+            h1 { font-size: 2rem; }
+            .flow-diagram { font-size: 1rem; }
+            .flow-arrow { display: block; margin: 0.5rem 0; }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🧠 TANGNET ARCHITECTURE 🛰️</h1>
+        <p class="subtitle">Phase 1: Single Pi Neural Node - ACTIVE</p>
+        
+        <div class="architecture-diagram">
+            <h2>Current System Overview</h2>
+            
+            <div class="stats">
+                <div class="stat-item">
+                    <span class="stat-value">1</span>
+                    <span class="stat-label">Active Node</span>
+                </div>
+                <div class="stat-item">
+                    <span class="stat-value">1.1B</span>
+                    <span class="stat-label">Parameters</span>
+                </div>
+                <div class="stat-item">
+                    <span class="stat-value">8GB</span>
+                    <span class="stat-label">RAM</span>
+                </div>
+                <div class="stat-item">
+                    <span class="stat-value">4</span>
+                    <span class="stat-label">CPU Cores</span>
+                </div>
+            </div>
+            
+            <div class="flow-diagram">
+                <span class="flow-item">User Input</span>
+                <span class="flow-arrow">→</span>
+                <span class="flow-item">Web Interface</span>
+                <span class="flow-arrow">→</span>
+                <span class="flow-item">Chat API</span>
+                <span class="flow-arrow">→</span>
+                <span class="flow-item">SSH Tunnel</span>
+                <span class="flow-arrow">→</span>
+                <span class="flow-item">Pi Node</span>
+                <span class="flow-arrow">→</span>
+                <span class="flow-item">TinyLlama</span>
+            </div>
+        </div>
+        
+        <h2>Core Components</h2>
+        
+        <div class="grid">
+            <div class="component">
+                <h3>🖥️ Raspberry Pi 5 Node</h3>
+                <p><strong>IP:</strong> <span class="highlight">192.168.1.31</span></p>
+                <p><strong>Model:</strong> Raspberry Pi 5 (8GB RAM)</p>
+                <p><strong>OS:</strong> Raspberry Pi OS Lite (64-bit)</p>
+                <p><strong>Purpose:</strong> Primary inference node running TinyLlama 1.1B</p>
+                <div class="code-block">
+                    <code>ssh brand@192.168.1.31<br>
+tangnet "Your prompt here"</code>
+                </div>
+            </div>
+            
+            <div class="component">
+                <h3>🧬 TinyLlama 1.1B</h3>
+                <p><strong>Model:</strong> TinyLlama-1.1B-Chat-v1.0</p>
+                <p><strong>Quantization:</strong> Q4_K_M (4-bit)</p>
+                <p><strong>Size:</strong> ~600MB</p>
+                <p><strong>Context:</strong> 2048 tokens</p>
+                <div class="code-block">
+                    <code>./llama.cpp/llama-cli \<br>
+  -m models/tinyllama-1.1b-chat-v1.0.Q4_K_M.gguf \<br>
+  -c 2048 -t 4 -ngl 33 --no-display-prompt</code>
+                </div>
+            </div>
+            
+            <div class="component">
+                <h3>⚡ llama.cpp Engine</h3>
+                <p><strong>Backend:</strong> C++ inference engine</p>
+                <p><strong>Optimization:</strong> ARM NEON acceleration</p>
+                <p><strong>GPU:</strong> 33 layers offloaded to GPU</p>
+                <p><strong>Performance:</strong> ~10-15 tokens/second</p>
+            </div>
+            
+            <div class="component">
+                <h3>💬 Chat Interface</h3>
+                <p><strong>Framework:</strong> FastAPI + WebSocket</p>
+                <p><strong>UI:</strong> Tailwind CSS + Vanilla JS</p>
+                <p><strong>Features:</strong> Real-time streaming, personalities</p>
+                <p><strong>Port:</strong> 8000 (local development)</p>
+            </div>
+        </div>
+        
+        <h2>Data Flow Architecture</h2>
+        
+        <div class="architecture-diagram">
+            <h3>Request Processing Pipeline</h3>
+            
+            <div class="grid">
+                <div class="component">
+                    <h3>1. Client Layer</h3>
+                    <ul>
+                        <li>Web browser connects to localhost:8000</li>
+                        <li>WebSocket establishes real-time channel</li>
+                        <li>Messages sent with personality context</li>
+                    </ul>
+                </div>
+                
+                <div class="component">
+                    <h3>2. API Layer</h3>
+                    <ul>
+                        <li>FastAPI handles WebSocket connections</li>
+                        <li>Session management in memory</li>
+                        <li>Personality prompt injection</li>
+                    </ul>
+                </div>
+                
+                <div class="component">
+                    <h3>3. Transport Layer</h3>
+                    <ul>
+                        <li>SSH tunnel to Pi (passwordless auth)</li>
+                        <li>Command escaping and formatting</li>
+                        <li>30-second timeout protection</li>
+                    </ul>
+                </div>
+                
+                <div class="component">
+                    <h3>4. Inference Layer</h3>
+                    <ul>
+                        <li>tangnet bash alias executes</li>
+                        <li>llama.cpp processes prompt</li>
+                        <li>Response streamed back via SSH</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+        
+        <h2>System Configuration</h2>
+        
+        <div class="component">
+            <h3>Network Topology</h3>
+            <div class="code-block">
+                <code>┌─────────────────┐     ┌──────────────────┐     ┌─────────────────┐<br>
+│  Dev Machine    │────▶│   Chat Server    │────▶│  Raspberry Pi   │<br>
+│ Windows/Mac/Linux│ HTTP│  localhost:8000  │ SSH │  192.168.1.31   │<br>
+└─────────────────┘     └──────────────────┘     └─────────────────┘<br>
+                              FastAPI                 TinyLlama</code>
+            </div>
+        </div>
+        
+        <div class="grid">
+            <div class="component">
+                <h3>🔧 Bash Alias Configuration</h3>
+                <div class="code-block">
+                    <code>alias tangnet='./llama.cpp/llama-cli \<br>
+  -m models/tinyllama-1.1b-chat-v1.0.Q4_K_M.gguf \<br>
+  -c 2048 -t 4 -ngl 33 --no-display-prompt -p'</code>
+                </div>
+            </div>
+            
+            <div class="component">
+                <h3>🔐 SSH Setup</h3>
+                <div class="code-block">
+                    <code># Generate key<br>
+ssh-keygen -t rsa -b 4096<br>
+# Copy to Pi<br>
+ssh-copy-id brand@192.168.1.31</code>
+                </div>
+            </div>
+        </div>
+        
+        <h2>Performance Metrics</h2>
+        
+        <div class="stats">
+            <div class="stat-item">
+                <span class="stat-value">~2s</span>
+                <span class="stat-label">First Token</span>
+            </div>
+            <div class="stat-item">
+                <span class="stat-value">10-15</span>
+                <span class="stat-label">Tokens/sec</span>
+            </div>
+            <div class="stat-item">
+                <span class="stat-value">~600MB</span>
+                <span class="stat-label">Model Size</span>
+            </div>
+            <div class="stat-item">
+                <span class="stat-value">2048</span>
+                <span class="stat-label">Context Length</span>
+            </div>
+        </div>
+        
+        <h2>Future Expansion Path</h2>
+        
+        <div class="component">
+            <h3>🚀 Phase 2 Ready</h3>
+            <p>The architecture is designed for seamless expansion:</p>
+            <ul>
+                <li><strong>Model Abstraction:</strong> Swap inference backends without code changes</li>
+                <li><strong>Network Ready:</strong> Add nodes by updating configuration</li>
+                <li><strong>API Stability:</strong> Same interface for Pi or GPU servers</li>
+                <li><strong>Database Ready:</strong> SQLite schema supports conversation persistence</li>
+            </ul>
+            
+            <div class="code-block">
+                <code># Future: Just change config<br>
+ACTIVE_SERVER=remote_3080<br>
+REMOTE_3080_URL=http://192.168.1.32:8001<br>
+REMOTE_3080_MODEL=mistral-7b-instruct</code>
+            </div>
+        </div>
+        
+        <div class="footer">
+            <p>TANGNET Phase 1 Architecture</p>
+            <p>One node today, one hundred tomorrow. The mesh awakens.</p>
+            <p>🧠 Powered by curiosity and ARM processors 🛰️</p>
+        </div>
+    </div>
+</body>
+</html>

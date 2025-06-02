@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Tangnet Phase 2: 3080 Server Expansion</title>
+  <style>
+    body {
+      background-color: #0b0c10;
+      color: #66fcf1;
+      font-family: 'Courier New', Courier, monospace;
+      padding: 2rem;
+    }
+    h1, h2, h3 {
+      color: #45a29e;
+    }
+    code {
+      background: #1f2833;
+      padding: 0.2em 0.4em;
+      border-radius: 3px;
+      color: #c5c6c7;
+    }
+    section {
+      margin-bottom: 2rem;
+    }
+  </style>
+</head>
+<body>
+  <h1>🧪 Tangnet Phase 2: 3080 AI Server Integration</h1>
+
+  <section>
+    <h2>🔧 1. Set up the 3080 Rig as Inference Server</h2>
+    <ul>
+      <li>Install <code>llama.cpp</code> with GPU acceleration (cuBLAS/cuDNN)</li>
+      <li>Alternatively, install <code>ollama</code> or <code>vllm</code></li>
+      <li>Expose an API like:
+        <pre><code>POST /generate
+{
+  "prompt": "What's the mission?"
+}</code></pre>
+      </li>
+      <li>Make it accessible at <code>http://192.168.1.X:8001</code></li>
+    </ul>
+  </section>
+
+  <section>
+    <h2>💬 2. Enhance the Chatbot</h2>
+    <ul>
+      <li>Build AI personalities (Rick, Security Bot, Lorekeeper)</li>
+      <li>Add context memory: file-backed, sqlite, or vector DB</li>
+      <li>Enable real function execution (shell, sensors, logs)</li>
+    </ul>
+  </section>
+
+  <section>
+    <h2>🧠 3. Try Stronger Models</h2>
+    <ul>
+      <li>Models: <code>Phi-3-mini</code>, <code>Mistral 7B</code>, <code>Gemma</code></li>
+      <li>Use <code>transformers</code> or <code>llama.cpp</code> depending on format</li>
+      <li>Use model server tools: <code>text-generation-webui</code>, <code>ollama</code>, <code>vllm</code></li>
+    </ul>
+  </section>
+
+  <section>
+    <h2>💻 4. Frontend Upgrades</h2>
+    <ul>
+      <li>Build rich interface with Tailwind + HTMX or React</li>
+      <li>Or build a terminal-based CLI tool called <code>tangnet</code></li>
+    </ul>
+  </section>
+
+  <section>
+    <h2>📡 5. Tangnet Mesh Network</h2>
+    <ul>
+      <li>Use the Pi as a router/coordinator</li>
+      <li>Connect main rig, laptop, and future nodes</li>
+      <li>Expose WebSocket or REST endpoints on each node</li>
+      <li>Allow internal node-to-node messaging and AI routing</li>
+    </ul>
+  </section>
+
+  <section>
+    <h2>📂 6. Local Knowledge + RAG</h2>
+    <ul>
+      <li>Index personal files, Markdown, PDFs</li>
+      <li>Use embeddings + FAISS or Chroma</li>
+      <li>Let the bot answer based on indexed knowledge</li>
+    </ul>
+  </section>
+
+  <section>
+    <h2>🗣️ 7. Voice-Enabled Bot (Optional)</h2>
+    <ul>
+      <li>Input: <code>vosk</code> or <code>whisper.cpp</code></li>
+      <li>Output: <code>llama-tts</code> or <code>Coqui TTS</code></li>
+      <li>Build local JARVIS style assistant</li>
+    </ul>
+  </section>
+
+  <section>
+    <h2>🔌 Connect to 3080 from Pi</h2>
+    <pre><code># On the Pi, POST to the main rig
+curl -X POST http://192.168.1.100:8001/generate \
+  -H "Content-Type: application/json" \
+  -d '{"prompt": "Hello from Pi!"}'
+    </code></pre>
+  </section>
+
+</body>
+</html>

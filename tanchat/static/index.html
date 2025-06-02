@@ -1,0 +1,233 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tangnet Chat Interface</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        .typing-indicator::after {
+            content: '...';
+            animation: typing 1s infinite;
+        }
+        @keyframes typing {
+            0% { content: '.'; }
+            33% { content: '..'; }
+            66% { content: '...'; }
+        }
+        .message-container {
+            max-height: calc(100vh - 200px);
+            overflow-y: auto;
+        }
+    </style>
+</head>
+<body class="bg-gray-900 text-green-400 font-mono">
+    <div class="container mx-auto p-4 max-w-4xl">
+        <header class="text-center mb-8">
+            <h1 class="text-4xl font-bold mb-2">🧠 TANGNET CHAT 🛰️</h1>
+            <p class="text-gray-500">Connected to: <span id="server-status" class="text-green-500">Local Pi</span></p>
+        </header>
+
+        <div class="mb-4 flex gap-2 justify-center">
+            <button onclick="setPersonality('default')" class="personality-btn px-4 py-2 bg-gray-800 hover:bg-gray-700 rounded" data-personality="default">Default</button>
+            <button onclick="setPersonality('rick')" class="personality-btn px-4 py-2 bg-gray-800 hover:bg-gray-700 rounded" data-personality="rick">Rick</button>
+            <button onclick="setPersonality('security')" class="personality-btn px-4 py-2 bg-gray-800 hover:bg-gray-700 rounded" data-personality="security">Security</button>
+            <button onclick="setPersonality('lorekeeper')" class="personality-btn px-4 py-2 bg-gray-800 hover:bg-gray-700 rounded" data-personality="lorekeeper">Lorekeeper</button>
+        </div>
+
+        <div class="bg-gray-800 rounded-lg p-6 mb-4">
+            <div id="messages" class="message-container space-y-4 mb-4">
+                <div class="text-center text-gray-500">Start a conversation...</div>
+            </div>
+            
+            <div id="typing-indicator" class="hidden mb-4">
+                <span class="text-gray-400 typing-indicator">AI is thinking</span>
+            </div>
+
+            <div class="flex gap-2">
+                <input 
+                    type="text" 
+                    id="message-input" 
+                    class="flex-1 bg-gray-700 text-green-400 px-4 py-2 rounded focus:outline-none focus:ring-2 focus:ring-green-500"
+                    placeholder="Type your message..."
+                    onkeypress="handleKeyPress(event)"
+                >
+                <button 
+                    onclick="sendMessage()" 
+                    class="px-6 py-2 bg-green-600 hover:bg-green-700 text-black font-bold rounded transition"
+                >
+                    Send
+                </button>
+            </div>
+        </div>
+
+        <div class="text-center text-sm text-gray-600">
+            <p>Session: <span id="session-id" class="text-gray-500">-</span></p>
+            <button onclick="newSession()" class="mt-2 text-green-500 hover:underline">New Session</button>
+        </div>
+    </div>
+
+    <script>
+        let sessionId = null;
+        let personality = 'default';
+        let ws = null;
+
+        // Initialize
+        async function init() {
+            await newSession();
+            connectWebSocket();
+        }
+
+        // Create new session
+        async function newSession() {
+            const response = await fetch('/new_session');
+            const data = await response.json();
+            sessionId = data.session_id;
+            document.getElementById('session-id').textContent = sessionId;
+            document.getElementById('messages').innerHTML = '<div class="text-center text-gray-500">Start a conversation...</div>';
+            
+            if (ws) {
+                ws.close();
+            }
+            connectWebSocket();
+        }
+
+        // Connect WebSocket
+        function connectWebSocket() {
+            if (!sessionId) return;
+            
+            ws = new WebSocket(`ws://localhost:8000/ws/${sessionId}`);
+            
+            ws.onmessage = (event) => {
+                const data = JSON.parse(event.data);
+                
+                if (data.type === 'chunk') {
+                    // Handle streaming chunks
+                    appendToLastMessage(data.content);
+                } else if (data.type === 'complete') {
+                    hideTypingIndicator();
+                }
+            };
+            
+            ws.onerror = (error) => {
+                console.error('WebSocket error:', error);
+                document.getElementById('server-status').textContent = 'Disconnected';
+                document.getElementById('server-status').className = 'text-red-500';
+            };
+            
+            ws.onopen = () => {
+                document.getElementById('server-status').textContent = 'Connected';
+                document.getElementById('server-status').className = 'text-green-500';
+            };
+        }
+
+        // Set personality
+        function setPersonality(newPersonality) {
+            personality = newPersonality;
+            
+            // Update button styles
+            document.querySelectorAll('.personality-btn').forEach(btn => {
+                if (btn.dataset.personality === personality) {
+                    btn.classList.add('bg-green-600', 'text-black');
+                    btn.classList.remove('bg-gray-800');
+                } else {
+                    btn.classList.remove('bg-green-600', 'text-black');
+                    btn.classList.add('bg-gray-800');
+                }
+            });
+        }
+
+        // Send message
+        async function sendMessage() {
+            const input = document.getElementById('message-input');
+            const message = input.value.trim();
+            
+            if (!message) return;
+            
+            // Add user message to chat
+            addMessage('user', message);
+            input.value = '';
+            
+            // Show typing indicator
+            showTypingIndicator();
+            
+            if (ws && ws.readyState === WebSocket.OPEN) {
+                // Use WebSocket
+                ws.send(JSON.stringify({ message, personality }));
+                addMessage('assistant', '', true); // Add empty message for streaming
+            } else {
+                // Fallback to HTTP
+                try {
+                    const response = await fetch('/chat', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({
+                            message,
+                            session_id: sessionId,
+                            personality
+                        })
+                    });
+                    
+                    const data = await response.json();
+                    addMessage('assistant', data.response);
+                } catch (error) {
+                    addMessage('system', 'Error: Could not connect to server');
+                }
+                hideTypingIndicator();
+            }
+        }
+
+        // Add message to chat
+        function addMessage(role, content, isStreaming = false) {
+            const messagesDiv = document.getElementById('messages');
+            const messageDiv = document.createElement('div');
+            messageDiv.className = 'flex gap-3';
+            
+            const roleClass = role === 'user' ? 'text-blue-400' : 'text-green-400';
+            const roleLabel = role === 'user' ? 'You' : 'AI';
+            
+            messageDiv.innerHTML = `
+                <span class="${roleClass} font-bold">${roleLabel}:</span>
+                <div class="flex-1 ${isStreaming ? 'streaming-message' : ''}">${content}</div>
+            `;
+            
+            messagesDiv.appendChild(messageDiv);
+            messagesDiv.scrollTop = messagesDiv.scrollHeight;
+        }
+
+        // Append to last message (for streaming)
+        function appendToLastMessage(content) {
+            const messages = document.getElementById('messages');
+            const lastMessage = messages.querySelector('.streaming-message');
+            if (lastMessage) {
+                lastMessage.textContent += content;
+                messages.scrollTop = messages.scrollHeight;
+            }
+        }
+
+        // Typing indicator
+        function showTypingIndicator() {
+            document.getElementById('typing-indicator').classList.remove('hidden');
+        }
+
+        function hideTypingIndicator() {
+            document.getElementById('typing-indicator').classList.add('hidden');
+            // Remove streaming class from last message
+            const lastMessage = document.querySelector('.streaming-message');
+            if (lastMessage) {
+                lastMessage.classList.remove('streaming-message');
+            }
+        }
+
+        // Handle Enter key
+        function handleKeyPress(event) {
+            if (event.key === 'Enter') {
+                sendMessage();
+            }
+        }
+
+        // Initialize on load
+        init();
+    </script>
+</body>
+</html>
