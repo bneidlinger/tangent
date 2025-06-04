@@ -1,0 +1,30 @@
+{
+  "name": "tanchat-node",
+  "version": "1.0.0",
+  "description": "TinyLlama chat server for Raspberry Pi inspired by catai",
+  "main": "index.js",
+  "type": "module",
+  "scripts": {
+    "start": "node index.js",
+    "dev": "node --watch index.js"
+  },
+  "dependencies": {
+    "express": "^4.18.2",
+    "socket.io": "^4.7.2",
+    "node-llama-cpp": "^2.8.0",
+    "cors": "^2.8.5",
+    "dotenv": "^16.3.1"
+  },
+  "engines": {
+    "node": ">=18.0.0"
+  },
+  "keywords": [
+    "llama",
+    "tinyllama",
+    "chat",
+    "ai",
+    "raspberry-pi"
+  ],
+  "author": "",
+  "license": "MIT"
+}

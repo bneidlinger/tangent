@@ -43,15 +43,19 @@ PERSONALITIES = {
 
 async def run_tangnet_command(prompt: str) -> str:
     """Run tangnet command on the Pi via SSH"""
-    # Escape quotes in the prompt
-    escaped_prompt = prompt.replace('"', '\\"').replace("'", "\\'")
+    # Escape quotes for PowerShell and bash
+    escaped_prompt = prompt.replace('"', '`"').replace("'", "''")
     
     # Try different command formats
     commands = [
-        f'ssh {PI_USER}@{PI_HOST} "tangnet \\"{escaped_prompt}\\""',
-        f"ssh {PI_USER}@{PI_HOST} 'tangnet \"{escaped_prompt}\"'",
-        # Direct llama.cpp command as fallback
-        f'ssh {PI_USER}@{PI_HOST} "./llama.cpp/llama-cli -m models/tinyllama-1.1b-chat-v1.0.Q4_K_M.gguf -c 2048 -t 4 -ngl 33 --no-display-prompt -p \\"{escaped_prompt}\\""'
+        # PowerShell command to SSH and run tangnet
+        f'powershell.exe -Command "ssh {PI_USER}@{PI_HOST} \'tangnet `\\"{escaped_prompt}`\\\'\'"',
+        # Try with bash -l
+        f'powershell.exe -Command "ssh {PI_USER}@{PI_HOST} \'bash -l -c `\\"tangnet `\\\\`\\"{escaped_prompt}`\\\\`\\"`\\\'\'"',
+        # Direct llama.cpp command
+        f'powershell.exe -Command "ssh {PI_USER}@{PI_HOST} \'cd /home/{PI_USER} && ./llama.cpp/llama-cli -m ./models/tinyllama-1.1b-chat-v1.0.Q4_K_M.gguf -c 2048 -t 4 -ngl 33 --no-display-prompt -p `\\"{escaped_prompt}`\\\'\'"',
+        # Fallback without PowerShell (for Linux/WSL with proper SSH setup)
+        f'ssh {PI_USER}@{PI_HOST} "cd /home/{PI_USER} && ./llama.cpp/llama-cli -m ./models/tinyllama-1.1b-chat-v1.0.Q4_K_M.gguf -c 2048 -t 4 -ngl 33 --no-display-prompt -p \\"{escaped_prompt}\\""'
     ]
     
     for i, cmd in enumerate(commands):
