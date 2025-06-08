@@ -1,0 +1,244 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Unity Mesh Node - Model Setup Guide</title>
+  <link href="https://fonts.googleapis.com/css?family=Fira+Mono:400,700|Orbitron:700" rel="stylesheet">
+  <style>
+    body {
+      background: radial-gradient(ellipse at 70% 10%, #44ffd1 0%, #23233b 100%);
+      font-family: 'Fira Mono', monospace;
+      color: #c0fffc;
+      margin: 0;
+      padding: 0 0 4em 0;
+      min-height: 100vh;
+    }
+    header {
+      background: linear-gradient(90deg, #ab7cff 0%, #44ffd1 100%);
+      color: #181825;
+      font-family: 'Orbitron', monospace;
+      font-size: 2.3em;
+      text-align: center;
+      letter-spacing: 2px;
+      padding: 1.1em 0 0.5em 0;
+      margin-bottom: 1em;
+      border-bottom: 5px solid #9e43ff99;
+      box-shadow: 0 7px 24px #8cf8ff20;
+    }
+    h1, h2, h3 {
+      font-family: 'Orbitron', monospace;
+      color: #ab7cff;
+      letter-spacing: 1px;
+      margin-top: 1.8em;
+      margin-bottom: 0.6em;
+    }
+    h1 {
+      color: #44ffd1;
+      font-size: 2.2em;
+      margin-top: 0.5em;
+      text-shadow: 0 2px 24px #34d6b9cc;
+    }
+    h2 {
+      color: #ab7cff;
+      text-shadow: 0 2px 14px #ab7cff55;
+    }
+    h3 {
+      color: #ffed8a;
+      font-size: 1.1em;
+      margin-bottom: 0.4em;
+    }
+    .section {
+      background: rgba(30,32,60,0.82);
+      border-left: 5px solid #44ffd1cc;
+      box-shadow: 0 4px 24px #ab7cff30;
+      padding: 1.5em 2em;
+      margin: 2em auto;
+      max-width: 700px;
+      border-radius: 16px;
+    }
+    code, pre {
+      background: #231944;
+      color: #e0c2ff;
+      padding: 0.2em 0.7em;
+      border-radius: 5px;
+      font-size: 1.06em;
+      font-family: 'Fira Mono', monospace;
+      line-height: 1.6em;
+      display: block;
+      overflow-x: auto;
+      margin: 1em 0;
+    }
+    .rickbox {
+      background: #8be9fd22;
+      color: #fafafa;
+      border-left: 4px solid #ab7cffcc;
+      padding: 0.9em 1.1em;
+      margin: 2em 0 1.4em 0;
+      border-radius: 7px;
+      font-family: 'Fira Mono', monospace;
+      font-size: 1.08em;
+      text-shadow: 0 1px 7px #6be1fc44;
+    }
+    .highlight {
+      color: #fffccc;
+      background: #44ffd122;
+      border-radius: 3px;
+      padding: 1px 7px;
+      font-weight: bold;
+    }
+    .stepnote {
+      color: #ffed8a;
+      font-size: 1.03em;
+      margin-bottom: 0.3em;
+    }
+    a, a:visited {
+      color: #44ffd1;
+      text-decoration: underline;
+      font-weight: bold;
+    }
+    ul, ol {
+      font-size: 1.04em;
+    }
+    footer {
+      margin-top: 3em;
+      font-size: 1em;
+      color: #bcbcbc;
+      text-align: center;
+      padding-bottom: 2em;
+      opacity: 0.88;
+    }
+    @media (max-width: 700px) {
+      .section { padding: 1em 0.6em; }
+      body { padding: 0 0.2em; }
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <span style="color:#ffed8a;">UNITY</span> MESH NODE MODEL SETUP <span style="color:#ab7cff;">(cool version)</span>
+  </header>
+  <main>
+    <div class="section">
+      <h1>🧬 Model Setup: tangent-node-02 (16GB Pi 5)</h1>
+      <div class="rickbox">
+        <strong>“Listen, Morty... Unity is about connecting all nodes—*and* running smarter, better models together. So don’t brick your Pi, okay?”</strong>
+        <br>– Rick Sanchez
+      </div>
+
+      <h2>1. Choose Your Model</h2>
+      <ul>
+        <li><span class="highlight">Best Pi 5 Upgrade:</span> <strong>Llama 2 7B Q4_K_M</strong> (quality & speed balance).</li>
+        <li>Other solid choices: <strong>Mistral 7B Q4</strong>, <strong>Phiphi-3 Mini</strong> (smaller, but fun), <strong>TinyLlama</strong> (fits on 8GB).</li>
+      </ul>
+      <p>
+        Find models at <a href="https://huggingface.co/TheBloke" target="_blank">TheBloke on HuggingFace</a>. <br>
+        Download a <code>.gguf</code> quantized file (e.g. <code>llama-2-7b.Q4_K_M.gguf</code>).
+      </p>
+
+      <h2>2. Download Model (On Dev Machine)</h2>
+      <ol>
+        <li>Visit: <a href="https://huggingface.co/TheBloke/Llama-2-7B-GGUF" target="_blank">Llama 2 7B GGUF</a></li>
+        <li>Pick and download <span class="highlight">Q4_K_M</span> or similar quantization for best RAM/quality/speed balance on Pi 5 16GB.</li>
+        <li>Save to a directory you’ll remember (like <code>~/Downloads/llama-models/</code>).</li>
+      </ol>
+      <div class="stepnote">Pro tip: Don’t download directly on your Pi unless you love slow Wi-Fi or have a huge SD card.</div>
+
+      <h2>3. Copy Model to Your Pi (SCP Basics)</h2>
+      <ol>
+        <li><strong>Find your Pi’s IP:</strong><br>
+          <pre>hostname -I</pre>
+        </li>
+        <li><strong>Make a models folder on your Pi:</strong><br>
+          <pre>ssh pi@192.168.1.32 'mkdir -p ~/models'</pre>
+        </li>
+        <li><strong>On your dev machine, run:</strong>
+          <pre>
+scp /path/to/llama-2-7b.Q4_K_M.gguf pi@192.168.1.32:/home/pi/models/
+          </pre>
+          <span class="stepnote">On Windows? Use <a href="https://winscp.net/" target="_blank">WinSCP</a> for a graphical interface or PowerShell's <code>scp</code> if you have it.</span>
+        </li>
+      </ol>
+
+      <h2>4. llama.cpp Setup on the Pi</h2>
+      <ol>
+        <li>
+          <strong>If not already done, install git/build tools & clone llama.cpp:</strong>
+          <pre>
+sudo apt update && sudo apt install -y build-essential git
+git clone https://github.com/ggerganov/llama.cpp.git
+cd llama.cpp
+make -j4
+          </pre>
+        </li>
+        <li>
+          <strong>Link or copy your model:</strong>
+          <pre>
+ln -s ~/models/llama-2-7b.Q4_K_M.gguf ~/llama.cpp/models/
+# or move it instead:
+mv ~/models/llama-2-7b.Q4_K_M.gguf ~/llama.cpp/models/
+          </pre>
+        </li>
+      </ol>
+      <div class="rickbox">
+        “Morty, if you don't put your models in the right place, you'll break the Unity... and then what? *You'll have to download them again!*” – Rick
+      </div>
+
+      <h2>5. Run the Model!</h2>
+      <ol>
+        <li>
+          <strong>Chat in one shot (replace username/model as needed):</strong>
+          <pre>
+cd ~/llama.cpp
+./main -m models/llama-2-7b.Q4_K_M.gguf -t 6 -n 128 -p "What can I automate with a Raspberry Pi mesh?"
+          </pre>
+        </li>
+        <li>
+          <strong>Interactive chat (recommended):</strong>
+          <pre>
+./main -m models/llama-2-7b.Q4_K_M.gguf -t 6 -c 2048 --color -i
+          </pre>
+        </li>
+        <li>
+          <span class="stepnote">Try <code>-t 8</code> for all Pi 5 cores, or lower context <code>-c 1024</code> if you see RAM errors.</span>
+        </li>
+      </ol>
+      <div class="rickbox">
+        “Unity means <span class="highlight">all nodes working together</span>—don’t let your Pi go rogue!” – Unity (not Summer)
+      </div>
+
+      <h2>6. Quick Troubleshooting</h2>
+      <ul>
+        <li>
+          <span class="highlight">Out of memory?</span> Try a lower context window: <code>-c 1024</code>
+        </li>
+        <li>
+          <span class="highlight">SCP fails?</span> Double-check IP, username, path, and SSH is enabled.
+        </li>
+        <li>
+          <span class="highlight">Slow model?</span> Try more quantized models (Q4_0, Q3), or use a smaller LLM (Phi-3 Mini, TinyLlama).
+        </li>
+      </ul>
+
+      <h2>7. Upgrade or Change Models</h2>
+      <p>
+        Just <code>scp</code> any new <code>.gguf</code> file into your Pi's <code>~/models/</code> and run it as above—no need to rebuild llama.cpp.
+      </p>
+
+      <div class="rickbox" style="background:#44ffd144; color:#23233b; border-color:#ffed8a;">
+        “When every Pi in the mesh runs an LLM, that’s Unity. Now let’s get schwifty and run some prompts!”<br>
+        &mdash; Unity (probably)
+      </div>
+
+      <h2>8. Example: Run From Any Node</h2>
+      <pre>
+ssh pi@192.168.1.32 "cd ~/llama.cpp && ./main -m models/llama-2-7b.Q4_K_M.gguf -t 6 -c 2048 --color -i"
+      </pre>
+    </div>
+  </main>
+  <footer>
+    <span style="color:#44ffd1;font-weight:bold;">Unity Mesh Guide</span> &bull; Created by Brandon Neidlinger &bull; <span style="color:#ab7cff;">June 2025</span><br>
+    Rick &amp; Morty and Unity are property of Adult Swim/Cartoon Network. This is a fan-inspired mesh-lab doc.<br>
+    <span style="font-size:0.95em;">"Sometimes science is more art than science, Morty."</span>
+  </footer>
+</body>
+</html>

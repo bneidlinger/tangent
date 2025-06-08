@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>tangent-node-02 (16GB Pi 5) - Setup Log</title>
+  <style>
+    body {
+      font-family: 'Fira Mono', 'Consolas', monospace;
+      background: #181825;
+      color: #e5e9f0;
+      padding: 2em;
+      max-width: 700px;
+      margin: auto;
+    }
+    h1, h2 {
+      color: #8be9fd;
+      letter-spacing: 1px;
+    }
+    code, pre {
+      background: #22223b;
+      color: #b4befe;
+      padding: 2px 6px;
+      border-radius: 5px;
+    }
+    ul, ol {
+      margin-bottom: 1.5em;
+    }
+    .section {
+      margin-bottom: 2.5em;
+      border-left: 3px solid #8be9fd33;
+      padding-left: 1em;
+    }
+    .node-name {
+      color: #a6e3a1;
+      font-weight: bold;
+      font-size: 1.2em;
+      letter-spacing: 1px;
+    }
+    .highlight {
+      color: #f9e2af;
+      background: #3b3b58;
+      padding: 0 6px;
+      border-radius: 4px;
+    }
+  </style>
+</head>
+<body>
+  <h1>tangent-node-02 (16GB Raspberry Pi 5) &mdash; Initial Setup</h1>
+
+  <div class="section">
+    <h2>1. Hardware Assembly</h2>
+    <ol>
+      <li>Unbox your <span class="node-name">Raspberry Pi 5 (16GB)</span> and accessories:
+        <ul>
+          <li>Pi 5 board (16GB model)</li>
+          <li>Case (with fan/heatsinks)</li>
+          <li>USB-C 27W power supply</li>
+          <li>128GB+ microSD card</li>
+          <li>Micro-HDMI cable</li>
+        </ul>
+      </li>
+      <li><span class="highlight">Install heatsinks</span> on the main chips (CPU, RAM) using the included thermal pads.</li>
+      <li>Attach the <span class="highlight">case fan</span> to the board:
+        <ul>
+          <li>Locate the white 4-pin FAN header (top-right near USB ports).</li>
+          <li>Remove the factory cap, plug in the fan’s connector (fits one way).</li>
+        </ul>
+      </li>
+      <li>Place the Pi into its case, close it up, and ensure nothing pinches the fan wires.</li>
+      <li>Insert the prepped <span class="highlight">microSD card</span> into the Pi’s slot (underside).</li>
+    </ol>
+  </div>
+
+  <div class="section">
+    <h2>2. Imaging the microSD Card</h2>
+    <ol>
+      <li>Insert the microSD card into your main computer.</li>
+      <li>Open <span class="highlight">Raspberry Pi Imager</span> (latest version recommended).</li>
+      <li>Select OS: <code>Raspberry Pi OS (64-bit)</code> (Bookworm or latest stable).</li>
+      <li>Before writing, click the <b>gear ⚙️ icon</b> (advanced settings):
+        <ul>
+          <li>Set hostname: <code>tangent-node-02</code></li>
+          <li>Set username and password</li>
+          <li>Configure Wi-Fi (SSID, password, country)</li>
+          <li><b>Enable SSH</b> (use password or public key auth)</li>
+          <li>Set locale, timezone, keyboard layout</li>
+        </ul>
+      </li>
+      <li>Write the image to the SD card. Eject safely when done.</li>
+    </ol>
+  </div>
+
+  <div class="section">
+    <h2>3. First Boot & Initial Startup</h2>
+    <ol>
+      <li>Insert the imaged SD card into the Pi 5.</li>
+      <li>Connect monitor (micro-HDMI), keyboard, and mouse.</li>
+      <li>Plug in the power supply to boot the Pi.</li>
+      <li>Wait for first boot:
+        <ul>
+          <li>Desktop appears. The Pi should connect to Wi-Fi automatically.</li>
+          <li>Log in with your set username/password.</li>
+          <li>If prompted, complete any remaining setup (updates, display config, etc.).</li>
+        </ul>
+      </li>
+      <li>Test internet connection (open browser, try <code>https://www.raspberrypi.com</code>).</li>
+      <li>Update packages (open Terminal):
+        <pre>sudo apt update && sudo apt full-upgrade -y</pre>
+      </li>
+      <li>Confirm SSH &amp; VNC access:
+        <ul>
+          <li>SSH: <code>ssh username@tangent-node-02.local</code> or use Pi’s IP</li>
+          <li>VNC: Use RealVNC Viewer to connect to <code>tangent-node-02.local:5900</code> or the Pi’s IP</li>
+        </ul>
+      </li>
+      <li>Record the Pi’s assigned IP address:
+        <pre>hostname -I</pre>
+      </li>
+    </ol>
+  </div>
+
+  <div class="section">
+    <h2>4. Node Notes & Next Steps</h2>
+    <ul>
+      <li>
+        <b>Node Name:</b> <code>tangent-node-02</code>
+      </li>
+      <li>
+        <b>RAM:</b> 16GB
+      </li>
+      <li>
+        <b>Network:</b> Wi-Fi (SSID: &lt;your-network&gt;), IP: <code>&lt;assigned-ip&gt;</code>
+      </li>
+      <li>
+        <b>Services enabled:</b> SSH, VNC
+      </li>
+      <li>
+        <b>Initial user:</b> <code>&lt;your-username&gt;</code>
+      </li>
+      <li>
+        <b>Status:</b> Online &amp; ready for mesh integration!
+      </li>
+    </ul>
+    <p>Next steps: join mesh, configure node roles, deploy workloads (AI models, containers, services).</p>
+  </div>
+
+  <hr>
+  <footer>
+    <small>
+      Project log: <b>tangent-node-02</b> &copy; 2025 Brandon Neidlinger<br>
+      Setup date: <code>2025-06-06</code>
+    </small>
+  </footer>
+</body>
+</html>

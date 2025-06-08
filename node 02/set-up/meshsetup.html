@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Mesh Networking Setup: tangent-node-02</title>
+  <style>
+    body { font-family: 'Fira Mono', monospace; background: #181825; color: #e5e9f0; max-width: 800px; margin: 2em auto; padding: 2em; }
+    h1, h2, h3 { color: #8be9fd; }
+    code, pre { background: #22223b; color: #b4befe; padding: 2px 6px; border-radius: 5px; }
+    .section { margin-bottom: 2.5em; border-left: 3px solid #8be9fd33; padding-left: 1em; }
+    .tip { color: #a6e3a1; background: #2a2a40; padding: 2px 8px; border-radius: 3px; font-weight: bold;}
+    .warn { color: #f38ba8; }
+    ul, ol { margin-bottom: 1.5em; }
+  </style>
+</head>
+<body>
+  <h1>Mesh Network Setup: <span style="color:#a6e3a1;">tangent-node-02</span></h1>
+  <div class="section">
+    <h2>Overview: What Is a Mesh Network?</h2>
+    <ul>
+      <li>All devices (Pis, servers, desktops) are securely and directly connected.</li>
+      <li>Each device ("node") can see and communicate with every other node—no single point of failure.</li>
+      <li>Easy to expand: add more Pis, servers, even laptops, at any time.</li>
+      <li>Supports remote control, file sharing, distributed computing, and advanced home automation.</li>
+      <li>Enables you to experiment with concepts like clustering, edge computing, and self-hosted services.</li>
+    </ul>
+    <p class="tip">Think of it as your own private cloud at home, but you control every part!</p>
+  </div>
+
+  <div class="section">
+    <h2>Step 1: Assign Static IP or DHCP Reservation</h2>
+    <ol>
+      <li>Decide on an IP address for <code>tangent-node-02</code> (e.g., <code>192.168.1.102</code>).</li>
+      <li>Option 1: <span class="tip">DHCP Reservation</span> (Recommended)
+        <ul>
+          <li>Log into your router’s admin page.</li>
+          <li>Find DHCP settings and reserve an IP for the Pi’s MAC address.</li>
+          <li>This makes sure the Pi always gets the same IP from the router.</li>
+        </ul>
+      </li>
+      <li>Option 2: <span class="tip">Static IP (On the Pi)</span>
+        <ul>
+          <li>Edit <code>/etc/dhcpcd.conf</code> (advanced, only if not using DHCP reservation):<br>
+            <pre>
+interface wlan0
+static ip_address=192.168.1.102/24
+static routers=192.168.1.1
+static domain_name_servers=192.168.1.1
+            </pre>
+          </li>
+          <li>Reboot to apply: <code>sudo reboot</code></li>
+        </ul>
+      </li>
+    </ol>
+  </div>
+
+  <div class="section">
+    <h2>Step 2: Set Hostnames for Each Node</h2>
+    <ol>
+      <li>Each Pi/PC should have a unique hostname. For this node, it’s <code>tangent-node-02</code>.</li>
+      <li>Check hostname:<br>
+        <code>hostname</code>
+      </li>
+      <li>Change it (if needed):<br>
+        <code>sudo raspi-config</code> → System Options → Hostname</li>
+      <li>Reboot after changing hostnames.</li>
+      <li class="tip">Consistent hostnames make SSH/VNC and scripts easier!</li>
+    </ol>
+  </div>
+
+  <div class="section">
+    <h2>Step 3: Test Basic Connectivity</h2>
+    <ol>
+      <li>From any node, ping another by IP and hostname:<br>
+        <code>ping 192.168.1.102</code><br>
+        <code>ping tangent-node-02.local</code>
+      </li>
+      <li>SSH between nodes:<br>
+        <code>ssh username@tangent-node-02.local</code>
+      </li>
+      <li>If you get a reply, your mesh is working at the network level!</li>
+    </ol>
+  </div>
+
+  <div class="section">
+    <h2>Step 4: (Optional but Powerful) Install ZeroTier or Tailscale</h2>
+    <ul>
+      <li>ZeroTier and Tailscale are "virtual mesh" tools—super easy to set up, secure, and let you reach your nodes from anywhere (even outside your home!).</li>
+      <li>
+        <b>Install Tailscale (example):</b>
+        <pre>
+curl -fsSL https://tailscale.com/install.sh | sh
+sudo tailscale up
+        </pre>
+        <ul>
+          <li>Sign in with your Google, Microsoft, or GitHub account.</li>
+          <li>All your nodes join the same Tailscale network and see each other by name, even if spread across different locations/networks.</li>
+        </ul>
+      </li>
+      <li class="tip">This is how pros build “cloud labs” and remote-access clusters—no complex firewall configs needed!</li>
+    </ul>
+  </div>
+
+  <div class="section">
+    <h2>Step 5: (Optional) Central Management & Services</h2>
+    <ul>
+      <li>
+        <b>File Sharing:</b> Use <code>sshfs</code>, <code>rsync</code>, or <code>Samba</code> to share files between nodes.
+      </li>
+      <li>
+        <b>Distributed Computing:</b> Set up <code>Docker Swarm</code>, <code>Kubernetes (K3s)</code>, or <code>Ansible</code> for orchestration.
+      </li>
+      <li>
+        <b>Self-Hosted Services:</b> Host Home Assistant, Pi-hole, web apps, local LLMs, and more.
+      </li>
+      <li>
+        <b>Monitoring:</b> Use <code>netdata</code>, <code>Prometheus</code>, or <code>Grafana</code> to watch CPU, RAM, network, and disk usage across all nodes.
+      </li>
+    </ul>
+  </div>
+
+  <div class="section">
+    <h2>Best Practices & Learning Notes</h2>
+    <ul>
+      <li><span class="tip">Document everything</span>—hostnames, IPs, what each node does.</li>
+      <li>Keep systems updated (<code>sudo apt update && sudo apt upgrade -y</code>).</li>
+      <li>Use <code>ssh-copy-id</code> for passwordless logins between trusted nodes.</li>
+      <li>Experiment! Try moving workloads between Pis and your desktop to see how performance and latency change.</li>
+      <li>Break things on purpose (and fix them)—that’s how pros learn networking!</li>
+    </ul>
+  </div>
+
+  <hr>
+  <footer>
+    <small>
+      Mesh Setup: <b>tangent-node-02</b> &copy; 2025 Brandon Neidlinger<br>
+      Guide date: <code>2025-06-06</code>
+    </small>
+  </footer>
+</body>
+</html>

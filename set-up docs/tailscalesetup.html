@@ -1,0 +1,227 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Tailscale Setup - Mr. Meeseeks Guide</title>
+  <link href="https://fonts.googleapis.com/css?family=Fira+Mono:400,700|Orbitron:700" rel="stylesheet">
+  <style>
+    body {
+      background: linear-gradient(120deg, #54e4ff 0%, #2d446d 100%);
+      color: #16171a;
+      font-family: 'Fira Mono', monospace;
+      margin: 0;
+      padding: 0 0 4em 0;
+      min-height: 100vh;
+    }
+    header {
+      background: linear-gradient(90deg, #54e4ff 0%, #aeeaff 100%);
+      color: #002d3a;
+      font-family: 'Orbitron', monospace;
+      font-size: 2.2em;
+      text-align: center;
+      letter-spacing: 2px;
+      padding: 1.3em 0 0.4em 0;
+      margin-bottom: 1em;
+      border-bottom: 6px solid #0099c9;
+      box-shadow: 0 7px 24px #4ee7ff20;
+    }
+    h1, h2, h3 {
+      font-family: 'Orbitron', monospace;
+      color: #1da8e9;
+      letter-spacing: 1px;
+      margin-top: 1.6em;
+      margin-bottom: 0.7em;
+    }
+    h1 {
+      color: #54e4ff;
+      font-size: 2.2em;
+      margin-top: 0.4em;
+      text-shadow: 0 2px 20px #54e4ff55;
+    }
+    h2 {
+      color: #1da8e9;
+      text-shadow: 0 2px 14px #9fdfff44;
+    }
+    .section {
+      background: rgba(224,255,255,0.80);
+      border-left: 7px solid #54e4ffcc;
+      box-shadow: 0 4px 24px #abf7ff30;
+      padding: 1.6em 2em;
+      margin: 2em auto;
+      max-width: 750px;
+      border-radius: 18px;
+    }
+    code, pre {
+      background: #e0faff;
+      color: #217da3;
+      padding: 0.2em 0.8em;
+      border-radius: 6px;
+      font-size: 1.08em;
+      font-family: 'Fira Mono', monospace;
+      line-height: 1.7em;
+      display: block;
+      overflow-x: auto;
+      margin: 1em 0;
+    }
+    .meeseeks-box {
+      background: #22d2ff20;
+      color: #04345d;
+      border-left: 5px solid #54e4ffcc;
+      padding: 0.9em 1.1em;
+      margin: 1.6em 0 1.2em 0;
+      border-radius: 7px;
+      font-family: 'Fira Mono', monospace;
+      font-size: 1.08em;
+      text-shadow: 0 1px 8px #4ee7ff33;
+      position: relative;
+    }
+    .meeseeks-box::before {
+      content: "🟦 Mr. Meeseeks says:";
+      font-weight: bold;
+      color: #2cbfff;
+      margin-right: 0.5em;
+    }
+    .success {
+      color: #17bf70;
+      font-weight: bold;
+    }
+    .tip {
+      color: #1da8e9;
+      font-weight: bold;
+      background: #c9f7ff;
+      border-radius: 3px;
+      padding: 1px 8px;
+      margin-right: 0.4em;
+    }
+    a, a:visited {
+      color: #1da8e9;
+      text-decoration: underline;
+      font-weight: bold;
+    }
+    ul, ol {
+      font-size: 1.06em;
+    }
+    footer {
+      margin-top: 3em;
+      font-size: 1.03em;
+      color: #36a3c3;
+      text-align: center;
+      padding-bottom: 2em;
+      opacity: 0.91;
+    }
+    @media (max-width: 700px) {
+      .section { padding: 1em 0.6em; }
+      body { padding: 0 0.2em; }
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <span style="color:#1da8e9;">Tailscale Mesh Setup</span> <span style="color:#0486b2;">— Mr. Meeseeks Edition</span>
+  </header>
+  <main>
+    <div class="section">
+      <h1>I'm Mr. Meeseeks! Look at me!</h1>
+      <div class="meeseeks-box">
+        “Your goal: connect your Pis and desktop over the internet, securely, with zero pain. Let’s get you a persistent, private mesh using <b>Tailscale</b>—free, easy, and <span class='success'>it just works</span>!”
+      </div>
+
+      <h2>1. What You'll Get</h2>
+      <ul>
+        <li>All nodes (Pis, desktop, future gear) see each other <b>anywhere</b> (home, work, roadtrip… Citadel of Ricks?)</li>
+        <li>SSH, VNC, web UIs—private, encrypted, no port forwarding, no public exposure</li>
+        <li>Up to 100 devices—totally free for personal labs</li>
+      </ul>
+
+      <h2>2. Tailscale Account Setup</h2>
+      <ol>
+        <li>Visit <a href="https://tailscale.com/" target="_blank">tailscale.com</a> and click <b>Sign Up</b></li>
+        <li>Sign in with Google, GitHub, or Microsoft (choose one to use for all devices)</li>
+        <li class="tip">Done! You now have your own private “tailnet.”</li>
+      </ol>
+
+      <h2>3. Install Tailscale on Your Mesh Devices</h2>
+      <ol>
+        <li>
+          <span class="tip">On each Pi (8GB/16GB):</span>
+          <pre>
+curl -fsSL https://tailscale.com/install.sh | sh
+sudo tailscale up
+          </pre>
+          <span>Open the link provided (it appears in terminal) in your browser and log in with your Tailscale account. You can do this on any device if your Pi is headless.</span>
+        </li>
+        <li>
+          <span class="tip">On your Desktop (Ubuntu/Windows/Mac):</span>
+          <ul>
+            <li><a href="https://tailscale.com/download" target="_blank">Download Tailscale</a> for your OS</li>
+            <li>Install and sign in with the same account</li>
+          </ul>
+        </li>
+        <li>
+          <span class="tip">Check your Tailscale Admin Console:</span> <a href="https://login.tailscale.com/admin/machines" target="_blank">tailscale.com/admin/machines</a><br>
+          You should see all devices listed!
+        </li>
+      </ol>
+      <div class="meeseeks-box">
+        “Woo! You did it! Every device now has a <b>100.x.x.x</b> Tailscale IP. Super private, super portable.”
+      </div>
+
+      <h2>4. Use Your Mesh—From Anywhere!</h2>
+      <ol>
+        <li>
+          <span class="tip">Find a node’s Tailscale IP:</span>
+          <pre>
+tailscale ip -4
+          </pre>
+          or check the Tailscale admin console.
+        </li>
+        <li>
+          <span class="tip">SSH to a Pi from your desktop:</span>
+          <pre>
+ssh pi@100.x.x.x
+          </pre>
+        </li>
+        <li>
+          <span class="tip">Remote VNC? No sweat:</span>
+          <pre>
+vncviewer 100.x.x.x:5900
+          </pre>
+        </li>
+        <li>
+          <span class="tip">Host a web service?</span>
+          Visit <code>http://100.x.x.x:PORT</code> in any browser on your mesh!
+        </li>
+      </ol>
+      <div class="meeseeks-box">
+        “I’m Mr. Meeseeks! Now you can access your mesh from anywhere, <span class='success'>just don’t ask me to help with NAT rules…</span>”
+      </div>
+
+      <h2>5. Power Moves & Tips</h2>
+      <ul>
+        <li>
+          <span class="tip">Want Pi-to-Pi or desktop-to-Pi auto-scripts?</span> Use Tailscale IPs or names like <code>tangent-node-02.tailnet-name.ts.net</code> for scripts and API calls!
+        </li>
+        <li>
+          <span class="tip">Use Tailscale on your phone!</span> SSH/VNC from your mobile from the beach, the DMV, or the Council of Ricks.
+        </li>
+        <li>
+          <span class="tip">MagicDNS:</span> Enable it in the admin console for easier node names (<code>ssh pi@tangent-node-02</code> works anywhere).
+        </li>
+        <li>
+          <span class="tip">Remove a node?</span> Click “Expire” in the console—done.
+        </li>
+      </ul>
+
+      <div class="meeseeks-box" style="background:#b9faff99;">
+        “Existence is pain!—But setting up Tailscale is <span class='success'>easy!</span> I hope this helps, and remember: I just want to help you mesh better!”
+      </div>
+
+    </div>
+  </main>
+  <footer>
+    <span style="color:#1da8e9;font-weight:bold;">Tailscale Mr. Meeseeks Guide</span> &bull; 2025 Brandon Neidlinger<br>
+    Rick &amp; Morty and Mr. Meeseeks are property of Adult Swim/Cartoon Network. This is a fan help doc.<br>
+    <span style="font-size:0.97em;">"I'm Mr. Meeseeks, look at me! — Goodbye!"</span>
+  </footer>
+</body>
+</html>
