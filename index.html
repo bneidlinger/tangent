@@ -300,6 +300,114 @@
             border: 2px solid var(--primary);
             border-radius: 10px;
             box-shadow: 0 0 30px rgba(0, 255, 65, 0.3);
+            position: relative;
+            overflow: hidden;
+        }
+
+        /* Retro CRT Effect */
+        .retro-container {
+            position: relative;
+            display: block;
+            margin: 2rem auto;
+            overflow: hidden;
+            border-radius: 10px;
+            max-width: 800px;
+        }
+
+        .retro-img {
+            width: 100%;
+            max-width: 800px;
+            display: block;
+            filter: contrast(1.1) saturate(1.2);
+            animation: flicker-img 0.15s infinite;
+        }
+
+        @keyframes flicker-img {
+            0% { opacity: 0.97; }
+            50% { opacity: 1; }
+            100% { opacity: 0.98; }
+        }
+
+        .retro-container::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: 
+                repeating-linear-gradient(
+                    0deg,
+                    rgba(0, 0, 0, 0.15),
+                    rgba(0, 0, 0, 0.15) 1px,
+                    transparent 1px,
+                    transparent 2px
+                );
+            pointer-events: none;
+            z-index: 1;
+        }
+
+        .retro-container::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: radial-gradient(ellipse at center, rgba(0,255,65,0.1) 0%, transparent 70%);
+            animation: pulse-glow 4s ease-in-out infinite;
+            pointer-events: none;
+            z-index: 2;
+        }
+
+        @keyframes pulse-glow {
+            0%, 100% { opacity: 0.5; }
+            50% { opacity: 0.8; }
+        }
+
+        /* Lab Photos Gallery */
+        .lab-gallery {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 2rem;
+            margin: 2rem 0;
+        }
+
+        .lab-photo {
+            position: relative;
+            overflow: hidden;
+            border: 2px solid var(--primary);
+            border-radius: 10px;
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+
+        .lab-photo:hover {
+            transform: scale(1.05);
+            box-shadow: 0 0 30px rgba(0, 255, 65, 0.5);
+        }
+
+        .lab-photo img {
+            width: 100%;
+            height: auto;
+            display: block;
+            filter: sepia(0.2) contrast(1.2);
+        }
+
+        .lab-photo-caption {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: rgba(0, 0, 0, 0.8);
+            color: var(--primary);
+            padding: 1rem;
+            transform: translateY(100%);
+            transition: transform 0.3s ease;
+        }
+
+        .lab-photo:hover .lab-photo-caption {
+            transform: translateY(0);
         }
 
         /* Footer */
@@ -398,7 +506,9 @@
             and 10 high-end GPU rigs. No cloud dependencies. Complete control. Infinite possibilities.
         </p>
 
-        <img src="picluster.png" alt="TANGNET Architecture" class="architecture-img">
+        <div class="retro-container">
+            <img src="picluster.png" alt="TANGNET Architecture" class="retro-img">
+        </div>
 
         <div class="feature-grid">
             <div class="feature-card">
@@ -495,18 +605,55 @@
         <a href="#lab-photos" class="btn btn-secondary" onclick="toggleLabPhotos()">🔬 View Lab Photos</a>
         
         <div id="lab-photos" style="display: none; margin-top: 3rem;">
-            <div class="feature-card" style="max-width: 800px; margin: 0 auto;">
-                <h3>The TANGNET Vision</h3>
-                <img src="picluster.png" alt="100-Pi Cluster Concept" style="width: 100%; margin: 1rem 0;">
-                <p>Conceptual design for the 100-node cluster. Each node will be rack-mounted with custom cooling and power distribution.</p>
+            <div class="feature-card" style="max-width: 1000px; margin: 0 auto;">
+                <h3>🔬 The TANGNET Lab</h3>
+                
+                <div class="lab-gallery">
+                    <div class="lab-photo" onclick="openFullscreen(this)">
+                        <img src="assets/lab_photos/command.jpeg" alt="Command Center">
+                        <div class="lab-photo-caption">
+                            <strong>Command Center</strong><br>
+                            Live terminal sessions to both Pi nodes
+                        </div>
+                    </div>
+                    <div class="lab-photo" onclick="openFullscreen(this)">
+                        <img src="assets/lab_photos/kb.jpeg" alt="Hardware Setup">
+                        <div class="lab-photo-caption">
+                            <strong>Hardware Interface</strong><br>
+                            Where the magic happens
+                        </div>
+                    </div>
+                </div>
+                
+                <div style="margin-top: 3rem;">
+                    <h4>The TANGNET Vision</h4>
+                    <div class="retro-container" style="max-width: 600px; margin: 1rem auto;">
+                        <img src="picluster.png" alt="100-Pi Cluster Concept" class="retro-img">
+                    </div>
+                    <p>Conceptual design for the 100-node cluster. Each node will be rack-mounted with custom cooling and power distribution.</p>
+                </div>
                 
                 <div style="margin-top: 2rem;">
-                    <h4>Current Lab Setup</h4>
-                    <ul style="text-align: left; list-style: none; padding: 0;">
-                        <li>✅ Node 01: Pi 5 8GB - TinyLlama 1.1B (192.168.1.31)</li>
-                        <li>✅ Node 02: Pi 5 16GB - Llama 2 7B (192.168.1.43)</li>
-                        <li>🔄 Desktop: RTX 3070 Ti - Future GPU acceleration</li>
-                        <li>📡 Mesh: Tailscale VPN for secure remote access</li>
+                    <h4>Current Lab Status</h4>
+                    <div class="stats" style="margin: 1rem 0;">
+                        <div class="stat-card" style="background: rgba(0, 255, 65, 0.2);">
+                            <div class="stat-number">2</div>
+                            <div class="stat-label">Active Nodes</div>
+                        </div>
+                        <div class="stat-card" style="background: rgba(255, 107, 107, 0.2);">
+                            <div class="stat-number">8.1B</div>
+                            <div class="stat-label">Total Parameters</div>
+                        </div>
+                        <div class="stat-card" style="background: rgba(0, 123, 255, 0.2);">
+                            <div class="stat-number">24GB</div>
+                            <div class="stat-label">Combined RAM</div>
+                        </div>
+                    </div>
+                    <ul style="text-align: left; list-style: none; padding: 0; font-family: 'Courier New', monospace;">
+                        <li style="color: var(--primary);">✅ Node 01: Pi 5 8GB - TinyLlama 1.1B (192.168.1.31)</li>
+                        <li style="color: var(--primary);">✅ Node 02: Pi 5 16GB - Llama 2 7B (192.168.1.43)</li>
+                        <li style="color: #ff6b6b;">🔄 Desktop: RTX 3070 Ti - GPU acceleration coming soon</li>
+                        <li style="color: #4ecdc4;">📡 Mesh: Tailscale VPN for secure remote access</li>
                     </ul>
                 </div>
             </div>
@@ -552,6 +699,18 @@
             } else {
                 labPhotos.style.display = 'none';
                 btn.textContent = '🔬 View Lab Photos';
+            }
+        }
+
+        // Open image in fullscreen
+        function openFullscreen(element) {
+            const img = element.querySelector('img');
+            if (img.requestFullscreen) {
+                img.requestFullscreen();
+            } else if (img.webkitRequestFullscreen) {
+                img.webkitRequestFullscreen();
+            } else if (img.msRequestFullscreen) {
+                img.msRequestFullscreen();
             }
         }
     </script>

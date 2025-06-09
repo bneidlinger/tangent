@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Distributed LLM Mesh Market Simulation - Project Pitch</title>
+  <style>
+    body {
+      background: #11181c;
+      color: #a5ffde;
+      font-family: 'Fira Mono', monospace;
+      margin: 0;
+      padding: 0 0 3em 0;
+    }
+    header {
+      background: #192b2c;
+      color: #3bff9b;
+      padding: 1.6em 0 0.8em 0;
+      text-align: center;
+      font-size: 2.3em;
+      font-weight: bold;
+      letter-spacing: 1.5px;
+      border-bottom: 4px solid #36ffb2;
+      box-shadow: 0 5px 22px #36ffb26e;
+    }
+    h2 {
+      color: #3bff9b;
+      border-bottom: 1.5px solid #59ffaa;
+      padding-bottom: 3px;
+      margin-top: 2.2em;
+    }
+    .section {
+      background: #1a2724cc;
+      border-left: 5px solid #36ffb2;
+      box-shadow: 0 4px 22px #36ffb244;
+      padding: 1.6em 2em;
+      margin: 2em auto 0 auto;
+      max-width: 850px;
+      border-radius: 14px;
+      font-size: 1.09em;
+    }
+    .code-block {
+      background: #172330;
+      color: #90eecb;
+      border-radius: 6px;
+      padding: 1em;
+      font-family: 'Fira Mono', monospace;
+      font-size: 1.07em;
+      margin: 1em 0;
+      overflow-x: auto;
+    }
+    .highlight { color: #3bff9b; font-weight: bold; }
+    ul, ol { font-size: 1.04em; }
+    .footer {
+      margin-top: 2.5em;
+      color: #b9f7e0;
+      font-size: 1.05em;
+      text-align: center;
+      opacity: 0.8;
+      padding-bottom: 2em;
+    }
+    @media (max-width: 900px) {
+      .section { padding: 1em 0.5em; }
+      body { padding: 0 0.2em; }
+    }
+  </style>
+</head>
+<body>
+  <header>
+    Distributed LLM Mesh<br>Market Simulation — Technical Pitch
+  </header>
+
+  <div class="section">
+    <h2>🚀 Project Idea</h2>
+    <p>
+      <span class="highlight">Simulate a stock market</span> with <b>100+ distributed LLMs</b> running as individual investor “minds” across a Raspberry Pi mesh (or other distributed hardware). Each LLM node runs a 7B (or other) model, simulates a unique investor/trader persona, and makes buy/sell/hold decisions in response to real or synthetic market/news data.
+    </p>
+    <ul>
+      <li>Each LLM agent interprets news, prices, rumors, and acts according to its profile.</li>
+      <li>Market responses, bubbles, and panics <b>emerge</b> from agent interactions, not a single program.</li>
+      <li>Ultimate testbed for LLM-driven multi-agent simulation, decentralized inference, and market modeling.</li>
+    </ul>
+  </div>
+
+  <div class="section">
+    <h2>🧠 Core Architecture</h2>
+    <ul>
+      <li><span class="highlight">100x Pi 5 nodes</span> (or split processes) running <code>llama.cpp</code> 7B models as individual investors</li>
+      <li><b>Orchestrator/hub</b> (desktop, Pi, or cloud): sends market/news events, collects responses, manages round cycles</li>
+      <li><b>Profile Config</b>: Each agent gets a persona file (risk, style, goals, biases, “fears bear markets,” “loves meme stocks,” etc.)</li>
+      <li>Real-time or simulated data feed (prices, news, tweets, earnings, etc.)</li>
+      <li>Aggregated outputs: market summary, order book, behavioral logs, etc.</li>
+    </ul>
+    <div class="code-block">
+# Example profile (YAML/JSON)
+- id: 23
+  type: "YOLO Daytrader"
+  risk: "High"
+  pattern: "Buys on hype, sells fast, tracks Twitter"
+- id: 47
+  type: "Index Dad"
+  risk: "Low"
+  pattern: "Buys dips, never sells, hates crypto"
+    </div>
+  </div>
+
+  <div class="section">
+    <h2>🔁 Simulation Flow</h2>
+    <ol>
+      <li><span class="highlight">Load profiles & LLMs</span> on all nodes (each with a unique system prompt/context).</li>
+      <li>At each timestep, the orchestrator <span class="highlight">broadcasts</span> a news+market event to all LLMs.</li>
+      <li>Each LLM generates a decision: <code>BUY/SELL/HOLD; amount; reason</code></li>
+      <li>Orchestrator aggregates responses, updates simulated price/order book based on agent actions.</li>
+      <li>Next round: repeat with new data and new context (including past “market” actions).</li>
+    </ol>
+    <div class="code-block">
+# Example prompt to agent:
+You are a "YOLO Daytrader" who follows meme stocks.
+Today's news: "TSLA misses earnings, CEO tweets 'we'll bounce back!'"
+Current price: $154.10
+What do you do? Respond as: BUY/SELL/HOLD; amount; short reason.
+    </div>
+  </div>
+
+  <div class="section">
+    <h2>🌐 Scaling & Experimentation</h2>
+    <ul>
+      <li>Agents can be distributed across real Pi mesh (ideal) or simulated in processes/containers.</li>
+      <li>Coordinator can run locally or remotely, supports batch rounds or real-time streaming.</li>
+      <li>Profiles can be swapped, mutated, or assigned randomly for scenario stress tests.</li>
+      <li>Model size can be reduced to fit hardware constraints, or use mixed models per node for diversity.</li>
+    </ul>
+    <div class="code-block">
+# Python: Orchestrator pseudocode
+for timestep in data_stream:
+    decisions = []
+    for node, profile in mesh:
+        prompt = make_prompt(profile, news, price)
+        action = ask_node(node, prompt)  # via SSH or API
+        decisions.append(action)
+    price = simulate_market(decisions)
+    log(price, decisions)
+    </div>
+  </div>
+
+  <div class="section">
+    <h2>💡 Potential Experiments & Outcomes</h2>
+    <ul>
+      <li><b>Emergent Bubbles/Panics:</b> Observe if/how “market madness” forms from agent voting.</li>
+      <li><b>Profile Diversity:</b> Test effects of crowding (e.g., 90% YOLO vs 10% Index Dad) on market stability.</li>
+      <li><b>Contagion Modeling:</b> How does FOMO, news, or rumor spread affect the simulated market?</li>
+      <li><b>Intervention Scenarios:</b> Inject a “central bank” or “market maker” node to stabilize/perturb outcomes.</li>
+      <li><b>Real vs Simulated Data:</b> Compare emergent behaviors to historical market events for validation.</li>
+    </ul>
+  </div>
+
+  <div class="section">
+    <h2>⚡ Next Steps</h2>
+    <ol>
+      <li>Prototype with a 3-5 node Pi mesh or VM cluster</li>
+      <li>Develop orchestrator script for SSH/API prompt & aggregation</li>
+      <li>Expand agent profiles and run trial rounds</li>
+      <li>Add visualization for agent actions & price movements</li>
+      <li>Scale to larger mesh or cloud for stress testing</li>
+    </ol>
+    <div class="highlight" style="margin-top:1em;">Ready for phase 3 of Tangnet? Just say the word and I'll wire up a quick-start repo and orchestration templates!</div>
+  </div>
+
+  <div class="footer">
+    Mesh Market LLM Simulation — Technical Pitch 2025<br>
+    &copy; 2025 Brandon Neidlinger | Tangnet Mesh Lab
+  </div>
+</body>
+</html>
