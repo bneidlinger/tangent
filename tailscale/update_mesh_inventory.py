@@ -83,13 +83,34 @@ def write_svg_badge(devices):
     with open("docs/mesh-status.svg", "w") as f:
         f.write(svg)
 
+def write_node_badges(devices):
+    import os
+    os.makedirs("docs/node-badges", exist_ok=True)
+    
+    for dev in devices:
+        node_name = dev['Name'].lower().replace(' ', '-')
+        status_color = "#3bff39" if dev['Online'] else "#fe2851"
+        status_text = "online" if dev['Online'] else "offline"
+        status_emoji = "🟢" if dev['Online'] else "🔴"
+        
+        svg = f'''<svg xmlns="http://www.w3.org/2000/svg" width="140" height="20">
+  <rect rx="3" width="140" height="20" fill="#555"/>
+  <rect x="70" rx="3" width="70" height="20" fill="{status_color}"/>
+  <text x="35" y="14" font-family="monospace" font-size="11" text-anchor="middle" fill="white">{dev['Name']}</text>
+  <text x="105" y="14" font-family="monospace" font-size="11" text-anchor="middle" fill="white">{status_emoji} {status_text}</text>
+</svg>'''
+        
+        with open(f"docs/node-badges/{node_name}.svg", "w") as f:
+            f.write(svg)
+
 def main():
     devices = get_tailscale_devices()
     parsed = [device_to_dict(dev) for dev in devices]
     write_yaml(parsed)
     write_markdown(parsed)
     write_svg_badge(parsed)
-    print(f"✅ Inventory and badge written to {OUTPUT_YAML}, {OUTPUT_MD}, {OUTPUT_SVG}")
+    write_node_badges(parsed)
+    print(f"✅ Inventory and badges written to {OUTPUT_YAML}, {OUTPUT_MD}, {OUTPUT_SVG}")
 
 if __name__ == '__main__':
     main()

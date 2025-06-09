@@ -8,6 +8,8 @@
   [![Nodes](https://img.shields.io/badge/Current%20Nodes-1-orange)](https://github.com/bneidlinger/tangent)
   [![Target](https://img.shields.io/badge/Target%20Nodes-100-red)](https://github.com/bneidlinger/tangent)
   
+  ![Mesh Status](docs/mesh-status.svg)
+  
   **Building a 100-node Raspberry Pi cluster for distributed AI inference**
 </div>
 
@@ -44,6 +46,15 @@ python chatapi.py
 ```
 
 Visit `http://localhost:8000` for the web interface.
+
+## 🌐 Live Mesh Network Status
+
+View the [Live Mesh Inventory](docs/mesh-inventory-auto.md) for real-time node status.
+
+### Current Nodes
+- **tangent-brain** (RTX 3070 Ti) - Central orchestration
+- **tangent-node-01** (Pi 5, 8GB) - TinyLlama server
+- **tangent-node-02** (Pi 5, 16GB) - Llama 2 7B inference
 
 ## 📊 Current Progress
 

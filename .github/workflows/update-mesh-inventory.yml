@@ -24,14 +24,14 @@ jobs:
       - name: Run update_mesh_inventory.py
         env:
           TAILSCALE_API_KEY: ${{ secrets.TAILSCALE_API_KEY }}
-          TAILSCALE_TAILNET: yourtailnet.tailscale.net  # CHANGE THIS!
+          TAILSCALE_TAILNET: ${{ secrets.TAILSCALE_TAILNET }}
         run: |
-          python scripts/update_mesh_inventory.py
+          python tailscale/update_mesh_inventory.py
 
       - name: Commit and push changes
         run: |
           git config --global user.name "github-actions[bot]"
           git config --global user.email "github-actions[bot]@users.noreply.github.com"
-          git add docs/mesh-inventory-auto.md docs/mesh-inventory-auto.yaml
-          git commit -m "Automated: Update mesh inventory" || echo "No changes to commit"
+          git add docs/mesh-inventory-auto.md docs/mesh-inventory-auto.yaml docs/mesh-status.svg docs/node-badges/
+          git commit -m "Automated: Update mesh inventory and status badges" || echo "No changes to commit"
           git push
