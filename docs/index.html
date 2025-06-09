@@ -1,0 +1,518 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TANGNET - Decentralized AI Cluster</title>
+    <meta name="description" content="Building a 100-node Raspberry Pi cluster for distributed AI inference. No cloud, complete autonomy.">
+    
+    <!-- Favicon -->
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🧠</text></svg>">
+    
+    <style>
+        :root {
+            --primary: #00ff41;
+            --secondary: #008f11;
+            --dark: #0a0a0a;
+            --darker: #050505;
+            --light: #f0f0f0;
+            --accent: #ff006e;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+            background: var(--darker);
+            color: var(--light);
+            line-height: 1.6;
+            overflow-x: hidden;
+        }
+
+        /* Terminal-style header */
+        .terminal-header {
+            background: var(--dark);
+            padding: 20px;
+            border-bottom: 2px solid var(--primary);
+            font-family: 'Courier New', monospace;
+        }
+
+        .terminal-text {
+            color: var(--primary);
+            text-shadow: 0 0 5px var(--primary);
+            animation: flicker 2s infinite;
+        }
+
+        @keyframes flicker {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.8; }
+        }
+
+        /* Hero Section */
+        .hero {
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: linear-gradient(135deg, var(--darker) 0%, var(--dark) 100%);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .hero::before {
+            content: '';
+            position: absolute;
+            width: 200%;
+            height: 200%;
+            background: repeating-linear-gradient(
+                0deg,
+                transparent,
+                transparent 2px,
+                rgba(0, 255, 65, 0.03) 2px,
+                rgba(0, 255, 65, 0.03) 4px
+            );
+            animation: scan 8s linear infinite;
+        }
+
+        @keyframes scan {
+            0% { transform: translateY(0); }
+            100% { transform: translateY(20px); }
+        }
+
+        .hero-content {
+            text-align: center;
+            z-index: 10;
+            padding: 2rem;
+            max-width: 1200px;
+        }
+
+        .hero h1 {
+            font-size: clamp(3rem, 8vw, 6rem);
+            margin-bottom: 1rem;
+            background: linear-gradient(45deg, var(--primary), var(--accent));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            text-shadow: 0 0 30px rgba(0, 255, 65, 0.5);
+        }
+
+        .hero .tagline {
+            font-size: 1.5rem;
+            margin-bottom: 2rem;
+            color: var(--primary);
+            opacity: 0.9;
+        }
+
+        .stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 2rem;
+            margin: 3rem 0;
+        }
+
+        .stat-card {
+            background: rgba(0, 255, 65, 0.1);
+            border: 1px solid var(--primary);
+            padding: 2rem;
+            border-radius: 10px;
+            transition: all 0.3s ease;
+        }
+
+        .stat-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 30px rgba(0, 255, 65, 0.3);
+        }
+
+        .stat-number {
+            font-size: 3rem;
+            font-weight: bold;
+            color: var(--primary);
+        }
+
+        .stat-label {
+            font-size: 1.2rem;
+            opacity: 0.8;
+        }
+
+        /* Navigation */
+        nav {
+            position: fixed;
+            top: 0;
+            width: 100%;
+            background: rgba(10, 10, 10, 0.95);
+            backdrop-filter: blur(10px);
+            z-index: 1000;
+            padding: 1rem 2rem;
+            border-bottom: 1px solid var(--primary);
+        }
+
+        nav ul {
+            list-style: none;
+            display: flex;
+            justify-content: center;
+            gap: 2rem;
+            flex-wrap: wrap;
+        }
+
+        nav a {
+            color: var(--light);
+            text-decoration: none;
+            transition: color 0.3s;
+            font-size: 1.1rem;
+        }
+
+        nav a:hover {
+            color: var(--primary);
+            text-shadow: 0 0 10px var(--primary);
+        }
+
+        /* Sections */
+        section {
+            padding: 5rem 2rem;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        h2 {
+            font-size: 3rem;
+            margin-bottom: 2rem;
+            color: var(--primary);
+            text-align: center;
+        }
+
+        .feature-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 2rem;
+            margin-top: 3rem;
+        }
+
+        .feature-card {
+            background: rgba(0, 143, 17, 0.1);
+            border: 1px solid var(--secondary);
+            padding: 2rem;
+            border-radius: 10px;
+            transition: all 0.3s ease;
+        }
+
+        .feature-card:hover {
+            background: rgba(0, 255, 65, 0.1);
+            border-color: var(--primary);
+            transform: translateY(-5px);
+        }
+
+        .feature-card h3 {
+            color: var(--primary);
+            margin-bottom: 1rem;
+            font-size: 1.5rem;
+        }
+
+        /* Roadmap */
+        .roadmap {
+            position: relative;
+            padding: 2rem 0;
+        }
+
+        .roadmap-item {
+            background: rgba(0, 143, 17, 0.1);
+            border-left: 3px solid var(--primary);
+            padding: 2rem;
+            margin-bottom: 2rem;
+            position: relative;
+            transition: all 0.3s ease;
+        }
+
+        .roadmap-item::before {
+            content: '';
+            position: absolute;
+            left: -10px;
+            top: 2rem;
+            width: 20px;
+            height: 20px;
+            background: var(--primary);
+            border-radius: 50%;
+            box-shadow: 0 0 20px var(--primary);
+        }
+
+        .roadmap-item.completed {
+            opacity: 0.7;
+        }
+
+        .roadmap-item.completed::before {
+            background: var(--accent);
+            box-shadow: 0 0 20px var(--accent);
+        }
+
+        .roadmap-item h3 {
+            color: var(--primary);
+            margin-bottom: 1rem;
+        }
+
+        /* CTA Section */
+        .cta {
+            text-align: center;
+            padding: 5rem 2rem;
+            background: linear-gradient(135deg, rgba(0, 255, 65, 0.1) 0%, rgba(255, 0, 110, 0.1) 100%);
+            border-radius: 20px;
+            margin: 3rem auto;
+            max-width: 800px;
+        }
+
+        .btn {
+            display: inline-block;
+            padding: 1rem 2rem;
+            background: var(--primary);
+            color: var(--dark);
+            text-decoration: none;
+            border-radius: 5px;
+            font-weight: bold;
+            margin: 0.5rem;
+            transition: all 0.3s ease;
+        }
+
+        .btn:hover {
+            background: var(--light);
+            transform: translateY(-2px);
+            box-shadow: 0 10px 30px rgba(0, 255, 65, 0.5);
+        }
+
+        .btn-secondary {
+            background: transparent;
+            border: 2px solid var(--primary);
+            color: var(--primary);
+        }
+
+        .btn-secondary:hover {
+            background: var(--primary);
+            color: var(--dark);
+        }
+
+        /* Architecture Diagram */
+        .architecture-img {
+            width: 100%;
+            max-width: 800px;
+            margin: 2rem auto;
+            display: block;
+            border: 2px solid var(--primary);
+            border-radius: 10px;
+            box-shadow: 0 0 30px rgba(0, 255, 65, 0.3);
+        }
+
+        /* Footer */
+        footer {
+            text-align: center;
+            padding: 3rem 2rem;
+            background: var(--dark);
+            border-top: 1px solid var(--primary);
+        }
+
+        .footer-quote {
+            font-style: italic;
+            color: var(--primary);
+            font-size: 1.2rem;
+            margin-bottom: 2rem;
+        }
+
+        /* Mobile Responsive */
+        @media (max-width: 768px) {
+            .hero h1 {
+                font-size: 3rem;
+            }
+            
+            .stats {
+                grid-template-columns: 1fr;
+                gap: 1rem;
+            }
+            
+            nav ul {
+                gap: 1rem;
+            }
+        }
+
+        /* Matrix rain effect */
+        .matrix-bg {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            opacity: 0.05;
+            z-index: 1;
+        }
+    </style>
+</head>
+<body>
+    <!-- Navigation -->
+    <nav>
+        <ul>
+            <li><a href="#home">Home</a></li>
+            <li><a href="#about">About</a></li>
+            <li><a href="#features">Features</a></li>
+            <li><a href="#roadmap">Roadmap</a></li>
+            <li><a href="#docs">Documentation</a></li>
+            <li><a href="https://github.com/bneidlinger/tangent">GitHub</a></li>
+        </ul>
+    </nav>
+
+    <!-- Hero Section -->
+    <section class="hero" id="home">
+        <div class="hero-content">
+            <h1>TANGNET</h1>
+            <p class="tagline">Decentralized AI at the Edge of Tomorrow</p>
+            
+            <div class="stats">
+                <div class="stat-card">
+                    <div class="stat-number">100</div>
+                    <div class="stat-label">Target Nodes</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number">10</div>
+                    <div class="stat-label">GPU Rigs</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number">70B+</div>
+                    <div class="stat-label">Model Size</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number">∞</div>
+                    <div class="stat-label">Possibilities</div>
+                </div>
+            </div>
+
+            <div class="terminal-header">
+                <span class="terminal-text">$ tangnet "What is the meaning of life?"</span>
+            </div>
+        </div>
+    </section>
+
+    <!-- About Section -->
+    <section id="about">
+        <h2>Building the Future of AI</h2>
+        <p style="text-align: center; font-size: 1.2rem; margin-bottom: 3rem;">
+            TANGNET is an ambitious project to create a fully autonomous AI infrastructure using 100 Raspberry Pi nodes 
+            and 10 high-end GPU rigs. No cloud dependencies. Complete control. Infinite possibilities.
+        </p>
+
+        <img src="../picluster.png" alt="TANGNET Architecture" class="architecture-img">
+
+        <div class="feature-grid">
+            <div class="feature-card">
+                <h3>🔐 Complete Autonomy</h3>
+                <p>Run powerful AI models without relying on external APIs or cloud services. Your data stays yours.</p>
+            </div>
+            <div class="feature-card">
+                <h3>⚡ Distributed Computing</h3>
+                <p>Leverage the power of 100 coordinated nodes for parallel processing and fault tolerance.</p>
+            </div>
+            <div class="feature-card">
+                <h3>🚀 Scalable Architecture</h3>
+                <p>Start with one Pi, scale to 100. Add GPU nodes as needed. Grow at your own pace.</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- Features Section -->
+    <section id="features">
+        <h2>Core Features</h2>
+        <div class="feature-grid">
+            <div class="feature-card">
+                <h3>Edge AI Inference</h3>
+                <p>Run models directly on Raspberry Pi hardware with optimized performance using llama.cpp.</p>
+            </div>
+            <div class="feature-card">
+                <h3>Mesh Networking</h3>
+                <p>Tailscale-powered VPN mesh for secure, seamless communication between all nodes.</p>
+            </div>
+            <div class="feature-card">
+                <h3>Real-time Chat API</h3>
+                <p>WebSocket-based chat interface with streaming responses and multiple AI personalities.</p>
+            </div>
+            <div class="feature-card">
+                <h3>GPU Acceleration</h3>
+                <p>Hybrid architecture combining edge nodes with powerful GPU rigs for heavy workloads.</p>
+            </div>
+            <div class="feature-card">
+                <h3>Voice & Multimodal</h3>
+                <p>Future support for voice transcription, image analysis, and document retrieval.</p>
+            </div>
+            <div class="feature-card">
+                <h3>100% Open Source</h3>
+                <p>Every component is open source. Build, modify, and extend as you see fit.</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- Roadmap Section -->
+    <section id="roadmap">
+        <h2>Development Roadmap</h2>
+        <div class="roadmap">
+            <div class="roadmap-item completed">
+                <h3>Phase 1: Single Node ✓</h3>
+                <p>Raspberry Pi 5 running TinyLlama 1.1B with custom chat interface.</p>
+            </div>
+            <div class="roadmap-item">
+                <h3>Phase 2: Mini Cluster (In Progress)</h3>
+                <p>5 nodes with job distribution, monitoring dashboard, and RTX 3080 integration.</p>
+            </div>
+            <div class="roadmap-item">
+                <h3>Phase 3: AI Stack</h3>
+                <p>10 nodes with distributed vector database, persistent memory, and API gateway.</p>
+            </div>
+            <div class="roadmap-item">
+                <h3>Phase 4: Regional Cluster</h3>
+                <p>25 nodes with zone-based architecture, redundancy, and voice commands.</p>
+            </div>
+            <div class="roadmap-item">
+                <h3>Phase 5: TANGNET GRIDCORE</h3>
+                <p>100 Pi nodes + 10 RTX 5090 rigs. Complete offline AI ecosystem.</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- Documentation Section -->
+    <section id="docs" class="cta">
+        <h2>Get Started</h2>
+        <p style="font-size: 1.2rem; margin-bottom: 2rem;">
+            Ready to build your own decentralized AI cluster? Dive into our comprehensive documentation.
+        </p>
+        <a href="setup/guide.html" class="btn">Setup Guide</a>
+        <a href="https://github.com/bneidlinger/tangent" class="btn btn-secondary">View on GitHub</a>
+        <a href="api/index.html" class="btn btn-secondary">API Docs</a>
+    </section>
+
+    <!-- Footer -->
+    <footer>
+        <p class="footer-quote">"TANGNET isn't just a cluster — it's a bunker-grade synthetic brain."</p>
+        <p>Built by Brandon | Powered by curiosity, caffeine, and cold solder joints</p>
+        <p style="margin-top: 1rem;">
+            <a href="https://github.com/bneidlinger/tangent" style="color: var(--primary);">GitHub</a> | 
+            <a href="https://twitter.com/yourusername" style="color: var(--primary);">Twitter</a> | 
+            <a href="mailto:your.email@example.com" style="color: var(--primary);">Contact</a>
+        </p>
+    </footer>
+
+    <script>
+        // Smooth scrolling for navigation links
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+                document.querySelector(this.getAttribute('href')).scrollIntoView({
+                    behavior: 'smooth'
+                });
+            });
+        });
+
+        // Add parallax effect to hero section
+        window.addEventListener('scroll', () => {
+            const scrolled = window.pageYOffset;
+            const hero = document.querySelector('.hero');
+            hero.style.transform = `translateY(${scrolled * 0.5}px)`;
+        });
+    </script>
+</body>
+</html>

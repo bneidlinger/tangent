@@ -1,140 +1,183 @@
-# 🧠 TANGNET - Decentralized AI Cluster Project
+# 🧠 TANGNET - Decentralized AI Cluster
 
-TANGNET is an ambitious project to build a 100-node Raspberry Pi cluster for distributed AI inference, combining edge computing with powerful GPU nodes to create a self-contained synthetic intelligence ecosystem.
+<div align="center">
+  <img src="picluster.png" alt="TANGNET Architecture" width="600">
+  
+  [![Phase](https://img.shields.io/badge/Phase-1%20of%205-blue)](https://github.com/bneidlinger/tangent)
+  [![Model](https://img.shields.io/badge/Model-TinyLlama%201.1B-green)](https://github.com/bneidlinger/tangent)
+  [![Nodes](https://img.shields.io/badge/Current%20Nodes-1-orange)](https://github.com/bneidlinger/tangent)
+  [![Target](https://img.shields.io/badge/Target%20Nodes-100-red)](https://github.com/bneidlinger/tangent)
+  
+  **Building a 100-node Raspberry Pi cluster for distributed AI inference**
+</div>
 
-## 🌟 Project Vision
+## 🌟 Overview
 
-TANGNET (Tangential Network) aims to create a fully offline-capable AI infrastructure that includes:
+TANGNET (Tangential Network) is an ambitious project to create a fully offline-capable AI infrastructure combining edge computing with powerful GPU acceleration. No cloud dependencies, complete autonomy.
+
+### 🎯 Project Goals
+
 - **100 Raspberry Pi 5 units** (8GB) for distributed edge computing
-- **10 RTX 5090 GPU rigs** for heavy inference tasks
-- Voice transcription, document retrieval, and AI inference capabilities
-- No reliance on cloud APIs - complete autonomy
+- **10 RTX 5090 GPU rigs** for heavy inference tasks  
+- Voice transcription, document retrieval, and AI inference
+- Completely self-contained synthetic intelligence ecosystem
+- Zero reliance on external APIs or cloud services
 
-## 📁 Project Structure
+## 🚀 Quick Start
 
-```
-tangnet/
-├── overview/              # Project documentation and vision
-│   ├── index.html        # About the project and creator
-│   ├── guide.html        # Pi setup and usage guide
-│   ├── implementationidea.html  # Phase-by-phase implementation plan
-│   ├── materials.html    # Hardware requirements and build manual
-│   └── modeloverview.html # Model details and commands
-├── set-up docs/          # Configuration and setup documentation
-│   ├── cana_setup.html   # Setup instructions
-│   ├── dets.txt          # Network and command details
-│   └── modelsetup.html   # Model configuration
-├── tanchat/              # Custom chat API implementation
-│   ├── chatapi.py        # FastAPI WebSocket chat server
-│   └── requirements.txt  # Python dependencies
-└── llama.cpp/            # (gitignored) LLM inference engine
-```
+### Access the Current Node
 
-## 🚀 Current Status
-
-### Phase 1: Single Pi Setup ✅
-- Raspberry Pi 5 (8GB) running at IP: `192.168.1.31`
-- TinyLlama 1.1B Chat model deployed via llama.cpp
-- SSH and VNC access configured
-- Basic inference working with custom alias
-
-### In Development
-- FastAPI-based chat API with WebSocket support
-- Web interface for cluster management
-- Integration with llama.cpp for real-time inference
-
-## 🛠️ Quick Start
-
-### Accessing the Pi
 ```bash
-# SSH into the Pi
+# SSH into the primary Pi
 ssh brand@192.168.1.31
 
-# Use the tangnet alias for quick inference
+# Run inference using the tangnet alias
 tangnet "What is the meaning of life?"
 ```
 
-### Running the Chat API
+### Launch the Chat Interface
+
 ```bash
 cd tanchat
 pip install -r requirements.txt
 python chatapi.py
 ```
 
-The API will be available at `http://localhost:8000` with WebSocket support at `/ws/{session_id}`.
+Visit `http://localhost:8000` for the web interface.
 
-## 📋 Requirements
+## 📊 Current Progress
 
-### Hardware (Current)
-- Raspberry Pi 5 (8GB RAM)
-- 32GB+ microSD card
-- USB-C power supply (27W)
-- Gigabit Ethernet connection
+### ✅ Phase 1: Single Node (Complete)
+- Raspberry Pi 5 (8GB) operational
+- TinyLlama 1.1B model deployed
+- ~10-15 tokens/second inference
+- Custom chat API with WebSocket support
+- SSH/VNC remote access configured
+
+### 🔄 Phase 2: Mini Cluster (In Progress)
+- Adding 4 additional Pi nodes
+- Implementing job distribution
+- Building monitoring dashboard
+- Integrating RTX 3080 GPU server
+
+## 🏗️ Architecture
+
+```
+TANGNET Infrastructure
+├── Edge Nodes (Raspberry Pi 5)
+│   ├── Inference Engine (llama.cpp)
+│   ├── Local Model Storage
+│   └── Mesh Networking (Tailscale)
+├── GPU Acceleration Layer
+│   ├── RTX 3080 Server (Phase 2)
+│   └── RTX 5090 Rigs (Phase 5)
+└── Control Plane
+    ├── FastAPI Chat Server
+    ├── WebSocket Real-time Streaming
+    └── Distributed Job Queue
+```
+
+## 🛠️ Technical Stack
+
+### Hardware
+- **Current**: 1x Raspberry Pi 5 (8GB RAM)
+- **Phase 5**: 100x Pi 5 + 10x RTX 5090 rigs
+- **Networking**: Gigabit Ethernet mesh
+- **Storage**: Distributed across nodes
 
 ### Software
-- Raspberry Pi OS Lite or Ubuntu Server ARM
-- Python 3.10+
-- llama.cpp (compiled for ARM)
-- FastAPI, Uvicorn, WebSockets
+- **Inference**: llama.cpp (ARM-optimized)
+- **API**: FastAPI + WebSockets
+- **Models**: TinyLlama 1.1B (expanding to Llama 3, Mixtral)
+- **Mesh**: Tailscale VPN
+- **OS**: Raspberry Pi OS Lite
 
-## 🔧 Build Commands
+## 📈 Performance Metrics
 
-### On the Pi
-```bash
-# Check temperature
-vcgencmd measure_temp
-
-# Navigate to llama.cpp
-cd ~/tangnet/llama.cpp/build
-
-# Run inference
-./bin/llama-run ../tinyllama-1.1b-chat-v1.0.Q4_K_M.gguf "Your prompt"
-```
-
-### Model Management
-```bash
-# Download new models
-huggingface-cli download TheBloke/TinyLlama-1.1B-Chat-v1.0-GGUF \
-  tinyllama-1.1b-chat-v1.0.Q4_K_M.gguf \
-  --local-dir . \
-  --local-dir-use-symlinks False
-```
+| Metric | Current | Target (Phase 5) |
+|--------|---------|------------------|
+| Nodes | 1 | 100 |
+| Models | TinyLlama 1.1B | Multiple 70B+ |
+| Inference Speed | 10-15 tok/s | 1000+ tok/s |
+| Availability | Single node | 99.9% uptime |
+| Power Draw | ~10W | ~5kW total |
 
 ## 🗺️ Roadmap
 
-1. **Phase 2**: 5-Node Mini Cluster
-   - Multi-node coordination
-   - Basic job distribution
-   - HTML monitoring dashboard
+<details>
+<summary><b>Phase 2: 5-Node Mini Cluster</b></summary>
 
-2. **Phase 3**: 10-Node AI Stack
-   - Distributed services (ChromaDB, FastAPI)
-   - Job queue management
-   - Persistent logging
+- [ ] Deploy 4 additional Pi nodes
+- [ ] Implement basic load balancing
+- [ ] Add RTX 3080 GPU server
+- [ ] Create monitoring dashboard
+- [ ] Test multi-node inference
 
-3. **Phase 4**: 25-Node Regional Cluster
-   - Zone-based architecture
-   - Redundancy and failover
-   - Memory integration
+</details>
 
-4. **Phase 5**: 100-Node TANGNET GRIDCORE
-   - Full AI mesh deployment
-   - Cluster-wide message bus
-   - Voice command layer
-   - Complete offline operation
+<details>
+<summary><b>Phase 3: 10-Node AI Stack</b></summary>
+
+- [ ] Distributed vector database (ChromaDB)
+- [ ] Job queue management system
+- [ ] Persistent conversation memory
+- [ ] API gateway with auth
+- [ ] Automated model deployment
+
+</details>
+
+<details>
+<summary><b>Phase 4: 25-Node Regional Cluster</b></summary>
+
+- [ ] Zone-based architecture
+- [ ] Redundancy and auto-failover
+- [ ] Advanced load distribution
+- [ ] Real-time performance monitoring
+- [ ] Voice command integration
+
+</details>
+
+<details>
+<summary><b>Phase 5: 100-Node TANGNET GRIDCORE</b></summary>
+
+- [ ] Full 100 Pi deployment
+- [ ] 10x RTX 5090 GPU rigs
+- [ ] Cluster-wide message bus
+- [ ] Complete offline operation
+- [ ] Multi-modal AI capabilities
+
+</details>
+
+## 📚 Documentation
+
+- [Project Overview](overview/index.html) - Vision and goals
+- [Setup Guide](overview/guide.html) - Step-by-step Pi configuration
+- [Hardware Specs](overview/materials.html) - Complete parts list
+- [API Documentation](tanchat/README.md) - Chat server API reference
+- [Mesh Network](mesh%20docs/mesh_network.md) - Node inventory and topology
 
 ## 🤝 Contributing
 
-This is currently a personal project, but contributions and ideas are welcome. Feel free to open issues or submit PRs.
+While this is currently a personal project, contributions are welcome! Areas of interest:
+
+- Distributed inference algorithms
+- Web UI improvements
+- Performance optimizations
+- Documentation and tutorials
+- Hardware recommendations
 
 ## 📜 License
 
-This project is open source. Specific license to be determined.
+This project is open source. License TBD.
 
-## 🧪 Creator
+## 👨‍💻 Creator
 
-Created by Brandon. Powered by curiosity, caffeine, and cold solder joints.
+Built by **Brandon** - Powered by curiosity, caffeine, and the relentless pursuit of decentralized AI.
 
 ---
 
-*"TANGNET isn't just a build — it's a bunker-grade synthetic brain."*
+<div align="center">
+  <i>"TANGNET isn't just a cluster — it's a bunker-grade synthetic brain."</i>
+  
+  ⭐ Star this repo to follow the journey from 1 to 100 nodes!
+</div>

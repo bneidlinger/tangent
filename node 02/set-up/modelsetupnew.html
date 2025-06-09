@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Llama 2 7B Setup on Pi 5 (16GB) — Tangnet Mesh Guide (2025 Update)</title>
+  <link href="https://fonts.googleapis.com/css2?family=Fira+Mono:wght@400;700&display=swap" rel="stylesheet">
+  <style>
+    body {
+      background: #171a22;
+      color: #b5ffcb;
+      font-family: 'Fira Mono', monospace;
+      padding: 0 0 3em 0;
+      margin: 0;
+    }
+    header {
+      background: #22282e;
+      padding: 1.3em 0 0.6em 0;
+      text-align: center;
+      color: #6ae67a;
+      font-size: 2.2em;
+      font-weight: bold;
+      border-bottom: 4px solid #37ff79;
+      letter-spacing: 2px;
+      box-shadow: 0 5px 22px #36ffb26e;
+    }
+    h2 {
+      color: #3bff39;
+      border-bottom: 1.5px solid #59ffaa;
+      padding-bottom: 3px;
+      margin-top: 2.3em;
+    }
+    .section {
+      background: #202c22c0;
+      border-left: 6px solid #36ff79;
+      box-shadow: 0 4px 22px #36ffb244;
+      padding: 1.5em 2em;
+      margin: 2em auto 0 auto;
+      max-width: 750px;
+      border-radius: 14px;
+      font-size: 1.09em;
+    }
+    pre, code {
+      background: #212944;
+      color: #a2e3d2;
+      border-radius: 6px;
+      padding: 0.2em 0.7em;
+      font-family: 'Fira Mono', monospace;
+      font-size: 1.08em;
+      line-height: 1.6em;
+      overflow-x: auto;
+    }
+    .tip {
+      color: #84ffb9;
+      background: #2e5442;
+      border-left: 3px solid #3bff39;
+      padding: 0.4em 1.2em;
+      margin: 1em 0 0.7em 0;
+      border-radius: 5px;
+      font-size: 1.02em;
+      box-shadow: 0 1px 5px #32d67122;
+    }
+    ul, ol { font-size: 1.06em; }
+    a, a:visited { color: #36ff79; }
+    .footer {
+      margin-top: 2.8em;
+      color: #7efca9;
+      font-size: 1.04em;
+      text-align: center;
+      opacity: 0.85;
+      padding-bottom: 2em;
+    }
+    @media (max-width: 750px) {
+      .section { padding: 1em 0.5em; }
+      body { padding: 0 0.2em; }
+    }
+  </style>
+</head>
+<body>
+  <header>
+    Llama 2 7B Setup<br>on Pi 5 (16GB) — Tangnet Mesh Guide <span style="font-size:0.65em;color:#fffca2;">(2025 Update)</span>
+  </header>
+
+  <div class="section">
+    <h2>1. Prepare Your Pi</h2>
+    <ul>
+      <li>Start with <b>64-bit Raspberry Pi OS</b> (bookworm or bullseye).</li>
+      <li>Connect to your mesh (LAN, WiFi, or Tailscale/ZeroTier).</li>
+      <li>Ensure at least <b>16GB free disk space</b> for models, swap, and build files.</li>
+      <li>Update all packages:</li>
+    </ul>
+    <pre>sudo apt update && sudo apt upgrade -y</pre>
+  </div>
+
+  <div class="section">
+    <h2>2. Install Requirements</h2>
+    <ul>
+      <li>Install build tools, git, cmake, and <b>libcurl4-openssl-dev</b> (needed for the build):</li>
+    </ul>
+    <pre>
+sudo apt install -y build-essential git cmake libcurl4-openssl-dev
+    </pre>
+    <ul>
+      <li>(Optional, but recommended) <b>htop</b> and <b>screen</b> for monitoring and multitasking:</li>
+    </ul>
+    <pre>sudo apt install -y htop screen</pre>
+  </div>
+
+  <div class="section">
+    <h2>3. Get &amp; Build Llama.cpp (CMake Method)</h2>
+    <ul>
+      <li>Clone the repo (or update if you have it already):</li>
+    </ul>
+    <pre>
+git clone https://github.com/ggerganov/llama.cpp.git
+cd llama.cpp
+mkdir build
+cd build
+cmake ..
+cmake --build . --config Release -j6
+    </pre>
+    <div class="tip">
+      <b>Tip:</b> The compiled binaries will be in <code>~/llama.cpp/build/bin/</code>.<br>
+      The classic <code>main</code> is now <code>llama-cli</code>.
+    </div>
+  </div>
+
+  <div class="section">
+    <h2>4. Download Llama 2 7B Model (Quantized)</h2>
+    <ul>
+      <li>On your laptop/desktop, visit <a href="https://huggingface.co/TheBloke/Llama-2-7B-GGUF" target="_blank">TheBloke / Llama-2-7B-GGUF</a>.</li>
+      <li>Download a file like <b>llama-2-7b.Q4_K_M.gguf</b> (Q4_K_M is a good Pi balance of quality/speed).</li>
+      <li>Transfer to your Pi’s <code>~/llama.cpp/models/</code> folder (create if needed):</li>
+    </ul>
+    <pre>
+# On your Pi:
+mkdir -p ~/llama.cpp/models
+
+# On your laptop (PowerShell or CMD):
+scp "C:\Users\YOURUSER\Downloads\llama-2-7b.Q4_K_M.gguf" brand@192.168.1.43:/home/brand/llama.cpp/models/
+    </pre>
+    <div class="tip">
+      <b>Note:</b> Change the username, IP, and file path as needed for your setup!
+    </div>
+  </div>
+
+  <div class="section">
+    <h2>5. Run Llama 2 7B Model!</h2>
+    <ul>
+      <li>Change to your build directory and run:</li>
+    </ul>
+    <pre>
+cd ~/llama.cpp/build
+./bin/llama-cli -m ../models/llama-2-7b.Q4_K_M.gguf -t 8 -n 128 -p "What can I build with a Pi mesh?"
+    </pre>
+    <ul>
+      <li>For interactive chat:</li>
+    </ul>
+    <pre>
+./bin/llama-cli -m ../models/llama-2-7b.Q4_K_M.gguf -t 8 -c 2048 --color -i
+    </pre>
+    <div class="tip">
+      <ul>
+        <li><b>-t 8</b>: Use all 8 Pi 5 cores (adjust if needed)</li>
+        <li><b>-c 2048</b>: Context window; lower if you hit memory errors</li>
+        <li>If you see a <code>Could NOT find CURL</code> error on build, run:<br>
+          <code>sudo apt install libcurl4-openssl-dev</code>
+        </li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="section">
+    <h2>6. Mesh Tips &amp; Integration</h2>
+    <ul>
+      <li>Use <b>SSH</b> or <b>Tailscale</b> to run or automate prompts from any mesh node.</li>
+      <li>Node 01 (TinyLlama) &amp; Node 02 (Llama 2 7B) can work together: quick prompts on one, deep answers on the other!</li>
+      <li>Keep both models up to date with your mesh's automation workflow.</li>
+    </ul>
+  </div>
+
+  <div class="footer">
+    Tangnet Mesh Lab Docs — Llama 2 7B on Pi 5 (16GB) — Updated for 2025<br>
+    &copy; 2025 Brandon Neidlinger<br>
+    <span style="color:#7efca9;">“Mesh stronger, mesh smarter!”</span>
+  </div>
+</body>
+</html>

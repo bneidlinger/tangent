@@ -1,0 +1,1 @@
+alias ask7b='cd ~/llama.cpp/build && ./bin/llama-cli -m ../models/llama-2-7b.Q4_K_M.gguf -t 8 -n 128 -c 2048 --color -p'

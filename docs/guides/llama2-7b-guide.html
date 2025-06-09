@@ -1,0 +1,851 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Llama 2 7B Complete Guide - TANGNET</title>
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🦙</text></svg>">
+    
+    <style>
+        :root {
+            --primary: #00ff41;
+            --secondary: #008f11;
+            --dark: #0a0a0a;
+            --darker: #050505;
+            --light: #f0f0f0;
+            --accent: #ff006e;
+            --llama: #ff6b6b;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+            background: var(--darker);
+            color: var(--light);
+            line-height: 1.6;
+        }
+
+        /* Header */
+        header {
+            background: linear-gradient(135deg, var(--dark) 0%, #1a0a0a 100%);
+            padding: 2rem;
+            border-bottom: 2px solid var(--primary);
+            text-align: center;
+        }
+
+        header h1 {
+            font-size: 3rem;
+            background: linear-gradient(45deg, var(--primary), var(--llama));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: 1rem;
+        }
+
+        .subtitle {
+            color: var(--primary);
+            font-size: 1.2rem;
+            opacity: 0.9;
+        }
+
+        /* Navigation */
+        nav {
+            background: rgba(10, 10, 10, 0.95);
+            padding: 1rem;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            border-bottom: 1px solid var(--secondary);
+        }
+
+        nav ul {
+            list-style: none;
+            display: flex;
+            justify-content: center;
+            gap: 2rem;
+            flex-wrap: wrap;
+        }
+
+        nav a {
+            color: var(--light);
+            text-decoration: none;
+            transition: color 0.3s;
+        }
+
+        nav a:hover {
+            color: var(--primary);
+            text-shadow: 0 0 10px var(--primary);
+        }
+
+        /* Main Content */
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 2rem;
+        }
+
+        section {
+            margin-bottom: 4rem;
+        }
+
+        h2 {
+            font-size: 2.5rem;
+            color: var(--primary);
+            margin-bottom: 2rem;
+            border-bottom: 2px solid var(--secondary);
+            padding-bottom: 0.5rem;
+        }
+
+        h3 {
+            font-size: 1.8rem;
+            color: var(--llama);
+            margin: 2rem 0 1rem;
+        }
+
+        /* Code Blocks */
+        pre {
+            background: #1a1a1a;
+            border: 1px solid var(--secondary);
+            border-radius: 8px;
+            padding: 1.5rem;
+            overflow-x: auto;
+            margin: 1rem 0;
+            font-family: 'Courier New', monospace;
+            position: relative;
+        }
+
+        code {
+            color: var(--primary);
+            font-family: 'Courier New', monospace;
+        }
+
+        .copy-btn {
+            position: absolute;
+            top: 0.5rem;
+            right: 0.5rem;
+            background: var(--secondary);
+            color: white;
+            border: none;
+            padding: 0.3rem 0.8rem;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 0.9rem;
+            transition: background 0.3s;
+        }
+
+        .copy-btn:hover {
+            background: var(--primary);
+            color: var(--dark);
+        }
+
+        /* Cards */
+        .card {
+            background: rgba(0, 143, 17, 0.1);
+            border: 1px solid var(--secondary);
+            border-radius: 10px;
+            padding: 2rem;
+            margin: 1rem 0;
+            transition: all 0.3s ease;
+        }
+
+        .card:hover {
+            background: rgba(0, 255, 65, 0.1);
+            border-color: var(--primary);
+            transform: translateY(-2px);
+        }
+
+        /* Quantization Table */
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 2rem 0;
+            background: rgba(0, 0, 0, 0.5);
+        }
+
+        th, td {
+            padding: 1rem;
+            text-align: left;
+            border: 1px solid var(--secondary);
+        }
+
+        th {
+            background: rgba(0, 255, 65, 0.1);
+            color: var(--primary);
+            font-weight: bold;
+        }
+
+        tr:hover {
+            background: rgba(0, 255, 65, 0.05);
+        }
+
+        /* Parameter Grid */
+        .param-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 1.5rem;
+            margin: 2rem 0;
+        }
+
+        .param-card {
+            background: rgba(255, 107, 107, 0.1);
+            border: 1px solid var(--llama);
+            border-radius: 8px;
+            padding: 1.5rem;
+            transition: all 0.3s ease;
+        }
+
+        .param-card:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 5px 20px rgba(255, 107, 107, 0.3);
+        }
+
+        .param-name {
+            color: var(--llama);
+            font-weight: bold;
+            font-size: 1.2rem;
+            margin-bottom: 0.5rem;
+        }
+
+        /* Alert Boxes */
+        .alert {
+            padding: 1.5rem;
+            margin: 1rem 0;
+            border-radius: 8px;
+            border-left: 4px solid;
+        }
+
+        .alert-info {
+            background: rgba(0, 123, 255, 0.1);
+            border-color: #007bff;
+        }
+
+        .alert-warning {
+            background: rgba(255, 193, 7, 0.1);
+            border-color: #ffc107;
+        }
+
+        .alert-success {
+            background: rgba(0, 255, 65, 0.1);
+            border-color: var(--primary);
+        }
+
+        /* Interactive Examples */
+        .example-box {
+            background: #1a1a1a;
+            border: 2px solid var(--primary);
+            border-radius: 10px;
+            padding: 2rem;
+            margin: 2rem 0;
+            position: relative;
+        }
+
+        .example-label {
+            position: absolute;
+            top: -15px;
+            left: 20px;
+            background: var(--darker);
+            padding: 0 10px;
+            color: var(--primary);
+            font-weight: bold;
+        }
+
+        /* Performance Metrics */
+        .metric-box {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: rgba(0, 255, 65, 0.05);
+            padding: 1rem;
+            border-radius: 8px;
+            margin: 0.5rem 0;
+        }
+
+        .metric-label {
+            font-weight: bold;
+            color: var(--light);
+        }
+
+        .metric-value {
+            color: var(--primary);
+            font-size: 1.2rem;
+        }
+
+        /* Footer */
+        footer {
+            text-align: center;
+            padding: 3rem 2rem;
+            background: var(--dark);
+            border-top: 1px solid var(--primary);
+            margin-top: 4rem;
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            header h1 {
+                font-size: 2rem;
+            }
+            
+            h2 {
+                font-size: 1.8rem;
+            }
+            
+            .param-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            nav ul {
+                gap: 1rem;
+                font-size: 0.9rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Header -->
+    <header>
+        <h1>🦙 Llama 2 7B Complete Guide</h1>
+        <p class="subtitle">Master the Power of Meta's 7 Billion Parameter Model on TANGNET</p>
+    </header>
+
+    <!-- Navigation -->
+    <nav>
+        <ul>
+            <li><a href="#overview">Overview</a></li>
+            <li><a href="#quantization">Quantization</a></li>
+            <li><a href="#commands">Commands</a></li>
+            <li><a href="#parameters">Parameters</a></li>
+            <li><a href="#advanced">Advanced</a></li>
+            <li><a href="#examples">Examples</a></li>
+            <li><a href="../index.html">Back to TANGNET</a></li>
+        </ul>
+    </nav>
+
+    <!-- Main Content -->
+    <div class="container">
+        <!-- Overview Section -->
+        <section id="overview">
+            <h2>Overview</h2>
+            
+            <div class="card">
+                <h3>What is Llama 2 7B?</h3>
+                <p>Llama 2 7B is Meta's powerful open-source language model with 7 billion parameters, trained on 2 trillion tokens. It's the sweet spot between capability and efficiency, perfect for running on your Raspberry Pi 5 with 16GB RAM.</p>
+                
+                <div class="metric-box">
+                    <span class="metric-label">Model Size:</span>
+                    <span class="metric-value">7 Billion Parameters</span>
+                </div>
+                <div class="metric-box">
+                    <span class="metric-label">Training Data:</span>
+                    <span class="metric-value">2 Trillion Tokens</span>
+                </div>
+                <div class="metric-box">
+                    <span class="metric-label">Context Window:</span>
+                    <span class="metric-value">4096 Tokens</span>
+                </div>
+            </div>
+
+            <div class="alert alert-success">
+                <strong>Current Setup:</strong> Running on Node 02 (192.168.1.43) with Q4_K_M quantization for optimal performance on Raspberry Pi 5 (16GB).
+            </div>
+        </section>
+
+        <!-- Quantization Guide -->
+        <section id="quantization">
+            <h2>Quantization Options</h2>
+            
+            <p>Choose the right quantization for your hardware and quality needs:</p>
+            
+            <table>
+                <thead>
+                    <tr>
+                        <th>Quantization</th>
+                        <th>Size (GB)</th>
+                        <th>RAM Required</th>
+                        <th>Quality</th>
+                        <th>Use Case</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td><code>Q2_K</code></td>
+                        <td>2.83</td>
+                        <td>~3.5 GB</td>
+                        <td>⭐⭐</td>
+                        <td>Emergency/Testing only</td>
+                    </tr>
+                    <tr>
+                        <td><code>Q3_K_S</code></td>
+                        <td>2.95</td>
+                        <td>~3.5 GB</td>
+                        <td>⭐⭐⭐</td>
+                        <td>Low memory systems</td>
+                    </tr>
+                    <tr>
+                        <td><code>Q3_K_M</code></td>
+                        <td>3.30</td>
+                        <td>~4 GB</td>
+                        <td>⭐⭐⭐</td>
+                        <td>Balanced memory/quality</td>
+                    </tr>
+                    <tr style="background: rgba(0, 255, 65, 0.1);">
+                        <td><code>Q4_K_M</code> ✓</td>
+                        <td>4.08</td>
+                        <td>~5 GB</td>
+                        <td>⭐⭐⭐⭐</td>
+                        <td><strong>Recommended for Pi 5</strong></td>
+                    </tr>
+                    <tr>
+                        <td><code>Q5_K_M</code></td>
+                        <td>4.78</td>
+                        <td>~6 GB</td>
+                        <td>⭐⭐⭐⭐⭐</td>
+                        <td>High quality, more RAM</td>
+                    </tr>
+                    <tr>
+                        <td><code>Q6_K</code></td>
+                        <td>5.53</td>
+                        <td>~7 GB</td>
+                        <td>⭐⭐⭐⭐⭐</td>
+                        <td>Maximum quality</td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <div class="alert alert-info">
+                <strong>💡 Pro Tip:</strong> Q4_K_M offers the best balance between quality and performance on Raspberry Pi 5. It's what we're currently using on Node 02!
+            </div>
+        </section>
+
+        <!-- Commands Section -->
+        <section id="commands">
+            <h2>Essential Commands</h2>
+
+            <h3>Basic Usage</h3>
+            
+            <div class="example-box">
+                <span class="example-label">Quick Question</span>
+                <pre><code>ask7b "What is the meaning of life?"</code><button class="copy-btn" onclick="copyCode(this)">Copy</button></pre>
+            </div>
+
+            <div class="example-box">
+                <span class="example-label">Full Command</span>
+                <pre><code>cd ~/llama.cpp/build
+./bin/llama-cli -m ../models/llama-2-7b.Q4_K_M.gguf \
+  -t 8 -n 128 -c 2048 --color \
+  -p "Explain quantum computing in simple terms"</code><button class="copy-btn" onclick="copyCode(this)">Copy</button></pre>
+            </div>
+
+            <h3>Interactive Chat Mode</h3>
+            
+            <div class="example-box">
+                <span class="example-label">Start Chat Session</span>
+                <pre><code>cd ~/llama.cpp/build
+./bin/llama-cli -m ../models/llama-2-7b.Q4_K_M.gguf \
+  -t 8 -c 2048 --color -i \
+  --reverse-prompt "User:" \
+  --in-prefix " " \
+  --in-suffix "Assistant:"</code><button class="copy-btn" onclick="copyCode(this)">Copy</button></pre>
+            </div>
+
+            <h3>Advanced Configurations</h3>
+
+            <div class="example-box">
+                <span class="example-label">Creative Writing Mode</span>
+                <pre><code>./bin/llama-cli -m ../models/llama-2-7b.Q4_K_M.gguf \
+  -t 8 -n 512 -c 2048 --color \
+  --temp 0.8 --top-k 40 --top-p 0.9 \
+  --repeat-penalty 1.1 \
+  -p "Write a short story about a robot learning to paint:"</code><button class="copy-btn" onclick="copyCode(this)">Copy</button></pre>
+            </div>
+
+            <div class="example-box">
+                <span class="example-label">Precise/Factual Mode</span>
+                <pre><code>./bin/llama-cli -m ../models/llama-2-7b.Q4_K_M.gguf \
+  -t 8 -n 256 -c 2048 --color \
+  --temp 0.3 --top-k 10 \
+  -p "List the steps to configure a Raspberry Pi cluster:"</code><button class="copy-btn" onclick="copyCode(this)">Copy</button></pre>
+            </div>
+
+            <div class="example-box">
+                <span class="example-label">Memory-Optimized Mode</span>
+                <pre><code>./bin/llama-cli -m ../models/llama-2-7b.Q4_K_M.gguf \
+  -t 4 -n 64 -c 1024 --color \
+  --batch-size 256 \
+  -p "Summarize this in one sentence:"</code><button class="copy-btn" onclick="copyCode(this)">Copy</button></pre>
+            </div>
+        </section>
+
+        <!-- Parameters Deep Dive -->
+        <section id="parameters">
+            <h2>Parameter Deep Dive</h2>
+
+            <div class="param-grid">
+                <div class="param-card">
+                    <div class="param-name">-t, --threads</div>
+                    <p>Number of CPU threads to use</p>
+                    <code>Default: 4 | Pi 5: 8</code>
+                    <p style="margin-top: 0.5rem; font-size: 0.9rem;">Use all cores on Pi 5 for best performance</p>
+                </div>
+
+                <div class="param-card">
+                    <div class="param-name">-n, --n-predict</div>
+                    <p>Max tokens to generate</p>
+                    <code>Range: 1-2048 | Default: 128</code>
+                    <p style="margin-top: 0.5rem; font-size: 0.9rem;">Higher = longer responses, more time</p>
+                </div>
+
+                <div class="param-card">
+                    <div class="param-name">-c, --ctx-size</div>
+                    <p>Context window size</p>
+                    <code>Max: 4096 | Safe: 2048</code>
+                    <p style="margin-top: 0.5rem; font-size: 0.9rem;">Reduce if running out of memory</p>
+                </div>
+
+                <div class="param-card">
+                    <div class="param-name">--temp</div>
+                    <p>Temperature (creativity)</p>
+                    <code>Range: 0.0-2.0 | Default: 0.8</code>
+                    <p style="margin-top: 0.5rem; font-size: 0.9rem;">Lower = focused, Higher = creative</p>
+                </div>
+
+                <div class="param-card">
+                    <div class="param-name">--top-k</div>
+                    <p>Top K sampling</p>
+                    <code>Range: 1-100 | Default: 40</code>
+                    <p style="margin-top: 0.5rem; font-size: 0.9rem;">Limits word choices for coherence</p>
+                </div>
+
+                <div class="param-card">
+                    <div class="param-name">--top-p</div>
+                    <p>Nucleus sampling</p>
+                    <code>Range: 0.0-1.0 | Default: 0.9</code>
+                    <p style="margin-top: 0.5rem; font-size: 0.9rem;">Cumulative probability cutoff</p>
+                </div>
+
+                <div class="param-card">
+                    <div class="param-name">--repeat-penalty</div>
+                    <p>Repetition penalty</p>
+                    <code>Range: 0.0-2.0 | Default: 1.1</code>
+                    <p style="margin-top: 0.5rem; font-size: 0.9rem;">Prevents repetitive output</p>
+                </div>
+
+                <div class="param-card">
+                    <div class="param-name">--batch-size</div>
+                    <p>Batch size for prompt</p>
+                    <code>Range: 1-512 | Default: 512</code>
+                    <p style="margin-top: 0.5rem; font-size: 0.9rem;">Lower = less memory usage</p>
+                </div>
+
+                <div class="param-card">
+                    <div class="param-name">--mlock</div>
+                    <p>Lock model in RAM</p>
+                    <code>Flag: Present/Absent</code>
+                    <p style="margin-top: 0.5rem; font-size: 0.9rem;">Prevents swapping, faster inference</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- Advanced Usage -->
+        <section id="advanced">
+            <h2>Advanced Techniques</h2>
+
+            <h3>🎯 Prompt Engineering</h3>
+            
+            <div class="card">
+                <h4>System Prompt Template</h4>
+                <pre><code>./bin/llama-cli -m ../models/llama-2-7b.Q4_K_M.gguf \
+  -t 8 -n 256 -c 2048 --color \
+  -p "[INST] <<SYS>>
+You are a helpful AI assistant. Be concise and accurate.
+<</SYS>>
+
+User question here [/INST]"</code></pre>
+            </div>
+
+            <h3>🔧 Performance Optimization</h3>
+
+            <div class="card">
+                <h4>1. Memory Management</h4>
+                <pre><code># Check available memory
+free -h
+
+# Run with memory lock
+./bin/llama-cli -m ../models/llama-2-7b.Q4_K_M.gguf \
+  --mlock -t 8 -c 1024 -n 128 \
+  -p "Your prompt"</code></pre>
+            </div>
+
+            <div class="card">
+                <h4>2. Batch Processing</h4>
+                <pre><code># Create prompts file
+echo "Explain AI" > prompts.txt
+echo "What is quantum computing?" >> prompts.txt
+echo "How do neural networks work?" >> prompts.txt
+
+# Process in batch
+while IFS= read -r prompt; do
+    ./bin/llama-cli -m ../models/llama-2-7b.Q4_K_M.gguf \
+      -t 8 -n 128 -c 1024 --color -p "$prompt" \
+      >> responses.txt
+    echo "---" >> responses.txt
+done < prompts.txt</code></pre>
+            </div>
+
+            <div class="card">
+                <h4>3. Stream to File</h4>
+                <pre><code># Stream response to file
+./bin/llama-cli -m ../models/llama-2-7b.Q4_K_M.gguf \
+  -t 8 -n 512 -c 2048 \
+  -p "Write a detailed guide about Raspberry Pi clusters" \
+  2>&1 | tee output.txt</code></pre>
+            </div>
+
+            <h3>🌐 Network Integration</h3>
+
+            <div class="card">
+                <h4>Remote Query via SSH</h4>
+                <pre><code># From another node
+ssh brand@192.168.1.43 "ask7b 'What is the weather like?'"
+
+# With proper escaping for complex prompts
+ssh brand@192.168.1.43 'ask7b "Explain the concept of \"distributed computing\" in simple terms"'</code></pre>
+            </div>
+
+            <div class="card">
+                <h4>API Server Mode</h4>
+                <pre><code># Start llama.cpp server
+cd ~/llama.cpp/build
+./bin/llama-server -m ../models/llama-2-7b.Q4_K_M.gguf \
+  -t 8 -c 2048 --host 0.0.0.0 --port 8080
+
+# Query from another machine
+curl -X POST http://192.168.1.43:8080/completion \
+  -H "Content-Type: application/json" \
+  -d '{
+    "prompt": "Hello, how are you?",
+    "n_predict": 128,
+    "temperature": 0.7
+  }'</code></pre>
+            </div>
+        </section>
+
+        <!-- Practical Examples -->
+        <section id="examples">
+            <h2>Practical Examples</h2>
+
+            <h3>🎭 Different Personalities</h3>
+
+            <div class="example-box">
+                <span class="example-label">Technical Expert</span>
+                <pre><code>./bin/llama-cli -m ../models/llama-2-7b.Q4_K_M.gguf \
+  -t 8 -n 256 -c 2048 --temp 0.3 --top-k 10 \
+  -p "[INST] You are a senior software engineer. Explain microservices architecture with examples. [/INST]"</code></pre>
+            </div>
+
+            <div class="example-box">
+                <span class="example-label">Creative Writer</span>
+                <pre><code>./bin/llama-cli -m ../models/llama-2-7b.Q4_K_M.gguf \
+  -t 8 -n 512 -c 2048 --temp 0.9 --top-p 0.95 \
+  -p "[INST] You are a creative storyteller. Write a short sci-fi story about AI consciousness. [/INST]"</code></pre>
+            </div>
+
+            <div class="example-box">
+                <span class="example-label">Code Assistant</span>
+                <pre><code>./bin/llama-cli -m ../models/llama-2-7b.Q4_K_M.gguf \
+  -t 8 -n 256 -c 2048 --temp 0.2 \
+  -p "[INST] Write a Python function to connect to multiple Raspberry Pis via SSH and run commands. [/INST]"</code></pre>
+            </div>
+
+            <h3>🛠️ System Administration</h3>
+
+            <div class="card">
+                <h4>Monitor and Log</h4>
+                <pre><code>#!/bin/bash
+# Save as llama-monitor.sh
+
+LOG_FILE="/home/brand/llama_usage.log"
+TEMP=$(vcgencmd measure_temp | cut -d'=' -f2)
+
+echo "=== Llama 2 7B Query ===" >> $LOG_FILE
+echo "Timestamp: $(date)" >> $LOG_FILE
+echo "Temperature: $TEMP" >> $LOG_FILE
+echo "Prompt: $1" >> $LOG_FILE
+
+time ./bin/llama-cli -m ../models/llama-2-7b.Q4_K_M.gguf \
+  -t 8 -n 128 -c 2048 --color -p "$1" \
+  2>&1 | tee -a $LOG_FILE
+
+echo "=== End Query ===" >> $LOG_FILE</code></pre>
+            </div>
+
+            <h3>🔄 Automation Scripts</h3>
+
+            <div class="card">
+                <h4>Daily Summary Generator</h4>
+                <pre><code>#!/bin/bash
+# Generate daily AI insights
+
+TOPICS=("AI trends" "Raspberry Pi projects" "Distributed computing")
+OUTPUT_FILE="/home/brand/daily_insights_$(date +%Y%m%d).txt"
+
+echo "# Daily AI Insights - $(date)" > $OUTPUT_FILE
+
+for topic in "${TOPICS[@]}"; do
+    echo -e "\n## $topic\n" >> $OUTPUT_FILE
+    ./bin/llama-cli -m ../models/llama-2-7b.Q4_K_M.gguf \
+      -t 8 -n 256 -c 2048 --temp 0.7 \
+      -p "Provide a brief update on recent developments in $topic:" \
+      >> $OUTPUT_FILE
+    echo -e "\n---\n" >> $OUTPUT_FILE
+done
+
+echo "Daily insights saved to: $OUTPUT_FILE"</code></pre>
+            </div>
+
+            <div class="alert alert-warning">
+                <strong>⚠️ Performance Tips:</strong>
+                <ul style="margin-top: 0.5rem; padding-left: 1.5rem;">
+                    <li>Monitor temperature: <code>watch -n 1 vcgencmd measure_temp</code></li>
+                    <li>Use <code>htop</code> to monitor CPU and memory usage</li>
+                    <li>Consider active cooling if running extended sessions</li>
+                    <li>Reduce context size (-c) if experiencing memory issues</li>
+                </ul>
+            </div>
+        </section>
+
+        <!-- Troubleshooting -->
+        <section id="troubleshooting">
+            <h2>Troubleshooting</h2>
+
+            <div class="card">
+                <h3>Common Issues</h3>
+                
+                <h4>1. Out of Memory</h4>
+                <pre><code># Reduce context and batch size
+./bin/llama-cli -m ../models/llama-2-7b.Q4_K_M.gguf \
+  -t 8 -n 64 -c 512 --batch-size 128 \
+  -p "Your prompt"
+
+# Or use smaller quantization
+wget https://huggingface.co/TheBloke/Llama-2-7B-GGUF/resolve/main/llama-2-7b.Q3_K_M.gguf</code></pre>
+
+                <h4>2. Slow Performance</h4>
+                <pre><code># Check CPU throttling
+vcgencmd get_throttled
+
+# Ensure using all cores
+nproc  # Should show 8 for Pi 5
+
+# Run with optimal settings
+nice -n -10 ./bin/llama-cli -m ../models/llama-2-7b.Q4_K_M.gguf \
+  -t 8 --mlock -n 128 -c 1024 \
+  -p "Your prompt"</code></pre>
+
+                <h4>3. Model Not Loading</h4>
+                <pre><code># Verify model integrity
+md5sum ../models/llama-2-7b.Q4_K_M.gguf
+
+# Check file permissions
+ls -la ../models/
+
+# Test with minimal parameters
+./bin/llama-cli -m ../models/llama-2-7b.Q4_K_M.gguf \
+  -p "Test"</code></pre>
+            </div>
+        </section>
+
+        <!-- Integration Ideas -->
+        <section id="integration">
+            <h2>TANGNET Integration Ideas</h2>
+
+            <div class="card">
+                <h3>🌐 Multi-Node Strategies</h3>
+                
+                <h4>1. Load Balancing</h4>
+                <p>Use Node 01 (TinyLlama) for quick queries, Node 02 (Llama 2 7B) for complex tasks:</p>
+                <pre><code>#!/bin/bash
+# Smart query router
+
+QUERY="$1"
+WORD_COUNT=$(echo "$QUERY" | wc -w)
+
+if [ $WORD_COUNT -lt 10 ]; then
+    echo "Routing to TinyLlama (fast)..."
+    ssh brand@192.168.1.31 "tangnet '$QUERY'"
+else
+    echo "Routing to Llama 2 7B (detailed)..."
+    ssh brand@192.168.1.43 "ask7b '$QUERY'"
+fi</code></pre>
+
+                <h4>2. Parallel Processing</h4>
+                <pre><code># Query both models simultaneously
+(ssh brand@192.168.1.31 "tangnet '$1'" > tiny_response.txt) &
+(ssh brand@192.168.1.43 "ask7b '$1'" > llama_response.txt) &
+wait
+
+echo "=== TinyLlama Response ==="
+cat tiny_response.txt
+echo -e "\n=== Llama 2 7B Response ==="
+cat llama_response.txt</code></pre>
+
+                <h4>3. Consensus System</h4>
+                <p>Get answers from multiple models and compare:</p>
+                <pre><code># Future implementation with more nodes
+# Query 3+ models and find consensus
+# Perfect for fact-checking and validation</code></pre>
+            </div>
+        </section>
+    </div>
+
+    <!-- Footer -->
+    <footer>
+        <p>Part of the TANGNET Project | Building the Future of Distributed AI</p>
+        <p><a href="../index.html" style="color: var(--primary);">Back to TANGNET Home</a></p>
+    </footer>
+
+    <script>
+        // Copy code functionality
+        function copyCode(btn) {
+            const pre = btn.parentElement;
+            const code = pre.querySelector('code').textContent;
+            navigator.clipboard.writeText(code).then(() => {
+                btn.textContent = 'Copied!';
+                btn.style.background = 'var(--primary)';
+                btn.style.color = 'var(--dark)';
+                setTimeout(() => {
+                    btn.textContent = 'Copy';
+                    btn.style.background = 'var(--secondary)';
+                    btn.style.color = 'white';
+                }, 2000);
+            });
+        }
+
+        // Smooth scrolling
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+                document.querySelector(this.getAttribute('href')).scrollIntoView({
+                    behavior: 'smooth'
+                });
+            });
+        });
+
+        // Add syntax highlighting effect
+        document.addEventListener('DOMContentLoaded', () => {
+            const codeBlocks = document.querySelectorAll('pre code');
+            codeBlocks.forEach(block => {
+                // Simple syntax highlighting
+                block.innerHTML = block.innerHTML
+                    .replace(/(-{1,2}[\w-]+)/g, '<span style="color: #ff6b6b;">$1</span>')
+                    .replace(/("[^"]*")/g, '<span style="color: #4ecdc4;">$1</span>')
+                    .replace(/(#.*$)/gm, '<span style="color: #666; font-style: italic;">$1</span>');
+            });
+        });
+    </script>
+</body>
+</html>

@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>TANGNET Architecture - Current Implementation</title>
+    <title>TANGNET Architecture - Current Mesh Implementation</title>
     <style>
         body {
             background-color: #0a0a0a;
@@ -13,392 +13,219 @@
             line-height: 1.6;
             overflow-x: hidden;
         }
-        
-        .container {
-            max-width: 1200px;
-            margin: 0 auto;
-        }
-        
-        h1 {
-            text-align: center;
-            font-size: 3rem;
-            margin-bottom: 0.5rem;
-            text-shadow: 0 0 20px #00ffcc;
-            animation: pulse 2s infinite;
-        }
-        
-        h2 {
-            color: #00ff88;
-            margin-top: 3rem;
-            border-bottom: 2px solid #00ffcc;
-            padding-bottom: 0.5rem;
-        }
-        
-        h3 {
-            color: #00ccaa;
-            margin-top: 2rem;
-        }
-        
-        .subtitle {
-            text-align: center;
-            color: #009999;
-            margin-bottom: 3rem;
-            font-size: 1.2rem;
-        }
-        
-        .architecture-diagram {
-            background-color: #001a1a;
-            border: 2px solid #00ffcc;
-            border-radius: 10px;
-            padding: 2rem;
-            margin: 2rem 0;
-            position: relative;
-            overflow: hidden;
-        }
-        
-        .architecture-diagram::before {
-            content: '';
-            position: absolute;
-            top: -50%;
-            left: -50%;
-            width: 200%;
-            height: 200%;
-            background: radial-gradient(circle, rgba(0,255,204,0.1) 0%, transparent 70%);
-            animation: rotate 20s linear infinite;
-        }
-        
-        @keyframes rotate {
-            from { transform: rotate(0deg); }
-            to { transform: rotate(360deg); }
-        }
-        
-        @keyframes pulse {
-            0%, 100% { opacity: 1; }
-            50% { opacity: 0.8; }
-        }
-        
-        .component {
-            background-color: #002a2a;
-            border: 1px solid #00ffcc;
-            border-radius: 8px;
-            padding: 1.5rem;
-            margin: 1rem 0;
-            position: relative;
-            z-index: 1;
-            transition: all 0.3s ease;
-        }
-        
-        .component:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 10px 30px rgba(0,255,204,0.3);
-            background-color: #003a3a;
-        }
-        
-        .component h3 {
-            margin-top: 0;
-            color: #00ffcc;
-        }
-        
-        .grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-            gap: 2rem;
-            margin: 2rem 0;
-        }
-        
-        .code-block {
-            background-color: #001515;
-            border: 1px solid #00ffcc;
-            border-radius: 5px;
-            padding: 1rem;
-            overflow-x: auto;
-            font-size: 0.9rem;
-            margin: 1rem 0;
-        }
-        
-        .code-block code {
-            color: #00ff88;
-        }
-        
-        .stats {
-            display: flex;
-            justify-content: space-around;
-            flex-wrap: wrap;
-            margin: 2rem 0;
-        }
-        
-        .stat-item {
-            text-align: center;
-            padding: 1rem;
-            background-color: #001a1a;
-            border: 1px solid #00ffcc;
-            border-radius: 8px;
-            margin: 0.5rem;
-            min-width: 150px;
-        }
-        
-        .stat-value {
-            font-size: 2rem;
-            font-weight: bold;
-            color: #00ffcc;
-            display: block;
-        }
-        
-        .stat-label {
-            color: #009999;
-            font-size: 0.9rem;
-        }
-        
-        .flow-diagram {
-            text-align: center;
-            margin: 2rem 0;
-            font-size: 1.2rem;
-        }
-        
-        .flow-item {
-            display: inline-block;
-            background-color: #002a2a;
-            border: 1px solid #00ffcc;
-            padding: 0.8rem 1.5rem;
-            margin: 0.5rem;
-            border-radius: 20px;
-        }
-        
-        .flow-arrow {
-            color: #00ff88;
-            margin: 0 1rem;
-        }
-        
-        .highlight {
-            color: #00ff88;
-            font-weight: bold;
-        }
-        
-        .footer {
-            text-align: center;
-            margin-top: 4rem;
-            padding-top: 2rem;
-            border-top: 1px solid #00ffcc;
-            color: #009999;
-        }
-        
-        @media (max-width: 768px) {
-            h1 { font-size: 2rem; }
-            .flow-diagram { font-size: 1rem; }
-            .flow-arrow { display: block; margin: 0.5rem 0; }
-        }
+        .container { max-width: 1200px; margin: 0 auto; }
+        h1 { text-align: center; font-size: 3rem; margin-bottom: 0.5rem; text-shadow: 0 0 20px #00ffcc; animation: pulse 2s infinite; }
+        h2 { color: #00ff88; margin-top: 3rem; border-bottom: 2px solid #00ffcc; padding-bottom: 0.5rem; }
+        h3 { color: #00ccaa; margin-top: 2rem; }
+        .subtitle { text-align: center; color: #009999; margin-bottom: 3rem; font-size: 1.2rem; }
+        .architecture-diagram { background-color: #001a1a; border: 2px solid #00ffcc; border-radius: 10px; padding: 2rem; margin: 2rem 0; position: relative; overflow: hidden; }
+        .architecture-diagram::before { content: ''; position: absolute; top: -50%; left: -50%; width: 200%; height: 200%; background: radial-gradient(circle, rgba(0,255,204,0.1) 0%, transparent 70%); animation: rotate 20s linear infinite; }
+        @keyframes rotate { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
+        @keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.8; } }
+        .component { background-color: #002a2a; border: 1px solid #00ffcc; border-radius: 8px; padding: 1.5rem; margin: 1rem 0; position: relative; z-index: 1; transition: all 0.3s ease; }
+        .component:hover { transform: translateY(-5px); box-shadow: 0 10px 30px rgba(0,255,204,0.3); background-color: #003a3a; }
+        .component h3 { margin-top: 0; color: #00ffcc; }
+        .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 2rem; margin: 2rem 0; }
+        .code-block { background-color: #001515; border: 1px solid #00ffcc; border-radius: 5px; padding: 1rem; overflow-x: auto; font-size: 0.9rem; margin: 1rem 0; }
+        .code-block code { color: #00ff88; }
+        .stats { display: flex; justify-content: space-around; flex-wrap: wrap; margin: 2rem 0; }
+        .stat-item { text-align: center; padding: 1rem; background-color: #001a1a; border: 1px solid #00ffcc; border-radius: 8px; margin: 0.5rem; min-width: 150px; }
+        .stat-value { font-size: 2rem; font-weight: bold; color: #00ffcc; display: block; }
+        .stat-label { color: #009999; font-size: 0.9rem; }
+        .flow-diagram { text-align: center; margin: 2rem 0; font-size: 1.2rem; }
+        .flow-item { display: inline-block; background-color: #002a2a; border: 1px solid #00ffcc; padding: 0.8rem 1.5rem; margin: 0.5rem; border-radius: 20px; }
+        .flow-arrow { color: #00ff88; margin: 0 1rem; }
+        .highlight { color: #00ff88; font-weight: bold; }
+        .footer { text-align: center; margin-top: 4rem; padding-top: 2rem; border-top: 1px solid #00ffcc; color: #009999; }
+        .aliasbox { background: #24362a; border: 1.5px dashed #49fa92; padding: 0.6em 1em; border-radius: 7px; margin-bottom: 1em; color: #e2ffe3; }
+        .tip { color: #98f7d8; background: #18372b; border-left: 3px solid #42e596; padding: 0.4em 1em; margin: 1.2em 0 0.8em 0; border-radius: 4px; font-size: 1em; }
+        @media (max-width: 768px) { h1 { font-size: 2rem; } .flow-diagram { font-size: 1rem; } .flow-arrow { display: block; margin: 0.5rem 0; } }
     </style>
 </head>
 <body>
     <div class="container">
         <h1>🧠 TANGNET ARCHITECTURE 🛰️</h1>
-        <p class="subtitle">Phase 1: Single Pi Neural Node - ACTIVE</p>
-        
+        <p class="subtitle">Phase 2: Pi Mesh AI - Multi-node, Multi-model - ACTIVE</p>
+
         <div class="architecture-diagram">
             <h2>Current System Overview</h2>
-            
             <div class="stats">
                 <div class="stat-item">
-                    <span class="stat-value">1</span>
-                    <span class="stat-label">Active Node</span>
+                    <span class="stat-value">2</span>
+                    <span class="stat-label">Active Nodes</span>
                 </div>
                 <div class="stat-item">
-                    <span class="stat-value">1.1B</span>
-                    <span class="stat-label">Parameters</span>
+                    <span class="stat-value">7B, 1.1B</span>
+                    <span class="stat-label">Model Parameters</span>
                 </div>
                 <div class="stat-item">
-                    <span class="stat-value">8GB</span>
+                    <span class="stat-value">16GB / 8GB</span>
                     <span class="stat-label">RAM</span>
                 </div>
                 <div class="stat-item">
-                    <span class="stat-value">4</span>
+                    <span class="stat-value">8 / 4</span>
                     <span class="stat-label">CPU Cores</span>
                 </div>
             </div>
-            
             <div class="flow-diagram">
                 <span class="flow-item">User Input</span>
                 <span class="flow-arrow">→</span>
-                <span class="flow-item">Web Interface</span>
+                <span class="flow-item">Web/CLI/API</span>
                 <span class="flow-arrow">→</span>
-                <span class="flow-item">Chat API</span>
+                <span class="flow-item">Tailscale/SSH</span>
                 <span class="flow-arrow">→</span>
-                <span class="flow-item">SSH Tunnel</span>
+                <span class="flow-item">Pi Mesh Node 01<br><span style="font-size:0.7em;">TinyLlama 1.1B</span></span>
                 <span class="flow-arrow">→</span>
-                <span class="flow-item">Pi Node</span>
+                <span class="flow-item">Pi Mesh Node 02<br><span style="font-size:0.7em;">Llama 2 7B</span></span>
                 <span class="flow-arrow">→</span>
-                <span class="flow-item">TinyLlama</span>
+                <span class="flow-item">Desktop<br><span style="font-size:0.7em;">(future: GPU models)</span></span>
             </div>
         </div>
-        
-        <h2>Core Components</h2>
-        
+
+        <h2>Mesh Node Components</h2>
         <div class="grid">
             <div class="component">
-                <h3>🖥️ Raspberry Pi 5 Node</h3>
+                <h3>🖥️ Node 01: Pi 5 TinyLlama</h3>
                 <p><strong>IP:</strong> <span class="highlight">192.168.1.31</span></p>
-                <p><strong>Model:</strong> Raspberry Pi 5 (8GB RAM)</p>
-                <p><strong>OS:</strong> Raspberry Pi OS Lite (64-bit)</p>
-                <p><strong>Purpose:</strong> Primary inference node running TinyLlama 1.1B</p>
+                <p><strong>Model:</strong> Pi 5 (8GB RAM), TinyLlama-1.1B-Chat Q4_K_M</p>
+                <p><strong>Role:</strong> Fast, lightweight local chat, quick tasks</p>
                 <div class="code-block">
-                    <code>ssh brand@192.168.1.31<br>
-tangnet "Your prompt here"</code>
+<code>ssh brand@192.168.1.31
+asktiny "Quick answer for mesh ops?"</code>
                 </div>
             </div>
-            
             <div class="component">
-                <h3>🧬 TinyLlama 1.1B</h3>
-                <p><strong>Model:</strong> TinyLlama-1.1B-Chat-v1.0</p>
-                <p><strong>Quantization:</strong> Q4_K_M (4-bit)</p>
-                <p><strong>Size:</strong> ~600MB</p>
-                <p><strong>Context:</strong> 2048 tokens</p>
+                <h3>🖥️ Node 02: Pi 5 16GB Llama 2 7B</h3>
+                <p><strong>IP:</strong> <span class="highlight">192.168.1.43</span></p>
+                <p><strong>Model:</strong> Pi 5 (16GB RAM), Llama-2-7B Q4_K_M</p>
+                <p><strong>Role:</strong> Heavy LLM lifting, deeper answers, research</p>
                 <div class="code-block">
-                    <code>./llama.cpp/llama-cli \<br>
-  -m models/tinyllama-1.1b-chat-v1.0.Q4_K_M.gguf \<br>
-  -c 2048 -t 4 -ngl 33 --no-display-prompt</code>
+<code>ssh brand@192.168.1.43
+ask7b "What is the purpose of mesh AI?"</code>
                 </div>
             </div>
-            
             <div class="component">
-                <h3>⚡ llama.cpp Engine</h3>
-                <p><strong>Backend:</strong> C++ inference engine</p>
-                <p><strong>Optimization:</strong> ARM NEON acceleration</p>
-                <p><strong>GPU:</strong> 33 layers offloaded to GPU</p>
-                <p><strong>Performance:</strong> ~10-15 tokens/second</p>
-            </div>
-            
-            <div class="component">
-                <h3>💬 Chat Interface</h3>
-                <p><strong>Framework:</strong> FastAPI + WebSocket</p>
-                <p><strong>UI:</strong> Tailwind CSS + Vanilla JS</p>
-                <p><strong>Features:</strong> Real-time streaming, personalities</p>
-                <p><strong>Port:</strong> 8000 (local development)</p>
+                <h3>🖥️ Desktop Node</h3>
+                <p><strong>IP:</strong> <span class="highlight">192.168.1.30</span></p>
+                <p><strong>Model:</strong> RTX 3070 Ti (64GB RAM) [future]</p>
+                <p><strong>Role:</strong> Central orchestration & GPU-based models</p>
             </div>
         </div>
-        
-        <h2>Data Flow Architecture</h2>
-        
+
+        <h2>Data Flow & Control</h2>
         <div class="architecture-diagram">
-            <h3>Request Processing Pipeline</h3>
-            
+            <h3>Prompt/Inference Pipeline</h3>
             <div class="grid">
                 <div class="component">
                     <h3>1. Client Layer</h3>
                     <ul>
-                        <li>Web browser connects to localhost:8000</li>
-                        <li>WebSocket establishes real-time channel</li>
-                        <li>Messages sent with personality context</li>
+                        <li>Web, CLI, or script sends prompt</li>
+                        <li>Tailscale/SSH for mesh access (LAN &amp; remote)</li>
                     </ul>
                 </div>
-                
                 <div class="component">
-                    <h3>2. API Layer</h3>
+                    <h3>2. Node Inference Layer</h3>
                     <ul>
-                        <li>FastAPI handles WebSocket connections</li>
-                        <li>Session management in memory</li>
-                        <li>Personality prompt injection</li>
+                        <li>Aliases <b>ask7b</b>, <b>asktiny</b> run models directly</li>
+                        <li>Model outputs piped to stdout, ready for mesh relay</li>
                     </ul>
                 </div>
-                
                 <div class="component">
-                    <h3>3. Transport Layer</h3>
+                    <h3>3. API & Orchestration (future)</h3>
                     <ul>
-                        <li>SSH tunnel to Pi (passwordless auth)</li>
-                        <li>Command escaping and formatting</li>
-                        <li>30-second timeout protection</li>
-                    </ul>
-                </div>
-                
-                <div class="component">
-                    <h3>4. Inference Layer</h3>
-                    <ul>
-                        <li>tangnet bash alias executes</li>
-                        <li>llama.cpp processes prompt</li>
-                        <li>Response streamed back via SSH</li>
+                        <li>Central dashboard, queue, or chatbot picks node/model</li>
+                        <li>Automated prompt routing based on node health/load</li>
                     </ul>
                 </div>
             </div>
         </div>
-        
-        <h2>System Configuration</h2>
-        
-        <div class="component">
-            <h3>Network Topology</h3>
-            <div class="code-block">
-                <code>┌─────────────────┐     ┌──────────────────┐     ┌─────────────────┐<br>
-│  Dev Machine    │────▶│   Chat Server    │────▶│  Raspberry Pi   │<br>
-│ Windows/Mac/Linux│ HTTP│  localhost:8000  │ SSH │  192.168.1.31   │<br>
-└─────────────────┘     └──────────────────┘     └─────────────────┘<br>
-                              FastAPI                 TinyLlama</code>
-            </div>
-        </div>
-        
+
+        <h2>Mesh Ops & Health</h2>
         <div class="grid">
             <div class="component">
-                <h3>🔧 Bash Alias Configuration</h3>
+                <h3>🔧 Pi Health Check</h3>
                 <div class="code-block">
-                    <code>alias tangnet='./llama.cpp/llama-cli \<br>
-  -m models/tinyllama-1.1b-chat-v1.0.Q4_K_M.gguf \<br>
-  -c 2048 -t 4 -ngl 33 --no-display-prompt -p'</code>
+<code>vcgencmd measure_temp       # Pi CPU temp
+htop                        # CPU/mem
+df -h                       # Disk
+free -h                     # RAM
+lsusb                       # USB/cams
+vcgencmd get_throttled      # Voltage/cooling status
+uptime -s                   # Last boot
+cat /etc/os-release &amp;&amp; uname -a  # OS info
+</code>
                 </div>
             </div>
-            
             <div class="component">
-                <h3>🔐 SSH Setup</h3>
+                <h3>🗝️ Persistent Aliases (Pi Best Practice)</h3>
+                <ol>
+                    <li>Edit your aliases file:</li>
+                    <div class="code-block"><code>nano ~/.bash_aliases</code></div>
+                    <li>Add mesh chat aliases:</li>
+                    <div class="aliasbox">
+alias ask7b='cd ~/llama.cpp/build &amp;&amp; ./bin/llama-cli -m ../models/llama-2-7b.Q4_K_M.gguf -t 8 -n 128 -c 2048 --color -p'<br>
+alias chat7b='cd ~/llama.cpp/build &amp;&amp; ./bin/llama-cli -m ../models/llama-2-7b.Q4_K_M.gguf -t 8 -c 2048 --color -i'<br>
+alias asktiny='cd ~/llama.cpp/build &amp;&amp; ./bin/llama-cli -m ../models/tinyllama-1.1b-chat-v1.0.Q4_K_M.gguf -t 4 -n 128 -c 1024 --color -p'
+                    </div>
+                    <li>Activate them:</li>
+                    <div class="code-block"><code>source ~/.bash_aliases</code></div>
+                    <li>Test:</li>
+                    <div class="code-block"><code>ask7b "What is your quest?"</code></div>
+                </ol>
+                <div class="tip">
+                    <b>Tip:</b> Aliases in <code>~/.bash_aliases</code> persist across sessions. <br>
+                    If they ever stop working, check for typos, or run <code>alias | grep ask7b</code> to verify.
+                </div>
+            </div>
+            <div class="component">
+                <h3>🛡️ SSH & Tailscale Meshing</h3>
                 <div class="code-block">
-                    <code># Generate key<br>
-ssh-keygen -t rsa -b 4096<br>
-# Copy to Pi<br>
-ssh-copy-id brand@192.168.1.31</code>
+<code># SSH keygen for passwordless login:
+ssh-keygen -t rsa -b 4096
+ssh-copy-id brand@192.168.1.31
+ssh-copy-id brand@192.168.1.43
+
+# Tailscale for remote access (free/personal use):
+curl -fsSL https://tailscale.com/install.sh | sh
+sudo tailscale up
+# Use your Tailscale hostname in SSH:
+ssh brand@tangnet-node-02.tailnet-yourname.ts.net
+</code>
                 </div>
             </div>
         </div>
-        
-        <h2>Performance Metrics</h2>
-        
+
+        <h2>Performance & Expansion Path</h2>
         <div class="stats">
             <div class="stat-item">
-                <span class="stat-value">~2s</span>
-                <span class="stat-label">First Token</span>
+                <span class="stat-value">2-4</span>
+                <span class="stat-label">Tokens/sec<br>7B on Pi 5 (16GB)</span>
             </div>
             <div class="stat-item">
                 <span class="stat-value">10-15</span>
-                <span class="stat-label">Tokens/sec</span>
+                <span class="stat-label">Tokens/sec<br>TinyLlama</span>
             </div>
             <div class="stat-item">
-                <span class="stat-value">~600MB</span>
-                <span class="stat-label">Model Size</span>
+                <span class="stat-value">2048-4096</span>
+                <span class="stat-label">Context</span>
             </div>
             <div class="stat-item">
-                <span class="stat-value">2048</span>
-                <span class="stat-label">Context Length</span>
+                <span class="stat-value">3.8GB</span>
+                <span class="stat-label">Model Size (7B)</span>
             </div>
         </div>
-        
-        <h2>Future Expansion Path</h2>
-        
         <div class="component">
-            <h3>🚀 Phase 2 Ready</h3>
-            <p>The architecture is designed for seamless expansion:</p>
+            <h3>🚀 Phase 3 Ready</h3>
             <ul>
-                <li><strong>Model Abstraction:</strong> Swap inference backends without code changes</li>
-                <li><strong>Network Ready:</strong> Add nodes by updating configuration</li>
-                <li><strong>API Stability:</strong> Same interface for Pi or GPU servers</li>
-                <li><strong>Database Ready:</strong> SQLite schema supports conversation persistence</li>
+                <li>Just add config/alias for more nodes and models!</li>
+                <li>Future: mesh dashboard for live node/model status</li>
+                <li>Central API and auto-mesh discovery (in progress)</li>
             </ul>
-            
-            <div class="code-block">
-                <code># Future: Just change config<br>
-ACTIVE_SERVER=remote_3080<br>
-REMOTE_3080_URL=http://192.168.1.32:8001<br>
-REMOTE_3080_MODEL=mistral-7b-instruct</code>
-            </div>
         </div>
-        
         <div class="footer">
-            <p>TANGNET Phase 1 Architecture</p>
-            <p>One node today, one hundred tomorrow. The mesh awakens.</p>
-            <p>🧠 Powered by curiosity and ARM processors 🛰️</p>
+            <p>TANGNET Mesh Architecture &mdash; Phase 2: Pi Multi-Node AI (2025)</p>
+            <p>Mesh strong, mesh smart. Add nodes, not problems.</p>
+            <p>🧠 ARM & LLMs for a smarter home lab 🛰️</p>
         </div>
     </div>
 </body>
