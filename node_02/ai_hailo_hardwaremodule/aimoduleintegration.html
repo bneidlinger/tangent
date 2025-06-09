@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Integrate Raspberry Pi AI Kit (Hailo-8) with Pi 5</title>
+  <style>
+    body { background: #101a17; color: #baffd6; font-family: 'Fira Mono', monospace; margin: 0; padding: 0 0 3em 0; }
+    header { background: #153030; color: #46ffc7; padding: 1.2em 0 0.6em 0; text-align: center; font-size: 2em; font-weight: bold; border-bottom: 3px solid #46ffc7; }
+    h2 { color: #46ffc7; border-bottom: 1.5px solid #47ffd1; padding-bottom: 3px; margin-top: 2.1em; }
+    .section { background: #1b302dcd; border-left: 5px solid #46ffc7; box-shadow: 0 4px 18px #47ffd145; padding: 1.3em 2em; margin: 2em auto 0 auto; max-width: 850px; border-radius: 13px; font-size: 1.09em;}
+    pre, code { background: #112528; color: #99e2ba; border-radius: 6px; padding: 0.19em 0.7em; font-family: 'Fira Mono', monospace; font-size: 1.05em; line-height: 1.6em;}
+    ul, ol { font-size: 1.03em; }
+    .tip { color: #baffd6; background: #18372b; border-left: 3px solid #42e596; padding: 0.5em 1em; margin: 1.1em 0 0.8em 0; border-radius: 4px; font-size: 1em;}
+    .warn { color: #ffe9ae; background: #472b1b; border-left: 3px solid #ffc942; padding: 0.5em 1em; margin: 1.1em 0 0.8em 0; border-radius: 4px; font-size: 1em;}
+    .footer { margin-top: 2.5em; color: #b9f7e0; font-size: 1.05em; text-align: center; opacity: 0.8; padding-bottom: 2em; }
+    @media (max-width: 900px) { .section { padding: 1em 0.4em; } body { padding: 0 0.2em; } }
+  </style>
+</head>
+<body>
+<header>
+  Raspberry Pi AI Kit (Hailo-8) Integration Guide<br>for Pi 5 Tangnet Node
+</header>
+
+<div class="section">
+  <h2>1. Hardware Prep</h2>
+  <ol>
+    <li>Shut down your Pi 5 cleanly:<br>
+      <pre>sudo poweroff</pre>
+    </li>
+    <li>Disconnect power, display, and other peripherals.</li>
+    <li>
+      <b>Attach the M.2 HAT+ Board:</b>
+      <ul>
+        <li>Remove Pi from case if needed (careful of touchscreen ribbon cable!).</li>
+        <li>Mount the <b>M.2 HAT+</b> (usually included with the AI Kit) onto the Pi 5’s main board GPIO headers (align as shown in the HAT+ docs).</li>
+        <li>Secure with standoffs/screws.</li>
+      </ul>
+    </li>
+    <li>
+      <b>Insert Hailo-8 M.2 Module:</b>
+      <ul>
+        <li>Slide the AI module into the M.2 slot on the HAT+ board (M-key, label up, 2280 slot position).</li>
+        <li>Gently screw it in (don’t overtighten).</li>
+      </ul>
+    </li>
+    <li>
+      <b>Reconnect everything:</b>
+      <ul>
+        <li>Reconnect your 7" touchscreen ribbon (DSI) and power.</li>
+        <li>Plug in the HDMI if using a second display for setup.</li>
+      </ul>
+    </li>
+  </ol>
+  <div class="warn">
+    <b>Touchscreen Tip:</b><br>
+    If the M.2 HAT+ makes your Pi too tall for the current case, consider running it "open bench" or with a taller Pi case. Double-check that the touchscreen ribbon isn’t pinched or over-bent!
+  </div>
+</div>
+
+<div class="section">
+  <h2>2. OS and Firmware Update</h2>
+  <ol>
+    <li>Boot into Raspberry Pi OS (64-bit recommended).</li>
+    <li>Update system & firmware for Pi 5 and HAT+ support:
+      <pre>
+sudo apt update
+sudo apt full-upgrade -y
+sudo rpi-update
+sudo reboot
+      </pre>
+    </li>
+  </ol>
+  <div class="tip">
+    <b>Why?</b> Latest kernel/firmware ensures Hailo-8 drivers and Pi 5 M.2 support are ready.
+  </div>
+</div>
+
+<div class="section">
+  <h2>3. Install AI Kit Software</h2>
+  <ol>
+    <li>
+      Install official drivers and runtime for Hailo-8 (as of June 2024):
+      <pre>
+sudo apt install -y python3-pip python3-venv python3-h5py \
+  python3-opencv libopencv-dev git
+sudo pip3 install hailo-platform
+      </pre>
+    </li>
+    <li>
+      <b>Check for detection:</b>
+      <pre>hailo device list</pre>
+      You should see the Hailo-8 listed!
+    </li>
+    <li>
+      (Optional but recommended) Clone demo apps:
+      <pre>
+git clone https://github.com/HailoAI/Hailo-Application-Code-Examples.git
+cd Hailo-Application-Code-Examples
+      </pre>
+    </li>
+    <li>
+      <b>Test a demo (e.g., live object detection):</b>
+      <pre>
+cd classification
+python3 classification.py --device-id 0
+      </pre>
+    </li>
+  </ol>
+  <div class="tip">
+    <b>If you hit errors:</b> Check for updates on <a href="https://www.raspberrypi.com/documentation/computers/ai-kit.html" style="color:#46ffc7;">Raspberry Pi AI Kit docs</a> or <a href="https://hailo.ai/" style="color:#46ffc7;">Hailo AI</a>.
+  </div>
+</div>
+
+<div class="section">
+  <h2>4. Integrate with Tangnet Mesh</h2>
+  <ul>
+    <li>Set a <b>distinct hostname</b> (e.g., <code>tangnet-node-02-ai</code>) to identify your AI-accelerated node.</li>
+    <li>Update your <code>mesh_inventory.yaml</code> and ops docs to show AI capabilities.</li>
+    <li>
+      Use this node for:
+      <ul>
+        <li>Vision tasks (object/person detection with Pi camera or USB cam)</li>
+        <li>Audio processing if desired</li>
+        <li>As an "event trigger" for your other LLM nodes (e.g., when person detected, summarize using Llama-2 7B)</li>
+      </ul>
+    </li>
+    <li>
+      <b>Example workflow:</b>  
+      <pre>
+# Detect person (Hailo-8, fast, low-power)
+# If detected, send a mesh prompt:
+ssh brand@192.168.1.43 ask7b "Describe what the camera saw: {event_data}"
+      </pre>
+    </li>
+  </ul>
+</div>
+
+<div class="section">
+  <h2>5. Troubleshooting & Advanced</h2>
+  <ul>
+    <li>If touchscreen stops working: double-check cable seating and try reattaching after mounting HAT+ board.</li>
+    <li>If Pi fails to boot: remove HAT+ and re-test, then reattach carefully. Make sure no pins are bent!</li>
+    <li>Want to run both AI and LLM models? Use AI Kit for vision/audio, let the CPU do language models—best of both worlds!</li>
+    <li>Watch <a href="https://www.youtube.com/@HailoAI" style="color:#46ffc7;">HailoAI’s YouTube</a> for new demos and Pi integration tips.</li>
+  </ul>
+</div>
+
+<div class="footer">
+  Tangnet Mesh &mdash; AI Kit Integration (Hailo-8 Pi 5) &copy; 2025 Brandon Neidlinger<br>
+  <span style="color:#46ffc7;">Smarter mesh, smarter home!</span>
+</div>
+</body>
+</html>
