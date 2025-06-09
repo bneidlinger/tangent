@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>TANGNET Cluster: Implementation Guide</title>
+  <style>
+    body {
+      background-color: #0a0a0a;
+      color: #00ffcc;
+      font-family: 'Courier New', Courier, monospace;
+      padding: 2rem;
+      line-height: 1.6;
+    }
+    h1, h2 {
+      text-align: center;
+      margin-bottom: 1rem;
+    }
+    .section {
+      max-width: 800px;
+      margin: 2rem auto;
+    }
+    ul {
+      list-style-type: square;
+      margin-left: 1.5rem;
+    }
+    .footer {
+      text-align: center;
+      margin-top: 4rem;
+      font-size: 0.9rem;
+      color: #009999;
+    }
+  </style>
+</head>
+<body>
+  <h1>🧠 TANGNET IMPLEMENTATION GUIDE 🛰️</h1>
+  <h2>From 1 Pi to 100-Node AI Cluster</h2>
+
+  <div class="section">
+    <h3>📦 Phase 1: Single Pi Setup</h3>
+    <ul>
+      <li>Install Raspberry Pi OS (Lite recommended)</li>
+      <li>Set up SSH, static IP, hostname (e.g., <code>tangnet-node-01</code>)</li>
+      <li>Install llama.cpp, whisper.cpp, and Python (3.10+)</li>
+      <li>Test a basic model (e.g., Mistral 7B Q2_K) and confirm token output</li>
+    </ul>
+  </div>
+
+  <div class="section">
+    <h3>🔗 Phase 2: 5-Node Mini Cluster</h3>
+    <ul>
+      <li>Connect all Pis via Gigabit switch with DHCP or static IPs</li>
+      <li>Set up passwordless SSH between all nodes</li>
+      <li>Assign roles: e.g., LLM inference, RAG, embeddings, voice transcriber</li>
+      <li>Create a control script to broadcast jobs or prompts across nodes</li>
+      <li>Build a basic HTML dashboard for monitoring/logging</li>
+    </ul>
+  </div>
+
+  <div class="section">
+    <h3>🧠 Phase 3: 10-Node AI Stack</h3>
+    <ul>
+      <li>Deploy nodes with distributed services (e.g., ChromaDB, FastAPI, node-specific Whisper)</li>
+      <li>Introduce job queue manager (e.g., Celery + Redis or NATS)</li>
+      <li>Implement persistent logging and stats (e.g., Prometheus or flat JSON logs)</li>
+      <li>Wire up UI input to routed service calls (voice or typed prompts)</li>
+    </ul>
+  </div>
+
+  <div class="section">
+    <h3>🌐 Phase 4: 25-Node Regional Cluster</h3>
+    <ul>
+      <li>Modularize the cluster by assigning "zones" (voice, text, retrieval, compute)</li>
+      <li>Introduce redundancy + failover: heartbeat and health checks</li>
+      <li>Map the roles visually on a UI dashboard (SVG or 3D space)</li>
+      <li>Start integrating memory (e.g., email or note archive)</li>
+    </ul>
+  </div>
+
+  <div class="section">
+    <h3>🚀 Phase 5: 100-Node TANGNET GRIDCORE</h3>
+    <ul>
+      <li>Deploy full AI mesh with microservices for Whisper, RAG, LLM, DB, API</li>
+      <li>Each Pi runs a container or service, optionally load-balanced</li>
+      <li>Cluster-wide message bus (e.g., MQTT or NATS) with topic-based routing</li>
+      <li>Storage replication across nodes with S3-compatible sync or rsync schedule</li>
+      <li>Voice command layer + long-term memory engine</li>
+      <li>Offline-first capability with total cloud independence</li>
+    </ul>
+  </div>
+
+  <div class="section">
+    <h3>🧬 Bonus: Personality + Agent Layer</h3>
+    <ul>
+      <li>Assign personas or task AIs to specific nodes (e.g., Historian, Scout, Archivist)</li>
+      <li>Allow AI-to-AI messaging across nodes to coordinate tasks</li>
+      <li>Log insights in natural language summaries</li>
+    </ul>
+  </div>
+
+  <div class="footer">
+    TANGNET is an open experiment in decentralized AI creativity and control. Run wild.
+  </div>
+</body>
+</html>

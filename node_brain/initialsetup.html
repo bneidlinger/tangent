@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Add Windows Desktop to Tangnet Mesh</title>
+  <style>
+    body { background: #0a1c1d; color: #b5ffe2; font-family: 'Fira Mono', monospace; margin: 0; padding-bottom: 2em;}
+    header { background: #113838; color: #40ffc7; padding: 1.2em 0 0.6em 0; text-align: center; font-size: 2em; font-weight: bold; letter-spacing: 1.2px; border-bottom: 3px solid #47ffd1; box-shadow: 0 6px 22px #23ffc099;}
+    h2 { color: #40ffc7; border-bottom: 1.5px solid #47ffd1; padding-bottom: 3px; margin-top: 2.1em; }
+    .section { background: #1c2927c5; border-left: 5px solid #47ffd1; box-shadow: 0 4px 18px #47ffd145; padding: 1.3em 2em; margin: 2em auto 0 auto; max-width: 850px; border-radius: 13px; font-size: 1.07em;}
+    pre, code { background: #1a2b33; color: #bef7d7; border-radius: 6px; padding: 0.19em 0.7em; font-family: 'Fira Mono', monospace; font-size: 1.07em; line-height: 1.7em; }
+    ul, ol { font-size: 1.04em; }
+    .footer { margin-top: 2.5em; color: #b7f7e0; font-size: 1.03em; text-align: center; opacity: 0.83; padding-bottom: 2em;}
+    .tip { color: #99ffe2; background: #18372b; border-left: 3px solid #42e596; padding: 0.4em 1em; margin: 1.2em 0 0.8em 0; border-radius: 4px; font-size: 1em; }
+    .highlight { color: #40ffc7; font-weight: bold; }
+    @media (max-width: 900px) { .section { padding: 1em 0.4em; } body { padding: 0 0.2em; } }
+  </style>
+</head>
+<body>
+<header>
+  Add Windows Desktop (RTX 3070 Ti) to Tangnet Mesh
+</header>
+
+<div class="section">
+  <h2>1. Set Up Desktop Hostname & IP</h2>
+  <ul>
+    <li><b>Hostname:</b> Set as <span class="highlight">tangnet-desktop</span> for consistency.</li>
+    <li><b>IP:</b> Assign <span class="highlight">192.168.1.30</span> (via router DHCP reservation for stability).</li>
+    <li><b>Check hostname (cmd):</b>
+      <pre>hostname</pre>
+    </li>
+    <li><b>Change hostname:</b>
+      <pre>Control Panel &gt; System &gt; Advanced system settings &gt; Computer Name &gt; Change...</pre>
+    </li>
+    <li><b>Reserve static IP on router:</b> Map MAC address to <code>192.168.1.30</code>.</li>
+  </ul>
+</div>
+
+<div class="section">
+  <h2>2. Install SSH Server (for Pi-to-Desktop Ops)</h2>
+  <ol>
+    <li>Go to <b>Settings &gt; Apps &gt; Optional Features</b></li>
+    <li>Scroll down, click <b>Add a feature</b></li>
+    <li>Search for <b>OpenSSH Server</b> and install</li>
+    <li>Start and enable the service:<br>
+      <pre>sc start sshd</pre>
+      <pre>sc config sshd start=auto</pre>
+    </li>
+    <li>Allow SSH through Windows Firewall (auto or via Inbound Rules for port 22)</li>
+    <li>Test from another device:
+      <pre>ssh brand@192.168.1.30</pre>
+      (use your Windows account username)
+    </li>
+  </ol>
+  <div class="tip">
+    <b>Optional:</b> For best mesh ops, create a local user <code>brand</code> with same SSH keys as your Pi nodes.
+  </div>
+</div>
+
+<div class="section">
+  <h2>3. Join the Mesh with Tailscale</h2>
+  <ol>
+    <li>Download &amp; install Tailscale: <a href="https://tailscale.com/download">tailscale.com/download</a></li>
+    <li>Sign in with your account (same as Pi nodes)</li>
+    <li>Authorize device via web if needed; hostname should show in your tailnet</li>
+    <li>Test from another mesh node:
+      <pre>ssh brand@tangnet-desktop.tailnet-yourname.ts.net</pre>
+    </li>
+  </ol>
+</div>
+
+<div class="section">
+  <h2>4. Prepare for Local LLM Inference (3070 Ti Power!)</h2>
+  <ol>
+    <li><b>Update NVIDIA drivers:</b> <a href="https://www.nvidia.com/Download/index.aspx">Get latest drivers</a></li>
+    <li><b>Install WSL2 + Ubuntu (recommended):</b> for easier Linux tools<br>
+      <pre>wsl --install -d Ubuntu</pre>
+      <div class="tip">
+        <b>Why?</b> llama.cpp, Ollama, and many LLM tools run easier/faster on Linux, even under WSL2.
+      </div>
+    </li>
+    <li><b>Install llama.cpp or Ollama:</b>
+      <pre>git clone https://github.com/ggerganov/llama.cpp.git</pre>
+      <pre>cd llama.cpp</pre>
+      <pre>pip install -r requirements.txt</pre>
+      <pre>make LLAMA_CUBLAS=1</pre>
+    </li>
+    <li><b>Test GPU inference (7B/13B models fly):</b>
+      <pre>./main -m models/llama-2-7b.Q4_K_M.gguf -t 16 -ngl 99 -n 128 -p "Mesh, assemble!"</pre>
+    </li>
+    <li>Or, <b>install Ollama for easy model management:</b>
+      <pre>curl -fsSL https://ollama.com/install.sh | sh</pre>
+      <pre>ollama run llama2</pre>
+    </li>
+  </ol>
+</div>
+
+<div class="section">
+  <h2>5. Mesh Ops & Integration Tips</h2>
+  <ul>
+    <li>
+      <b>SSH in and run local models from any mesh node (or schedule jobs):</b>
+      <pre>ssh brand@192.168.1.30 "wsl ~/<b>llama.cpp</b>/build/bin/llama-cli -m ~/llama.cpp/models/llama-2-7b.Q4_K_M.gguf -t 16 -ngl 99 -n 128 -p 'Mesh, assemble!'"</pre>
+    </li>
+    <li>
+      <b>Use Tailscale for remote, secure mesh control:</b>
+      <pre>ssh brand@tangnet-desktop.tailnet-yourname.ts.net ...</pre>
+    </li>
+    <li>
+      <b>Can share files with SCP/SFTP or mesh storage folder.</b>
+    </li>
+    <li>
+      <b>Integrate with mesh ops scripts, orchestration, or even use as LLM “summarizer”/heavy-lifter node.</b>
+    </li>
+  </ul>
+</div>
+
+<div class="section">
+  <h2>6. Optional: Mesh-Wide Orchestration</h2>
+  <ul>
+    <li>Use your desktop as a central orchestrator for prompt aggregation, consensus, or batch runs.</li>
+    <li>Can coordinate multi-node LLM voting, distributed training, or mesh dashboards.</li>
+    <li>Install tools like Python, VSCode, Docker for max flexibility.</li>
+  </ul>
+</div>
+
+<div class="footer">
+  Tangnet Mesh: Windows Desktop Integration &mdash; RTX 3070 Ti, 2025<br>
+  &copy; 2025 Brandon Neidlinger | Mesh Smarter, Not Harder!
+</div>
+</body>
+</html>

@@ -1,0 +1,62 @@
+# mesh-inventory.yaml
+# Home Lab Mesh Network Inventory
+# Last updated: 2025-06-06
+
+nodes:
+  - name: tangent-brain
+    type: desktop
+    ip: 192.168.1.30
+    hostname: tangent-brain
+    specs:
+      cpu: "Intel i7 (or AMD equiv.)"
+      gpu: "RTX 3070 Ti"
+      ram: 64GB
+      os: Ubuntu 24.04
+    role: "Central AI / Storage / Orchestration"
+    notes: "Runs LLMs, media server, swarm master."
+
+  - name: tangent-node-01
+    type: raspberry_pi
+    model: Pi 5
+    ram: 8GB
+    ip: 192.168.1.31
+    hostname: tangent-node-01
+    os: Raspberry Pi OS 64-bit
+    role: "TinyLlama 1.1B Chat Server"
+    notes: "Fast Q&A, SSH: brand@192.168.1.31, alias: asktiny"
+
+  - name: tangent-node-02
+    type: raspberry_pi
+    model: Pi 5
+    ram: 16GB
+    ip: 192.168.1.43
+    hostname: tangent-node-02
+    os: Raspberry Pi OS 64-bit
+    role: "Llama 2 7B Deep Inference"
+    notes: "Complex tasks, SSH: brand@192.168.1.43, alias: ask7b"
+
+devices:
+  - name: cam-01
+    type: camera
+    ip: 192.168.1.40
+    role: "Video stream / Security"
+    notes: "Direct or Pi-connected"
+
+  - name: mic-01
+    type: microphone
+    ip: 192.168.1.41
+    role: "Audio sensing"
+    notes: "For AI sound analysis"
+
+  - name: neutrino-01
+    type: neutrino_detector
+    ip: 192.168.1.42
+    role: "Data collection"
+    notes: "Experimental (for the science!)"
+
+future:
+  - name: future-node-03
+    type: raspberry_pi
+    ip: 192.168.1.33
+    role: "Expansion slot"
+    notes: "Plug and play new node!"

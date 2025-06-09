@@ -23,20 +23,15 @@ tangnet "Your prompt here"
 ```
 
 ### Chat API Server
-```bash
-# Install dependencies
-cd tanchat
-pip install -r requirements.txt
-
-# Run the server
-python chatapi.py
-```
+The chat interface is being redesigned. Legacy tanchat system has been archived in `/archive/`.
 
 ## Architecture
 
-- **overview/**: HTML documentation for project vision, phases, and hardware specs
-- **set-up docs/**: Configuration and setup instructions
-- **tanchat/**: FastAPI WebSocket chat server for AI interaction
+- **docs/**: All project documentation (HTML & markdown)
+  - **setup/**: Configuration and setup instructions
+  - **architecture/mesh/**: Mesh network documentation
+  - **guides/**: Model setup guides
+- **archive/**: Legacy tanchat system (deprecated)
 - **llama.cpp/**: (gitignored submodule) The LLM inference engine
 
 ## Key Technical Details

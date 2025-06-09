@@ -1,7 +1,7 @@
 # 🧠 TANGNET - Decentralized AI Cluster
 
 <div align="center">
-  <img src="picluster.png" alt="TANGNET Architecture" width="600">
+  <img src="docs/assets/images/picluster.png" alt="TANGNET Architecture" width="600">
   
   [![Phase](https://img.shields.io/badge/Phase-1%20of%205-blue)](https://github.com/bneidlinger/tangent)
   [![Model](https://img.shields.io/badge/Model-TinyLlama%201.1B-green)](https://github.com/bneidlinger/tangent)
@@ -37,15 +37,9 @@ ssh brand@192.168.1.31
 tangnet "What is the meaning of life?"
 ```
 
-### Launch the Chat Interface
+### AI Interface (Coming Soon)
 
-```bash
-cd tanchat
-pip install -r requirements.txt
-python chatapi.py
-```
-
-Visit `http://localhost:8000` for the web interface.
+New chat interface under development. The legacy tanchat system has been archived.
 
 ## 🌐 Live Mesh Network Status
 
@@ -161,11 +155,10 @@ TANGNET Infrastructure
 
 ## 📚 Documentation
 
-- [Project Overview](overview/index.html) - Vision and goals
-- [Setup Guide](overview/guide.html) - Step-by-step Pi configuration
-- [Hardware Specs](overview/materials.html) - Complete parts list
-- [API Documentation](tanchat/README.md) - Chat server API reference
-- [Mesh Network](mesh%20docs/mesh_network.md) - Node inventory and topology
+- [Project Overview](docs/index.html) - Vision and goals
+- [Setup Guide](docs/guide.html) - Step-by-step Pi configuration
+- [Hardware Specs](docs/materials.html) - Complete parts list
+- [Mesh Network](docs/architecture/mesh/mesh_network.md) - Node inventory and topology
 
 ## 🤝 Contributing
 

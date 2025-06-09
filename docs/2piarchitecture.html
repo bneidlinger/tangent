@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Home Mesh Network Diagram</title>
+  <style>
+    body {
+      background: #181825;
+      color: #e5e9f0;
+      font-family: 'Fira Mono', monospace;
+      margin: 0;
+      padding: 2em;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+    h1 {
+      color: #8be9fd;
+      margin-bottom: 1em;
+      font-size: 2em;
+    }
+    .diagram-box {
+      background: #22223b;
+      border-radius: 16px;
+      box-shadow: 0 4px 24px #14141680;
+      padding: 2em 2.5em;
+      display: inline-block;
+      margin-top: 1.5em;
+    }
+    small {
+      display: block;
+      margin-top: 2em;
+      color: #a6adc8;
+      font-size: 0.95em;
+    }
+  </style>
+</head>
+<body>
+  <h1>Mesh Network Diagram: Home Lab</h1>
+  <div class="diagram-box">
+    <svg width="530" height="350" viewBox="0 0 530 350">
+      <!-- Mesh links (lines) -->
+      <line x1="120" y1="90" x2="410" y2="70" stroke="#8be9fd" stroke-width="3" opacity="0.7"/>
+      <line x1="120" y1="90" x2="260" y2="270" stroke="#a6e3a1" stroke-width="3" opacity="0.7"/>
+      <line x1="410" y1="70" x2="260" y2="270" stroke="#f9e2af" stroke-width="3" opacity="0.7"/>
+
+      <!-- tangent-brain (desktop) -->
+      <rect x="370" y="30" width="120" height="80" rx="16" fill="#1e1e2e" stroke="#8be9fd" stroke-width="3"/>
+      <text x="430" y="55" text-anchor="middle" fill="#8be9fd" font-size="17" font-family="Fira Mono" font-weight="bold">tangent-brain</text>
+      <text x="430" y="75" text-anchor="middle" fill="#b4befe" font-size="13">3070 Ti</text>
+      <text x="430" y="93" text-anchor="middle" fill="#b4befe" font-size="13">64GB RAM</text>
+
+      <!-- tangent-node-01 -->
+      <rect x="40" y="60" width="140" height="60" rx="16" fill="#1e1e2e" stroke="#a6e3a1" stroke-width="3"/>
+      <text x="110" y="80" text-anchor="middle" fill="#a6e3a1" font-size="16" font-family="Fira Mono" font-weight="bold">tangent-node-01</text>
+      <text x="110" y="99" text-anchor="middle" fill="#b4befe" font-size="13">Pi 5 &mdash; 8GB RAM</text>
+
+      <!-- tangent-node-02 -->
+      <rect x="170" y="230" width="180" height="70" rx="18" fill="#1e1e2e" stroke="#f9e2af" stroke-width="3"/>
+      <text x="260" y="255" text-anchor="middle" fill="#f9e2af" font-size="16" font-family="Fira Mono" font-weight="bold">tangent-node-02</text>
+      <text x="260" y="275" text-anchor="middle" fill="#b4befe" font-size="13">Pi 5 &mdash; 16GB RAM</text>
+
+      <!-- Wi-Fi / LAN Icon in Center -->
+      <circle cx="260" cy="140" r="30" fill="#313244" stroke="#b4befe" stroke-width="2"/>
+      <text x="260" y="148" text-anchor="middle" fill="#8be9fd" font-size="35" font-family="monospace">&#128246;</text>
+      <text x="260" y="170" text-anchor="middle" fill="#a6adc8" font-size="11">Mesh</text>
+    </svg>
+  </div>
+  <small>
+    Diagram: <b>tangent-brain</b> (Desktop, 3070 Ti, 64GB RAM) <br>
+    <b>tangent-node-01</b> (Pi 5, 8GB RAM)  &mdash; <b>tangent-node-02</b> (Pi 5, 16GB RAM) <br>
+    All nodes interconnected on private mesh (LAN/Wi-Fi/Tailscale/etc). <br>
+    &copy; 2025 Brandon Neidlinger | Home Lab
+  </small>
+</body>
+</html>

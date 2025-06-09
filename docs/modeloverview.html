@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>TangNet Ops Console</title>
+  <style>
+    body {
+      background-color: #0d0d0d;
+      color: #39ff14;
+      font-family: 'Courier New', Courier, monospace;
+      padding: 20px;
+    }
+    h1, h2 {
+      color: #00ffff;
+    }
+    pre {
+      background-color: #1a1a1a;
+      padding: 10px;
+      border-left: 5px solid #00ffff;
+      overflow-x: auto;
+    }
+    .section {
+      margin-bottom: 30px;
+    }
+    a {
+      color: #00ffff;
+      text-decoration: none;
+    }
+    a:hover {
+      text-decoration: underline;
+    }
+  </style>
+</head>
+<body>
+
+  <h1>🧪 TangNet: The Multiverse Terminal</h1>
+  <p>Welcome to the TangNet Ops Console. Below you'll find all the essential commands and information to navigate your Raspberry Pi setup running the TinyLlama 1.1B Chat model.</p>
+
+  <div class="section">
+    <h2>🔌 Network & Access</h2>
+    <p><strong>Raspberry Pi IP:</strong> <code>192.168.1.31</code></p>
+    <p><strong>SSH Access:</strong></p>
+    <pre>ssh brand@192.168.1.31</pre>
+    <p><strong>VNC Access:</strong></p>
+    <pre>vncviewer 192.168.1.31</pre>
+  </div>
+
+  <div class="section">
+    <h2>🧠 Model Details</h2>
+    <p><strong>Model:</strong> TinyLlama 1.1B Chat v1.0 (GGUF format)</p>
+    <p><strong>Quantization:</strong> Q4_K_M (4-bit, medium quality)</p>
+    <p><strong>Size:</strong> ~669MB</p>
+    <p><strong>Context Length:</strong> 2048 tokens</p>
+    <p><strong>Prompt Template:</strong> Zephyr</p>
+    <p><strong>Training:</strong> Pretrained on 3 trillion tokens; fine-tuned on UltraChat and UltraFeedback datasets</p>
+    <p><strong>More Info:</strong> <a href="https://huggingface.co/TheBloke/TinyLlama-1.1B-Chat-v1.0-GGUF" target="_blank">Hugging Face Model Card</a></p>
+  </div>
+
+  <div class="section">
+    <h2>🛠️ Handy Commands</h2>
+    <p><strong>Navigate to llama.cpp build directory:</strong></p>
+    <pre>cd ~/tangnet/llama.cpp/build</pre>
+
+    <p><strong>Run the model with a prompt:</strong></p>
+    <pre>./bin/llama-run ../tinyllama-1.1b-chat-v1.0.Q4_K_M.gguf "Your prompt here"</pre>
+
+    <p><strong>Set alias for easy access:</strong></p>
+    <pre>echo "alias tangnet='~/tangnet/llama.cpp/build/bin/llama-run ~/tangnet/llama.cpp/tinyllama-1.1b-chat-v1.0.Q4_K_M.gguf'" >> ~/.bashrc
+source ~/.bashrc</pre>
+    <p>Now you can run:</p>
+    <pre>tangnet "Your prompt here"</pre>
+  </div>
+
+  <div class="section">
+    <h2>🌡️ System Monitoring</h2>
+    <p><strong>Check CPU Temperature:</strong></p>
+    <pre>vcgencmd measure_temp</pre>
+    <p><strong>Note:</strong> 46.6°C is within normal operating range for the Raspberry Pi.</p>
+  </div>
+
+  <div class="section">
+    <h2>🔄 Model Management</h2>
+    <p><strong>Download model using huggingface-cli:</strong></p>
+    <pre>huggingface-cli download TheBloke/TinyLlama-1.1B-Chat-v1.0-GGUF tinyllama-1.1b-chat-v1.0.Q4_K_M.gguf --local-dir . --local-dir-use-symlinks False</pre>
+    <p><strong>Delete existing model file:</strong></p>
+    <pre>rm ~/tangnet/llama.cpp/tinyllama-1.1b-chat-v1.0.Q4_K_M.gguf</pre>
+  </div>
+
+  <div class="section">
+    <h2>📦 Additional Resources</h2>
+    <ul>
+      <li><a href="https://github.com/jzhang38/TinyLlama" target="_blank">TinyLlama GitHub Repository</a></li>
+      <li><a href="https://arxiv.org/abs/2401.02385" target="_blank">TinyLlama: An Open-Source Small Language Model (arXiv)</a></li>
+      <li><a href="https://llm.extractum.io/model/TheBloke%2FTinyLlama-1.1B-Chat-v1.0-GGUF" target="_blank">LLM Explorer: TinyLlama 1.1B Chat v1.0 GGUF</a></li>
+    </ul>
+  </div>
+
+  <footer>
+    <p>🧪 TangNet Ops Console - Powered by TinyLlama 1.1B Chat v1.0</p>
+  </footer>
+
+</body>
+</html>
