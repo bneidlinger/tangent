@@ -3,8 +3,8 @@
 | Name             | Type         | IP            | Hostname           | Specs/Model           | Role                         | Notes                        |
 |------------------|--------------|---------------|--------------------|-----------------------|------------------------------|------------------------------|
 | tangent-brain    | Desktop      | 192.168.1.30  | tangent-brain      | 3070 Ti, 64GB, Ubuntu | Central AI/Storage           | LLMs, Docker, media server   |
-| tangent-node-01  | Raspberry Pi | 192.168.1.31  | tangent-node-01    | Pi 5, 8GB             | Edge node/Sensors            | General lab Pi               |
-| tangent-node-02  | Raspberry Pi | 192.168.1.32  | tangent-node-02    | Pi 5, 16GB            | Edge node/AI/Backup          | High-RAM Pi                  |
+| tangent-node-01  | Raspberry Pi | 192.168.1.31  | tangent-node-01    | Pi 5, 8GB             | TinyLlama 1.1B (Fast Q&A)    | Active, SSH: brand@192.168.1.31 |
+| tangent-node-02  | Raspberry Pi | 192.168.1.43  | tangent-node-02    | Pi 5, 16GB            | Llama 2 7B (Deep answers)    | Active, SSH: brand@192.168.1.43 |
 
 ## Devices
 

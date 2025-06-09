@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>TANGNET Cluster: About Me</title>
+  <style>
+    body {
+      background-color: #0a0a0a;
+      color: #00ffcc;
+      font-family: 'Courier New', Courier, monospace;
+      padding: 2rem;
+    }
+    h1, h2 {
+      text-align: center;
+      margin-bottom: 1rem;
+    }
+    .container {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+    .about {
+      max-width: 800px;
+      text-align: center;
+      margin-top: 2rem;
+    }
+    .cluster-image {
+      max-width: 100%;
+      border: 2px solid #00ffcc;
+      border-radius: 10px;
+      margin-top: 2rem;
+    }
+    .docs-section {
+      max-width: 800px;
+      margin: 3rem auto;
+      text-align: center;
+    }
+    .docs-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 1rem;
+      margin-top: 1.5rem;
+    }
+    .doc-link {
+      background-color: #001a1a;
+      border: 1px solid #00ffcc;
+      border-radius: 5px;
+      padding: 1rem;
+      text-decoration: none;
+      color: #00ffcc;
+      transition: all 0.3s ease;
+    }
+    .doc-link:hover {
+      background-color: #00ffcc;
+      color: #0a0a0a;
+      transform: translateY(-2px);
+    }
+    .footer {
+      text-align: center;
+      margin-top: 4rem;
+      font-size: 0.9rem;
+      color: #009999;
+    }
+  </style>
+</head>
+<body>
+  <h1>🧠 TANGNET CLUSTER CORE 🛰️</h1>
+  <h2>About the Architect</h2>
+  <div class="container">
+    <img src="picluster.png" alt="100-Pi Cluster" class="cluster-image">
+    <div class="about">
+      <p>Welcome to my off-grid AI superbrain project — codename <strong>TANGNET</strong>.</p>
+      <p>This cluster is made up of 100 Raspberry Pi 5 units, each running specialized components for voice transcription, document retrieval, AI inference, and simulation. It's not just a hobby; it's a self-contained synthetic ecosystem built to evolve and learn, with no reliance on cloud APIs.</p>
+      <p>Whether it's serving LLM-powered bots, transcribing field audio, or running a miniature AI civilization simulation, TANGNET is my personal experiment in decentralized intelligence.</p>
+      <p>Built in a future basement lab. Coming soon. ⚡</p>
+    </div>
+  </div>
+  
+  <div class="docs-section">
+    <h2>📚 Documentation</h2>
+    <div class="docs-grid">
+      <a href="architecture.html" class="doc-link">🏗️ Current Architecture</a>
+      <a href="overview/guide.html" class="doc-link">Implementation Guide</a>
+      <a href="overview/implementationidea.html" class="doc-link">5-Phase Roadmap</a>
+      <a href="overview/aiclusterui.html" class="doc-link">Cluster UI Design</a>
+      <a href="overview/materials.html" class="doc-link">Hardware Specs</a>
+      <a href="overview/modeloverview.html" class="doc-link">Model Overview</a>
+      <a href="set-up%20docs/modelsetup.html" class="doc-link">Model Setup</a>
+    </div>
+  </div>
+  
+  <div class="footer">
+    Created by Brandon. Powered by curiosity, caffeine, and cold solder joints.
+  </div>
+</body>
+</html>

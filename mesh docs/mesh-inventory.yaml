@@ -22,18 +22,18 @@ nodes:
     ip: 192.168.1.31
     hostname: tangent-node-01
     os: Raspberry Pi OS 64-bit
-    role: "Edge node / Sensors / Light compute"
-    notes: "General purpose lab Pi."
+    role: "TinyLlama 1.1B Chat Server"
+    notes: "Fast Q&A, SSH: brand@192.168.1.31, alias: asktiny"
 
   - name: tangent-node-02
     type: raspberry_pi
     model: Pi 5
     ram: 16GB
-    ip: 192.168.1.32
+    ip: 192.168.1.43
     hostname: tangent-node-02
     os: Raspberry Pi OS 64-bit
-    role: "Edge node / AI / Backup / Experiments"
-    notes: "High-RAM Pi for models and containers."
+    role: "Llama 2 7B Deep Inference"
+    notes: "Complex tasks, SSH: brand@192.168.1.43, alias: ask7b"
 
 devices:
   - name: cam-01
