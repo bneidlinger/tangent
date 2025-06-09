@@ -104,13 +104,37 @@ def write_node_badges(devices):
             f.write(svg)
 
 def main():
-    devices = get_tailscale_devices()
-    parsed = [device_to_dict(dev) for dev in devices]
-    write_yaml(parsed)
-    write_markdown(parsed)
-    write_svg_badge(parsed)
-    write_node_badges(parsed)
-    print(f"✅ Inventory and badges written to {OUTPUT_YAML}, {OUTPUT_MD}, {OUTPUT_SVG}")
+    try:
+        if not TAILSCALE_API_KEY or not TAILSCALE_TAILNET:
+            print("⚠️  Tailscale not configured. Using fallback data.")
+            # Fallback data when Tailscale isn't set up
+            parsed = [
+                {'Name': 'tangent-brain', 'IP': '192.168.1.30', 'OS': 'Ubuntu', 'User': 'brandon', 'Tags': '', 'Online': False, 'Last Seen': ''},
+                {'Name': 'tangent-node-01', 'IP': '192.168.1.31', 'OS': 'RaspberryPi', 'User': 'brand', 'Tags': '', 'Online': True, 'Last Seen': ''},
+                {'Name': 'tangent-node-02', 'IP': '192.168.1.43', 'OS': 'RaspberryPi', 'User': 'brand', 'Tags': '', 'Online': False, 'Last Seen': ''}
+            ]
+        else:
+            devices = get_tailscale_devices()
+            parsed = [device_to_dict(dev) for dev in devices]
+        
+        write_yaml(parsed)
+        write_markdown(parsed)
+        write_svg_badge(parsed)
+        write_node_badges(parsed)
+        print(f"✅ Inventory and badges written to {OUTPUT_YAML}, {OUTPUT_MD}, {OUTPUT_SVG}")
+    except Exception as e:
+        print(f"❌ Error: {e}")
+        print("Using fallback data...")
+        # Same fallback data on error
+        parsed = [
+            {'Name': 'tangent-brain', 'IP': '192.168.1.30', 'OS': 'Ubuntu', 'User': 'brandon', 'Tags': '', 'Online': False, 'Last Seen': ''},
+            {'Name': 'tangent-node-01', 'IP': '192.168.1.31', 'OS': 'RaspberryPi', 'User': 'brand', 'Tags': '', 'Online': True, 'Last Seen': ''},
+            {'Name': 'tangent-node-02', 'IP': '192.168.1.43', 'OS': 'RaspberryPi', 'User': 'brand', 'Tags': '', 'Online': False, 'Last Seen': ''}
+        ]
+        write_yaml(parsed)
+        write_markdown(parsed)
+        write_svg_badge(parsed)
+        write_node_badges(parsed)
 
 if __name__ == '__main__':
     main()
