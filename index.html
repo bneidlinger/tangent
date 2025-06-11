@@ -486,7 +486,7 @@
                     <div class="stat-number">70B+</div>
                     <div class="stat-label">Model Size</div>
                 </div>
-                <div class="stat-card">
+                <div class="stat-card" style="cursor: help;" onclick="if(event.shiftKey && event.ctrlKey) window.location.href='assets/easteregg.html'" title="The possibilities are truly infinite...">
                     <div class="stat-number">∞</div>
                     <div class="stat-label">Possibilities</div>
                 </div>
@@ -592,6 +592,7 @@
         </p>
         <a href="docs/guide.html" class="btn">Setup Guide</a>
         <a href="https://github.com/bneidlinger/tangent" class="btn btn-secondary">View on GitHub</a>
+        <a href="assets/diagramill.html" class="btn" style="background: linear-gradient(45deg, var(--primary), var(--accent)); animation: pulse-glow 2s infinite;">🔮 Live Network Map</a>
         <a href="architecture.html" class="btn btn-secondary">Architecture</a>
         <a href="docs/architecture/mesh/mesh-inventory.md" class="btn btn-secondary">Mesh Inventory</a>
         <a href="docs/guides/llama2-7b-guide.html" class="btn btn-secondary">Llama 2 7B Guide</a>
@@ -668,7 +669,8 @@
         <p style="margin-top: 1rem;">
             <a href="https://github.com/bneidlinger/tangent" style="color: var(--primary);">GitHub</a> | 
             <a href="https://twitter.com/yourusername" style="color: var(--primary);">Twitter</a> | 
-            <a href="mailto:your.email@example.com" style="color: var(--primary);">Contact</a>
+            <a href="mailto:your.email@example.com" style="color: var(--primary);">Contact</a> | 
+            <a href="assets/easteregg.html" style="color: var(--secondary); opacity: 0.3; transition: all 0.5s;" onmouseover="this.style.opacity='1'; this.style.color='var(--accent)'; this.style.textShadow='0 0 10px var(--accent)'" onmouseout="this.style.opacity='0.3'; this.style.color='var(--secondary)'; this.style.textShadow='none'" title="???">🤖</a>
         </p>
     </footer>
 

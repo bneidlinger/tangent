@@ -11,6 +11,8 @@
   ![Mesh Status](docs/mesh-status.svg)
   
   **Building a 100-node Raspberry Pi cluster for distributed AI inference**
+  
+  ### 🌐 [View Live Project Site](https://bneidlinger.github.io/tangent/)
 </div>
 
 ## 🌟 Overview

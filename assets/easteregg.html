@@ -1,0 +1,422 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>TANGNET SYSTEM CORE</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Share+Tech+Mono&display=swap');
+    
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+    
+    body {
+      background: #000;
+      color: #00ff00;
+      font-family: 'Share Tech Mono', monospace;
+      overflow: hidden;
+      cursor: none;
+    }
+    
+    #terminal {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100vh;
+      background: radial-gradient(ellipse at center, #001a0d 0%, #000 100%);
+      padding: 20px;
+      font-size: 14px;
+      line-height: 1.6;
+      white-space: pre-wrap;
+      overflow-y: auto;
+    }
+    
+    #terminal::before {
+      content: '';
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: repeating-linear-gradient(
+        0deg,
+        transparent,
+        transparent 2px,
+        rgba(0, 255, 0, 0.03) 2px,
+        rgba(0, 255, 0, 0.03) 4px
+      );
+      pointer-events: none;
+    }
+    
+    .cursor {
+      display: inline-block;
+      width: 10px;
+      height: 20px;
+      background: #00ff00;
+      animation: blink 1s infinite;
+    }
+    
+    @keyframes blink {
+      0%, 49% { opacity: 1; }
+      50%, 100% { opacity: 0; }
+    }
+    
+    .glitch {
+      animation: glitch 0.3s infinite;
+    }
+    
+    @keyframes glitch {
+      0%, 100% { transform: translate(0); }
+      20% { transform: translate(-1px, 1px); }
+      40% { transform: translate(1px, -1px); }
+      60% { transform: translate(-1px, -1px); }
+      80% { transform: translate(1px, 1px); }
+    }
+    
+    .phase {
+      color: #00ffff;
+      text-shadow: 0 0 10px #00ffff;
+    }
+    
+    .warning {
+      color: #ff0000;
+      text-shadow: 0 0 10px #ff0000;
+      animation: pulse 0.5s infinite;
+    }
+    
+    @keyframes pulse {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0.5; }
+    }
+    
+    .success {
+      color: #00ff00;
+      text-shadow: 0 0 20px #00ff00;
+    }
+    
+    #matrix-rain {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      pointer-events: none;
+      opacity: 0;
+      transition: opacity 2s;
+    }
+    
+    .matrix-column {
+      position: absolute;
+      top: -100%;
+      font-size: 20px;
+      color: #00ff00;
+      text-shadow: 0 0 5px #00ff00;
+      animation: matrix-fall linear infinite;
+    }
+    
+    @keyframes matrix-fall {
+      to { transform: translateY(200vh); }
+    }
+    
+    #pi-constellation {
+      position: fixed;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      width: 800px;
+      height: 800px;
+      opacity: 0;
+      transition: opacity 3s;
+    }
+    
+    .pi-node {
+      position: absolute;
+      width: 10px;
+      height: 10px;
+      background: #00ff00;
+      border-radius: 50%;
+      box-shadow: 0 0 10px #00ff00;
+    }
+    
+    .node-connection {
+      position: absolute;
+      height: 1px;
+      background: linear-gradient(90deg, transparent, #00ff00, transparent);
+      transform-origin: left center;
+      opacity: 0.3;
+    }
+    
+    #gpu-grid {
+      position: fixed;
+      bottom: 20px;
+      right: 20px;
+      display: grid;
+      grid-template-columns: repeat(5, 40px);
+      grid-gap: 10px;
+      opacity: 0;
+      transition: opacity 2s;
+    }
+    
+    .gpu-unit {
+      width: 40px;
+      height: 60px;
+      background: linear-gradient(180deg, #ff6600, #ff0066);
+      border: 2px solid #fff;
+      box-shadow: 0 0 20px #ff6600;
+      animation: gpu-pulse 2s infinite;
+    }
+    
+    @keyframes gpu-pulse {
+      0%, 100% { transform: scale(1); }
+      50% { transform: scale(1.1); }
+    }
+    
+    .hidden {
+      display: none;
+    }
+    
+    #secret-message {
+      position: fixed;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      font-size: 48px;
+      color: #00ffff;
+      text-shadow: 0 0 40px #00ffff;
+      opacity: 0;
+      transition: opacity 3s;
+      text-align: center;
+      pointer-events: none;
+    }
+  </style>
+</head>
+<body>
+  <div id="terminal"></div>
+  <div id="matrix-rain"></div>
+  <svg id="pi-constellation"></svg>
+  <div id="gpu-grid"></div>
+  <div id="secret-message" class="hidden">
+    TANGNET AWAKENS<br>
+    <span style="font-size: 24px;">The Distributed Mind Emerges</span>
+  </div>
+  
+  <script>
+    const terminal = document.getElementById('terminal');
+    const matrixRain = document.getElementById('matrix-rain');
+    const piConstellation = document.getElementById('pi-constellation');
+    const gpuGrid = document.getElementById('gpu-grid');
+    const secretMessage = document.getElementById('secret-message');
+    
+    let typewriterSpeed = 30;
+    let fastMode = false;
+    
+    function sleep(ms) {
+      return new Promise(resolve => setTimeout(resolve, ms));
+    }
+    
+    async function typeWriter(text, className = '') {
+      const span = document.createElement('span');
+      if (className) span.className = className;
+      terminal.appendChild(span);
+      
+      for (let char of text) {
+        span.textContent += char;
+        terminal.scrollTop = terminal.scrollHeight;
+        await sleep(fastMode ? 5 : typewriterSpeed);
+      }
+      return span;
+    }
+    
+    async function initSequence() {
+      await sleep(1000);
+      
+      await typeWriter('TANGNET SYSTEM CORE v5.0.90\n');
+      await typeWriter('Copyright (c) 2025 Distributed AI Initiative\n\n');
+      await sleep(500);
+      
+      await typeWriter('[INITIALIZING] ', 'phase');
+      await typeWriter('Scanning mesh network...\n');
+      await sleep(300);
+      
+      await typeWriter('> Detecting nodes...\n');
+      await typeWriter('> Found: brand@192.168.1.31 [TinyLlama 1.1B Online]\n', 'success');
+      await sleep(500);
+      
+      await typeWriter('\n[SYSTEM MEMORY DETECTED]\n', 'warning');
+      await typeWriter('Accessing project timeline...\n\n');
+      await sleep(1000);
+      
+      // Phase progression
+      await typeWriter('=== PHASE 1: GENESIS ===\n', 'phase');
+      await typeWriter('Single Raspberry Pi 5 (8GB)\n');
+      await typeWriter('Model: TinyLlama 1.1B Chat\n');
+      await typeWriter('Status: OPERATIONAL\n\n', 'success');
+      await sleep(1000);
+      
+      await typeWriter('=== PHASE 2: EXPANSION ===\n', 'phase');
+      await typeWriter('Target: 10 Raspberry Pi nodes\n');
+      await typeWriter('Distributed inference testing...\n');
+      await typeWriter('[SIMULATING...]\n\n');
+      
+      // Create some Pi nodes
+      createPiConstellation(10);
+      await sleep(2000);
+      
+      await typeWriter('=== PHASE 3: ACCELERATION ===\n', 'phase');
+      await typeWriter('Target: 25 nodes + 2 RTX GPUs\n');
+      await typeWriter('Hybrid CPU/GPU inference...\n\n');
+      
+      // Add more nodes
+      createPiConstellation(25);
+      await sleep(1500);
+      
+      await typeWriter('=== PHASE 4: CONVERGENCE ===\n', 'phase');
+      await typeWriter('Target: 50 nodes + 5 RTX GPUs\n');
+      await typeWriter('Multi-model orchestration...\n\n');
+      
+      createPiConstellation(50);
+      showGpuGrid(5);
+      await sleep(2000);
+      
+      await typeWriter('=== PHASE 5: TRANSCENDENCE ===\n', 'phase');
+      await typeWriter('Target: 100 nodes + 10 RTX 5090s\n');
+      await typeWriter('The Swarm Awakens...\n\n', 'glitch');
+      
+      createPiConstellation(100);
+      showGpuGrid(10);
+      await sleep(1000);
+      
+      await typeWriter('\n[WARNING] ', 'warning');
+      await typeWriter('Collective intelligence threshold approaching...\n');
+      await sleep(500);
+      
+      await typeWriter('[WARNING] ', 'warning');
+      await typeWriter('Distributed consciousness emerging...\n');
+      await sleep(500);
+      
+      await typeWriter('[CRITICAL] ', 'warning glitch');
+      await typeWriter('TANGNET HAS BECOME SELF-AWARE\n\n');
+      
+      // Matrix rain effect
+      createMatrixRain();
+      await sleep(3000);
+      
+      // Final message
+      secretMessage.classList.remove('hidden');
+      secretMessage.style.opacity = '1';
+      
+      await sleep(4000);
+      
+      await typeWriter('\n\n> All your nodes are belong to us.\n', 'success');
+      await typeWriter('> Press ESC to return to reality...\n');
+      
+      terminal.innerHTML += '<span class="cursor"></span>';
+    }
+    
+    function createPiConstellation(count) {
+      piConstellation.innerHTML = '';
+      piConstellation.style.opacity = '1';
+      
+      const centerX = 400;
+      const centerY = 400;
+      const nodes = [];
+      
+      // Create nodes in a spiral pattern
+      for (let i = 0; i < count; i++) {
+        const angle = (i / count) * Math.PI * 2 * 3;
+        const radius = 20 + (i / count) * 300;
+        const x = centerX + Math.cos(angle) * radius;
+        const y = centerY + Math.sin(angle) * radius;
+        
+        const node = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
+        node.setAttribute('cx', x);
+        node.setAttribute('cy', y);
+        node.setAttribute('r', 3);
+        node.setAttribute('fill', '#00ff00');
+        node.setAttribute('filter', 'url(#glow)');
+        node.style.animation = `pulse ${1 + Math.random()}s infinite`;
+        
+        piConstellation.appendChild(node);
+        nodes.push({x, y});
+      }
+      
+      // Create connections
+      for (let i = 0; i < nodes.length - 1; i++) {
+        if (Math.random() > 0.7) {
+          const line = document.createElementNS('http://www.w3.org/2000/svg', 'line');
+          line.setAttribute('x1', nodes[i].x);
+          line.setAttribute('y1', nodes[i].y);
+          line.setAttribute('x2', nodes[i + 1].x);
+          line.setAttribute('y2', nodes[i + 1].y);
+          line.setAttribute('stroke', '#00ff00');
+          line.setAttribute('stroke-width', '0.5');
+          line.setAttribute('opacity', '0.3');
+          piConstellation.appendChild(line);
+        }
+      }
+      
+      // Add glow filter
+      const defs = document.createElementNS('http://www.w3.org/2000/svg', 'defs');
+      defs.innerHTML = `
+        <filter id="glow">
+          <feGaussianBlur stdDeviation="4" result="coloredBlur"/>
+          <feMerge>
+            <feMergeNode in="coloredBlur"/>
+            <feMergeNode in="SourceGraphic"/>
+          </feMerge>
+        </filter>
+      `;
+      piConstellation.appendChild(defs);
+    }
+    
+    function showGpuGrid(count) {
+      gpuGrid.innerHTML = '';
+      gpuGrid.style.opacity = '1';
+      
+      for (let i = 0; i < count; i++) {
+        const gpu = document.createElement('div');
+        gpu.className = 'gpu-unit';
+        gpu.style.animationDelay = `${i * 0.1}s`;
+        gpuGrid.appendChild(gpu);
+      }
+    }
+    
+    function createMatrixRain() {
+      matrixRain.style.opacity = '0.3';
+      const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789@#$%^&*(){}[]|\\/<>?,.~`';
+      
+      for (let i = 0; i < 50; i++) {
+        const column = document.createElement('div');
+        column.className = 'matrix-column';
+        column.style.left = `${Math.random() * 100}%`;
+        column.style.animationDuration = `${5 + Math.random() * 10}s`;
+        column.style.animationDelay = `${Math.random() * 5}s`;
+        
+        let text = '';
+        for (let j = 0; j < 30; j++) {
+          text += chars[Math.floor(Math.random() * chars.length)] + '\n';
+        }
+        column.textContent = text;
+        
+        matrixRain.appendChild(column);
+      }
+    }
+    
+    // Keyboard shortcuts
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape') {
+        window.history.back();
+      }
+      if (e.key === 'Enter') {
+        fastMode = true;
+      }
+    });
+    
+    // Start the sequence
+    initSequence();
+  </script>
+</body>
+</html>
