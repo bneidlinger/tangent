@@ -1,0 +1,1682 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>EC2 Terminal Guide v2.0 - Deep Dive</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=VT323&display=swap');
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            background: #0a0a0a;
+            color: #00ff00;
+            font-family: 'VT323', monospace;
+            font-size: 18px;
+            line-height: 1.6;
+            overflow-x: hidden;
+        }
+        
+        .terminal-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+            background: #000;
+            min-height: 100vh;
+            box-shadow: 0 0 50px rgba(0, 255, 0, 0.3);
+        }
+        
+        .terminal-header {
+            border: 2px solid #00ff00;
+            padding: 15px;
+            margin-bottom: 30px;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .terminal-header::before {
+            content: '';
+            position: absolute;
+            top: -2px;
+            left: -100%;
+            width: 100%;
+            height: 2px;
+            background: linear-gradient(90deg, transparent, #00ff00, transparent);
+            animation: scan 3s linear infinite;
+        }
+        
+        @keyframes scan {
+            0% { left: -100%; }
+            100% { left: 100%; }
+        }
+        
+        .crt-lines {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: repeating-linear-gradient(
+                0deg,
+                rgba(0, 0, 0, 0.15),
+                rgba(0, 0, 0, 0.15) 1px,
+                transparent 1px,
+                transparent 2px
+            );
+            pointer-events: none;
+            z-index: 1;
+        }
+        
+        h1 {
+            font-size: 48px;
+            text-shadow: 0 0 10px #00ff00;
+            animation: flicker 2s infinite;
+        }
+        
+        @keyframes flicker {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.8; }
+        }
+        
+        .nav-menu {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin-bottom: 30px;
+            padding: 15px;
+            border: 1px solid #00ff00;
+            background: rgba(0, 255, 0, 0.05);
+        }
+        
+        .nav-item {
+            padding: 8px 15px;
+            border: 1px solid #00ff00;
+            background: #000;
+            color: #00ff00;
+            text-decoration: none;
+            transition: all 0.3s;
+            cursor: pointer;
+            position: relative;
+        }
+        
+        .nav-item:hover {
+            background: #00ff00;
+            color: #000;
+            box-shadow: 0 0 15px #00ff00;
+        }
+        
+        .nav-item.active {
+            background: #00ff00;
+            color: #000;
+        }
+        
+        .section {
+            margin-bottom: 40px;
+            padding: 20px;
+            border: 1px solid #00ff00;
+            background: rgba(0, 255, 0, 0.02);
+            display: none;
+        }
+        
+        .section.active {
+            display: block;
+            animation: fadeIn 0.5s;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        h2 {
+            font-size: 32px;
+            margin-bottom: 20px;
+            padding-bottom: 10px;
+            border-bottom: 2px solid #00ff00;
+            text-shadow: 0 0 5px #00ff00;
+        }
+        
+        h3 {
+            font-size: 24px;
+            margin: 20px 0 15px;
+            color: #00ff00;
+        }
+        
+        h4 {
+            font-size: 20px;
+            margin: 15px 0 10px;
+            color: #00ffff;
+        }
+        
+        .command-line {
+            background: #111;
+            border: 1px solid #00ff00;
+            padding: 15px;
+            margin: 15px 0;
+            font-family: 'VT323', monospace;
+            overflow-x: auto;
+            position: relative;
+            white-space: pre-wrap;
+        }
+        
+        .command-line::before {
+            content: '$ ';
+            color: #00ff00;
+        }
+        
+        .output {
+            background: #0a0a0a;
+            border-left: 3px solid #00ff00;
+            padding: 10px 15px;
+            margin: 10px 0;
+            color: #00cc00;
+            white-space: pre-wrap;
+        }
+        
+        .warning {
+            background: rgba(255, 255, 0, 0.1);
+            border: 1px solid #ffff00;
+            color: #ffff00;
+            padding: 15px;
+            margin: 15px 0;
+        }
+        
+        .warning::before {
+            content: '⚠ WARNING: ';
+            font-weight: bold;
+        }
+        
+        .info-box {
+            background: rgba(0, 255, 255, 0.1);
+            border: 1px solid #00ffff;
+            color: #00ffff;
+            padding: 15px;
+            margin: 15px 0;
+        }
+        
+        .info-box::before {
+            content: 'ℹ INFO: ';
+            font-weight: bold;
+        }
+        
+        .tip-box {
+            background: rgba(255, 0, 255, 0.1);
+            border: 1px solid #ff00ff;
+            color: #ff00ff;
+            padding: 15px;
+            margin: 15px 0;
+        }
+        
+        .tip-box::before {
+            content: '💡 TIP: ';
+            font-weight: bold;
+        }
+        
+        ul {
+            list-style: none;
+            padding-left: 20px;
+        }
+        
+        ul li::before {
+            content: '▸ ';
+            color: #00ff00;
+        }
+        
+        .instance-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 15px;
+            margin-top: 20px;
+        }
+        
+        .instance-card {
+            border: 1px solid #00ff00;
+            padding: 15px;
+            background: rgba(0, 255, 0, 0.05);
+            transition: all 0.3s;
+        }
+        
+        .instance-card:hover {
+            background: rgba(0, 255, 0, 0.1);
+            box-shadow: 0 0 20px rgba(0, 255, 0, 0.5);
+            transform: translateY(-2px);
+        }
+        
+        .instance-card h4 {
+            color: #00ff00;
+            margin-bottom: 10px;
+            font-size: 22px;
+        }
+        
+        .cursor {
+            display: inline-block;
+            width: 10px;
+            height: 20px;
+            background: #00ff00;
+            animation: blink 1s infinite;
+        }
+        
+        @keyframes blink {
+            0%, 50% { opacity: 1; }
+            51%, 100% { opacity: 0; }
+        }
+        
+        .loading {
+            display: inline-block;
+            animation: rotate 1s linear infinite;
+        }
+        
+        @keyframes rotate {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        
+        code {
+            background: #111;
+            padding: 2px 6px;
+            border: 1px solid #00ff00;
+            color: #00ff00;
+        }
+        
+        .step-number {
+            display: inline-block;
+            width: 30px;
+            height: 30px;
+            background: #00ff00;
+            color: #000;
+            text-align: center;
+            line-height: 30px;
+            margin-right: 10px;
+            font-weight: bold;
+        }
+        
+        .ascii-art {
+            text-align: center;
+            color: #00ff00;
+            font-size: 14px;
+            line-height: 1.2;
+            margin: 20px 0;
+        }
+        
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 15px 0;
+        }
+        
+        th, td {
+            border: 1px solid #00ff00;
+            padding: 10px;
+            text-align: left;
+        }
+        
+        th {
+            background: rgba(0, 255, 0, 0.1);
+            color: #00ff00;
+        }
+        
+        tr:hover {
+            background: rgba(0, 255, 0, 0.05);
+        }
+        
+        .diagram {
+            background: #111;
+            border: 1px solid #00ff00;
+            padding: 20px;
+            margin: 20px 0;
+            text-align: center;
+            font-size: 14px;
+            line-height: 1.2;
+        }
+        
+        .progress-bar {
+            width: 100%;
+            height: 20px;
+            background: #111;
+            border: 1px solid #00ff00;
+            margin: 10px 0;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .progress-fill {
+            height: 100%;
+            background: #00ff00;
+            width: 0%;
+            animation: loadProgress 3s ease-out forwards;
+        }
+        
+        @keyframes loadProgress {
+            to { width: 100%; }
+        }
+        
+        .metric-display {
+            display: inline-block;
+            padding: 10px 20px;
+            border: 1px solid #00ff00;
+            background: rgba(0, 255, 0, 0.1);
+            margin: 5px;
+            font-size: 20px;
+        }
+        
+        .feature-comparison {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 10px;
+            margin: 15px 0;
+        }
+        
+        .feature-item {
+            padding: 10px;
+            border: 1px solid #00ff00;
+            text-align: center;
+        }
+        
+        .feature-item.yes {
+            background: rgba(0, 255, 0, 0.1);
+        }
+        
+        .feature-item.no {
+            background: rgba(255, 0, 0, 0.1);
+            border-color: #ff0000;
+            color: #ff0000;
+        }
+        
+        @media (max-width: 768px) {
+            h1 { font-size: 32px; }
+            h2 { font-size: 24px; }
+            .nav-menu { flex-direction: column; }
+            .nav-item { width: 100%; text-align: center; }
+        }
+    </style>
+</head>
+<body>
+    <div class="crt-lines"></div>
+    <div class="terminal-container">
+        <div class="terminal-header">
+            <h1>EC2 TERMINAL v2.0</h1>
+            <p>ELASTIC COMPUTE CLOUD - DEEP DIVE</p>
+            <p>STATUS: <span class="loading">◐</span> SYSTEM READY</p>
+        </div>
+        
+        <div class="ascii-art">
+<pre>
+ _____ ____ ____  
+| ____/ ___|___ \ 
+|  _|| |     __) |
+| |__| |___ / __/ 
+|_____\____|_____|
+VIRTUAL MACHINES IN THE CLOUD
+</pre>
+        </div>
+        
+        <nav class="nav-menu">
+            <a class="nav-item active" onclick="showSection('overview')">OVERVIEW</a>
+            <a class="nav-item" onclick="showSection('instances')">INSTANCE TYPES</a>
+            <a class="nav-item" onclick="showSection('launch')">LAUNCHING INSTANCES</a>
+            <a class="nav-item" onclick="showSection('storage')">STORAGE (EBS)</a>
+            <a class="nav-item" onclick="showSection('networking')">NETWORKING</a>
+            <a class="nav-item" onclick="showSection('security')">SECURITY GROUPS</a>
+            <a class="nav-item" onclick="showSection('keypairs')">KEY PAIRS & SSH</a>
+            <a class="nav-item" onclick="showSection('ami')">AMIs & SNAPSHOTS</a>
+            <a class="nav-item" onclick="showSection('pricing')">PRICING MODELS</a>
+            <a class="nav-item" onclick="showSection('monitoring')">MONITORING</a>
+            <a class="nav-item" onclick="showSection('scaling')">AUTO SCALING</a>
+            <a class="nav-item" onclick="showSection('advanced')">ADVANCED TOPICS</a>
+        </nav>
+        
+        <div id="overview" class="section active">
+            <h2>> EC2 OVERVIEW</h2>
+            
+            <p>Amazon Elastic Compute Cloud (EC2) provides scalable computing capacity in the AWS cloud. Think of it as renting virtual servers on demand.</p>
+            
+            <div class="info-box">
+                EC2 eliminates the need to invest in hardware upfront, allowing you to develop and deploy applications faster. You can launch as many or as few virtual servers as needed.
+            </div>
+            
+            <h3>Core Concepts:</h3>
+            <ul>
+                <li><strong>Instance:</strong> A virtual server in the cloud</li>
+                <li><strong>AMI:</strong> Amazon Machine Image - template for your instance</li>
+                <li><strong>Instance Type:</strong> Hardware configuration (CPU, memory, storage, networking)</li>
+                <li><strong>Region:</strong> Physical location of AWS data centers</li>
+                <li><strong>Availability Zone:</strong> Isolated locations within regions</li>
+                <li><strong>Security Group:</strong> Virtual firewall for your instance</li>
+                <li><strong>Key Pair:</strong> Secure login credentials</li>
+            </ul>
+            
+            <h3>EC2 Instance Lifecycle:</h3>
+            <div class="diagram">
+<pre>
+    [AMI] → [Launch] → [Pending] → [Running]
+                          ↓            ↓
+                      [Terminated] ← [Stopping] ← [Stopped]
+                                         ↓
+                                    [Rebooting]
+</pre>
+            </div>
+            
+            <h3>Why EC2?</h3>
+            <ul>
+                <li>Complete control over computing resources</li>
+                <li>Scale up or down in minutes</li>
+                <li>Pay only for capacity you use</li>
+                <li>Choose from various instance types optimized for different use cases</li>
+                <li>Integrate with other AWS services seamlessly</li>
+            </ul>
+            
+            <div class="command-line">
+                aws ec2 describe-instances --query 'Reservations[*].Instances[*].[InstanceId,State.Name]'
+            </div>
+            
+            <div class="output">
+                i-0123456789abcdef0    running
+                i-0987654321fedcba0    stopped
+                i-0abcdef123456789    terminated
+            </div>
+        </div>
+        
+        <div id="instances" class="section">
+            <h2>> EC2 INSTANCE TYPES</h2>
+            
+            <p>EC2 provides a wide selection of instance types optimized for different use cases.</p>
+            
+            <h3>Instance Naming Convention:</h3>
+            <div class="info-box">
+                Example: m5.large
+                • m = Instance family
+                • 5 = Generation
+                • large = Size within the instance family
+            </div>
+            
+            <h3>Instance Families:</h3>
+            
+            <div class="instance-grid">
+                <div class="instance-card">
+                    <h4>General Purpose</h4>
+                    <p><strong>Types:</strong> M5, M6i, T3, T4g</p>
+                    <ul>
+                        <li>Balanced compute, memory, networking</li>
+                        <li>Web servers, small databases</li>
+                        <li>Development environments</li>
+                    </ul>
+                    <div class="metric-display">vCPU: 2-96</div>
+                    <div class="metric-display">RAM: 0.5-384 GB</div>
+                </div>
+                
+                <div class="instance-card">
+                    <h4>Compute Optimized</h4>
+                    <p><strong>Types:</strong> C5, C6g, C6i</p>
+                    <ul>
+                        <li>High-performance processors</li>
+                        <li>CPU-intensive applications</li>
+                        <li>Gaming servers, ML inference</li>
+                    </ul>
+                    <div class="metric-display">vCPU: 2-96</div>
+                    <div class="metric-display">RAM: 3.75-192 GB</div>
+                </div>
+                
+                <div class="instance-card">
+                    <h4>Memory Optimized</h4>
+                    <p><strong>Types:</strong> R5, R6i, X2iezn</p>
+                    <ul>
+                        <li>Fast performance for memory-intensive workloads</li>
+                        <li>In-memory databases</li>
+                        <li>Real-time big data analytics</li>
+                    </ul>
+                    <div class="metric-display">vCPU: 2-128</div>
+                    <div class="metric-display">RAM: 16-3,904 GB</div>
+                </div>
+                
+                <div class="instance-card">
+                    <h4>Storage Optimized</h4>
+                    <p><strong>Types:</strong> I3, I4i, D3</p>
+                    <ul>
+                        <li>High sequential read/write</li>
+                        <li>NoSQL databases</li>
+                        <li>Data warehousing</li>
+                    </ul>
+                    <div class="metric-display">NVMe SSD</div>
+                    <div class="metric-display">Up to 60 TB</div>
+                </div>
+                
+                <div class="instance-card">
+                    <h4>Accelerated Computing</h4>
+                    <p><strong>Types:</strong> P4, G4, F1</p>
+                    <ul>
+                        <li>Hardware accelerators (GPU/FPGA)</li>
+                        <li>Machine learning training</li>
+                        <li>Graphics workstations</li>
+                    </ul>
+                    <div class="metric-display">GPU: NVIDIA</div>
+                    <div class="metric-display">CUDA Cores</div>
+                </div>
+                
+                <div class="instance-card">
+                    <h4>HPC Optimized</h4>
+                    <p><strong>Types:</strong> Hpc6a, Hpc6id</p>
+                    <ul>
+                        <li>High performance computing</li>
+                        <li>Complex simulations</li>
+                        <li>Computational fluid dynamics</li>
+                    </ul>
+                    <div class="metric-display">200 Gbps</div>
+                    <div class="metric-display">EFA Network</div>
+                </div>
+            </div>
+            
+            <h3>T-Series (Burstable Performance):</h3>
+            <div class="info-box">
+                T-series instances provide baseline CPU performance with ability to burst. They accumulate CPU credits when idle.
+            </div>
+            
+            <table>
+                <tr>
+                    <th>Instance</th>
+                    <th>vCPUs</th>
+                    <th>Memory</th>
+                    <th>Baseline CPU</th>
+                    <th>CPU Credits/hr</th>
+                </tr>
+                <tr>
+                    <td>t3.micro</td>
+                    <td>2</td>
+                    <td>1 GB</td>
+                    <td>10%</td>
+                    <td>6</td>
+                </tr>
+                <tr>
+                    <td>t3.small</td>
+                    <td>2</td>
+                    <td>2 GB</td>
+                    <td>20%</td>
+                    <td>12</td>
+                </tr>
+                <tr>
+                    <td>t3.medium</td>
+                    <td>2</td>
+                    <td>4 GB</td>
+                    <td>20%</td>
+                    <td>24</td>
+                </tr>
+                <tr>
+                    <td>t3.large</td>
+                    <td>2</td>
+                    <td>8 GB</td>
+                    <td>30%</td>
+                    <td>36</td>
+                </tr>
+            </table>
+            
+            <h3>Choosing the Right Instance:</h3>
+            <div class="command-line">
+                # Start with general purpose
+                aws ec2 run-instances --instance-type t3.micro
+                
+                # Monitor performance
+                aws cloudwatch get-metric-statistics --namespace AWS/EC2
+                
+                # Scale up if needed
+                aws ec2 modify-instance-attribute --instance-type t3.small
+            </div>
+        </div>
+        
+        <div id="launch" class="section">
+            <h2>> LAUNCHING EC2 INSTANCES</h2>
+            
+            <p>Master the art of launching EC2 instances with precision.</p>
+            
+            <h3>Launch Methods:</h3>
+            <ul>
+                <li><strong>AWS Console:</strong> Web-based GUI</li>
+                <li><strong>AWS CLI:</strong> Command line interface</li>
+                <li><strong>AWS SDK:</strong> Programmatic access</li>
+                <li><strong>CloudFormation:</strong> Infrastructure as Code</li>
+                <li><strong>EC2 Launch Templates:</strong> Reusable configurations</li>
+            </ul>
+            
+            <h3>Step-by-Step Launch Process:</h3>
+            
+            <div>
+                <p><span class="step-number">1</span>Choose an AMI</p>
+                <div class="command-line">
+                    aws ec2 describe-images --owners amazon --filters "Name=name,Values=amzn2-ami-hvm-*"
+                </div>
+                <div class="info-box">
+                    Popular AMIs: Amazon Linux 2, Ubuntu Server, Windows Server, RHEL
+                </div>
+            </div>
+            
+            <div>
+                <p><span class="step-number">2</span>Select Instance Type</p>
+                <div class="command-line">
+                    aws ec2 describe-instance-types --instance-types t3.micro
+                </div>
+            </div>
+            
+            <div>
+                <p><span class="step-number">3</span>Configure Instance Details</p>
+                <div class="command-line">
+                    # Advanced configuration
+                    {
+                        "SubnetId": "subnet-12345",
+                        "SecurityGroupIds": ["sg-12345"],
+                        "IamInstanceProfile": {"Name": "MyRole"},
+                        "UserData": "#!/bin/bash\nyum update -y",
+                        "Monitoring": {"Enabled": true}
+                    }
+                </div>
+            </div>
+            
+            <div>
+                <p><span class="step-number">4</span>Add Storage</p>
+                <div class="warning">
+                    Default storage is often too small. Plan your storage needs!
+                </div>
+                <div class="command-line">
+                    --block-device-mappings '[{
+                        "DeviceName": "/dev/xvda",
+                        "Ebs": {
+                            "VolumeSize": 30,
+                            "VolumeType": "gp3",
+                            "DeleteOnTermination": true
+                        }
+                    }]'
+                </div>
+            </div>
+            
+            <div>
+                <p><span class="step-number">5</span>Configure Security Group</p>
+                <div class="command-line">
+                    aws ec2 create-security-group --group-name MyWebServer --description "Web server security group"
+                    aws ec2 authorize-security-group-ingress --group-id sg-12345 --protocol tcp --port 22 --cidr 0.0.0.0/0
+                    aws ec2 authorize-security-group-ingress --group-id sg-12345 --protocol tcp --port 80 --cidr 0.0.0.0/0
+                </div>
+            </div>
+            
+            <div>
+                <p><span class="step-number">6</span>Review and Launch</p>
+                <div class="command-line">
+                    aws ec2 run-instances \
+                        --image-id ami-0abcdef1234567890 \
+                        --instance-type t3.micro \
+                        --key-name MyKeyPair \
+                        --security-group-ids sg-12345 \
+                        --subnet-id subnet-12345 \
+                        --tag-specifications 'ResourceType=instance,Tags=[{Key=Name,Value=MyWebServer}]'
+                </div>
+            </div>
+            
+            <h3>User Data Scripts:</h3>
+            <div class="info-box">
+                User data runs at instance launch. Perfect for automated configuration!
+            </div>
+            
+            <div class="command-line">
+                #!/bin/bash
+                # Update system
+                yum update -y
+                
+                # Install Apache
+                yum install -y httpd
+                systemctl start httpd
+                systemctl enable httpd
+                
+                # Install application
+                cd /var/www/html
+                echo "&lt;h1&gt;Hello from EC2&lt;/h1&gt;" &gt; index.html
+                
+                # Configure CloudWatch agent
+                wget https://s3.amazonaws.com/amazoncloudwatch-agent/amazon_linux/amd64/latest/amazon-cloudwatch-agent.rpm
+                rpm -U ./amazon-cloudwatch-agent.rpm
+            </div>
+            
+            <h3>Launch Templates vs Launch Configurations:</h3>
+            <table>
+                <tr>
+                    <th>Feature</th>
+                    <th>Launch Templates</th>
+                    <th>Launch Configurations</th>
+                </tr>
+                <tr>
+                    <td>Versioning</td>
+                    <td>✓ Supported</td>
+                    <td>✗ Not supported</td>
+                </tr>
+                <tr>
+                    <td>Spot Instances</td>
+                    <td>✓ Supported</td>
+                    <td>✗ Not supported</td>
+                </tr>
+                <tr>
+                    <td>T2/T3 Unlimited</td>
+                    <td>✓ Supported</td>
+                    <td>✗ Not supported</td>
+                </tr>
+                <tr>
+                    <td>Recommendation</td>
+                    <td>Use for new deployments</td>
+                    <td>Legacy - avoid</td>
+                </tr>
+            </table>
+            
+            <div class="tip-box">
+                Always use IMDSv2 (Instance Metadata Service v2) for enhanced security!
+            </div>
+        </div>
+        
+        <div id="storage" class="section">
+            <h2>> EBS (ELASTIC BLOCK STORE)</h2>
+            
+            <p>Persistent block storage for EC2 instances - your virtual hard drives in the cloud.</p>
+            
+            <h3>EBS Volume Types:</h3>
+            
+            <div class="instance-grid">
+                <div class="instance-card">
+                    <h4>gp3 (General Purpose SSD)</h4>
+                    <ul>
+                        <li>3,000 IOPS baseline</li>
+                        <li>125 MB/s throughput</li>
+                        <li>Can provision up to 16,000 IOPS</li>
+                        <li>Most cost-effective for most workloads</li>
+                    </ul>
+                    <div class="command-line">
+                        --volume-type gp3 --iops 3000
+                    </div>
+                </div>
+                
+                <div class="instance-card">
+                    <h4>gp2 (Previous Gen SSD)</h4>
+                    <ul>
+                        <li>3 IOPS per GB (min 100, max 16,000)</li>
+                        <li>Burstable to 3,000 IOPS</li>
+                        <li>Legacy - migrate to gp3</li>
+                    </ul>
+                    <div class="command-line">
+                        --volume-type gp2
+                    </div>
+                </div>
+                
+                <div class="instance-card">
+                    <h4>io2 (Provisioned IOPS SSD)</h4>
+                    <ul>
+                        <li>Up to 64,000 IOPS</li>
+                        <li>99.999% durability</li>
+                        <li>Critical business applications</li>
+                        <li>Large databases</li>
+                    </ul>
+                    <div class="command-line">
+                        --volume-type io2 --iops 50000
+                    </div>
+                </div>
+                
+                <div class="instance-card">
+                    <h4>st1 (Throughput Optimized HDD)</h4>
+                    <ul>
+                        <li>Big data, data warehouses</li>
+                        <li>Log processing</li>
+                        <li>Cannot be boot volume</li>
+                        <li>Max 500 MB/s throughput</li>
+                    </ul>
+                    <div class="command-line">
+                        --volume-type st1
+                    </div>
+                </div>
+                
+                <div class="instance-card">
+                    <h4>sc1 (Cold HDD)</h4>
+                    <ul>
+                        <li>Lowest cost storage</li>
+                        <li>Infrequently accessed data</li>
+                        <li>Cannot be boot volume</li>
+                        <li>Max 250 MB/s throughput</li>
+                    </ul>
+                    <div class="command-line">
+                        --volume-type sc1
+                    </div>
+                </div>
+            </div>
+            
+            <h3>EBS Operations:</h3>
+            
+            <h4>Creating and Attaching Volumes:</h4>
+            <div class="command-line">
+                # Create volume
+                aws ec2 create-volume \
+                    --availability-zone us-east-1a \
+                    --size 100 \
+                    --volume-type gp3 \
+                    --tag-specifications 'ResourceType=volume,Tags=[{Key=Name,Value=DataVolume}]'
+                
+                # Attach to instance
+                aws ec2 attach-volume \
+                    --volume-id vol-12345 \
+                    --instance-id i-12345 \
+                    --device /dev/sdf
+            </div>
+            
+            <h4>Mounting in Linux:</h4>
+            <div class="command-line">
+                # Check available disks
+                lsblk
+                
+                # Create filesystem
+                sudo mkfs -t xfs /dev/xvdf
+                
+                # Mount volume
+                sudo mkdir /data
+                sudo mount /dev/xvdf /data
+                
+                # Persistent mount
+                echo "/dev/xvdf /data xfs defaults,nofail 0 2" | sudo tee -a /etc/fstab
+            </div>
+            
+            <h3>EBS Snapshots:</h3>
+            <div class="info-box">
+                Snapshots are incremental backups stored in S3. First snapshot contains all data, subsequent snapshots only store changes.
+            </div>
+            
+            <div class="command-line">
+                # Create snapshot
+                aws ec2 create-snapshot \
+                    --volume-id vol-12345 \
+                    --description "Daily backup $(date +%Y-%m-%d)"
+                
+                # Create volume from snapshot
+                aws ec2 create-volume \
+                    --snapshot-id snap-12345 \
+                    --availability-zone us-east-1b
+            </div>
+            
+            <h3>EBS Encryption:</h3>
+            <div class="warning">
+                Always encrypt sensitive data! EBS encryption has no performance impact.
+            </div>
+            
+            <div class="command-line">
+                # Enable encryption by default
+                aws ec2 enable-ebs-encryption-by-default
+                
+                # Create encrypted volume
+                aws ec2 create-volume \
+                    --encrypted \
+                    --kms-key-id arn:aws:kms:us-east-1:123456789012:key/12345
+            </div>
+            
+            <h3>EBS vs Instance Store:</h3>
+            <table>
+                <tr>
+                    <th>Feature</th>
+                    <th>EBS</th>
+                    <th>Instance Store</th>
+                </tr>
+                <tr>
+                    <td>Persistence</td>
+                    <td>Data persists</td>
+                    <td>Data lost on stop/terminate</td>
+                </tr>
+                <tr>
+                    <td>Backup</td>
+                    <td>Snapshots supported</td>
+                    <td>No backup feature</td>
+                </tr>
+                <tr>
+                    <td>Performance</td>
+                    <td>Good, consistent</td>
+                    <td>Very high, variable</td>
+                </tr>
+                <tr>
+                    <td>Use Case</td>
+                    <td>Databases, file systems</td>
+                    <td>Temporary storage, cache</td>
+                </tr>
+            </table>
+        </div>
+        
+        <div id="networking" class="section">
+            <h2>> EC2 NETWORKING</h2>
+            
+            <p>Understanding EC2 networking is crucial for building secure, scalable architectures.</p>
+            
+            <h3>Network Components:</h3>
+            
+            <div class="diagram">
+<pre>
+    Internet Gateway
+           |
+        [VPC]
+           |
+    +------+------+
+    |             |
+ Public       Private
+ Subnet       Subnet
+    |             |
+[EC2-Web]    [EC2-DB]
+    |             |
+  [EIP]      [NAT Gateway]
+</pre>
+            </div>
+            
+            <h3>IP Addressing:</h3>
+            
+            <h4>Private IP:</h4>
+            <ul>
+                <li>Automatically assigned from subnet CIDR</li>
+                <li>Retained when instance stops</li>
+                <li>Used for internal VPC communication</li>
+            </ul>
+            
+            <h4>Public IP:</h4>
+            <ul>
+                <li>Optionally assigned at launch</li>
+                <li>Released when instance stops</li>
+                <li>Changes after stop/start</li>
+            </ul>
+            
+            <h4>Elastic IP (EIP):</h4>
+            <ul>
+                <li>Static public IP address</li>
+                <li>Can be reassigned between instances</li>
+                <li>Charged when not associated</li>
+            </ul>
+            
+            <div class="command-line">
+                # Allocate Elastic IP
+                aws ec2 allocate-address --domain vpc
+                
+                # Associate with instance
+                aws ec2 associate-address \
+                    --instance-id i-12345 \
+                    --allocation-id eipalloc-12345
+            </div>
+            
+            <h3>Elastic Network Interfaces (ENI):</h3>
+            <div class="info-box">
+                Virtual network cards that can be attached/detached from instances
+            </div>
+            
+            <div class="command-line">
+                # Create ENI
+                aws ec2 create-network-interface \
+                    --subnet-id subnet-12345 \
+                    --description "Secondary network interface" \
+                    --groups sg-12345
+                
+                # Attach to instance
+                aws ec2 attach-network-interface \
+                    --network-interface-id eni-12345 \
+                    --instance-id i-12345 \
+                    --device-index 1
+            </div>
+            
+            <h3>Enhanced Networking:</h3>
+            
+            <h4>SR-IOV (Single Root I/O Virtualization):</h4>
+            <ul>
+                <li>Higher bandwidth</li>
+                <li>Lower latency</li>
+                <li>Lower CPU utilization</li>
+            </ul>
+            
+            <div class="command-line">
+                # Enable enhanced networking
+                aws ec2 modify-instance-attribute \
+                    --instance-id i-12345 \
+                    --ena-support
+            </div>
+            
+            <h3>Placement Groups:</h3>
+            
+            <div class="feature-comparison">
+                <div class="feature-item">
+                    <strong>Cluster</strong>
+                    <p>Low latency, high throughput</p>
+                    <p>Same rack, same AZ</p>
+                </div>
+                <div class="feature-item">
+                    <strong>Spread</strong>
+                    <p>High availability</p>
+                    <p>Different racks</p>
+                </div>
+                <div class="feature-item">
+                    <strong>Partition</strong>
+                    <p>Large distributed workloads</p>
+                    <p>Logical partitions</p>
+                </div>
+            </div>
+            
+            <h3>Network Performance Optimization:</h3>
+            <ul>
+                <li>Use instances with enhanced networking support</li>
+                <li>Place instances in same placement group for low latency</li>
+                <li>Use dedicated hosts for consistent performance</li>
+                <li>Monitor network metrics in CloudWatch</li>
+            </ul>
+            
+            <div class="tip-box">
+                For network-intensive applications, choose instances with "Up to 25 Gbps" or higher network performance!
+            </div>
+        </div>
+        
+        <div id="security" class="section">
+            <h2>> SECURITY GROUPS</h2>
+            
+            <p>Security groups act as virtual firewalls controlling traffic to your instances.</p>
+            
+            <div class="warning">
+                Security groups are stateful - if you allow inbound traffic, the response is automatically allowed.
+            </div>
+            
+            <h3>Security Group Rules:</h3>
+            
+            <h4>Inbound Rules:</h4>
+            <div class="command-line">
+                # SSH access (restrict source IP!)
+                aws ec2 authorize-security-group-ingress \
+                    --group-id sg-12345 \
+                    --protocol tcp \
+                    --port 22 \
+                    --cidr 203.0.113.0/24
+                
+                # HTTP from anywhere
+                aws ec2 authorize-security-group-ingress \
+                    --group-id sg-12345 \
+                    --protocol tcp \
+                    --port 80 \
+                    --cidr 0.0.0.0/0
+                
+                # MySQL from another security group
+                aws ec2 authorize-security-group-ingress \
+                    --group-id sg-12345 \
+                    --protocol tcp \
+                    --port 3306 \
+                    --source-group sg-67890
+            </div>
+            
+            <h4>Common Port References:</h4>
+            <table>
+                <tr>
+                    <th>Service</th>
+                    <th>Port</th>
+                    <th>Protocol</th>
+                    <th>Use Case</th>
+                </tr>
+                <tr>
+                    <td>SSH</td>
+                    <td>22</td>
+                    <td>TCP</td>
+                    <td>Linux administration</td>
+                </tr>
+                <tr>
+                    <td>RDP</td>
+                    <td>3389</td>
+                    <td>TCP</td>
+                    <td>Windows administration</td>
+                </tr>
+                <tr>
+                    <td>HTTP</td>
+                    <td>80</td>
+                    <td>TCP</td>
+                    <td>Web traffic</td>
+                </tr>
+                <tr>
+                    <td>HTTPS</td>
+                    <td>443</td>
+                    <td>TCP</td>
+                    <td>Secure web traffic</td>
+                </tr>
+                <tr>
+                    <td>MySQL</td>
+                    <td>3306</td>
+                    <td>TCP</td>
+                    <td>Database access</td>
+                </tr>
+                <tr>
+                    <td>PostgreSQL</td>
+                    <td>5432</td>
+                    <td>TCP</td>
+                    <td>Database access</td>
+                </tr>
+                <tr>
+                    <td>Redis</td>
+                    <td>6379</td>
+                    <td>TCP</td>
+                    <td>Cache access</td>
+                </tr>
+            </table>
+            
+            <h3>Security Best Practices:</h3>
+            <ul>
+                <li>Never allow 0.0.0.0/0 on SSH (port 22)</li>
+                <li>Use specific IP ranges or security groups</li>
+                <li>Implement defense in depth with NACLs</li>
+                <li>Regularly audit security group rules</li>
+                <li>Use Systems Manager Session Manager instead of SSH</li>
+                <li>Enable VPC Flow Logs for traffic analysis</li>
+            </ul>
+            
+            <h3>Troubleshooting Connectivity:</h3>
+            <div class="command-line">
+                # Check security group rules
+                aws ec2 describe-security-groups --group-ids sg-12345
+                
+                # Test connectivity
+                telnet instance-ip 80
+                
+                # Check instance status
+                aws ec2 describe-instance-status --instance-id i-12345
+            </div>
+            
+            <div class="tip-box">
+                Can't connect? Check: 1) Security Group rules, 2) NACL rules, 3) Route tables, 4) Instance status
+            </div>
+        </div>
+        
+        <div id="keypairs" class="section">
+            <h2>> KEY PAIRS & SSH ACCESS</h2>
+            
+            <p>Secure access to your EC2 instances using SSH key pairs.</p>
+            
+            <h3>Creating Key Pairs:</h3>
+            
+            <h4>Using AWS Console/CLI:</h4>
+            <div class="command-line">
+                # Create key pair
+                aws ec2 create-key-pair \
+                    --key-name MyKeyPair \
+                    --query 'KeyMaterial' \
+                    --output text > MyKeyPair.pem
+                
+                # Set correct permissions (Linux/Mac)
+                chmod 400 MyKeyPair.pem
+            </div>
+            
+            <h4>Using SSH-Keygen:</h4>
+            <div class="command-line">
+                # Generate key pair
+                ssh-keygen -t rsa -b 4096 -f MyKeyPair
+                
+                # Import public key to AWS
+                aws ec2 import-key-pair \
+                    --key-name MyKeyPair \
+                    --public-key-material fileb://MyKeyPair.pub
+            </div>
+            
+            <h3>Connecting to Instances:</h3>
+            
+            <h4>Linux Instances:</h4>
+            <div class="command-line">
+                # Basic SSH connection
+                ssh -i MyKeyPair.pem ec2-user@public-ip-address
+                
+                # SSH with verbose output (debugging)
+                ssh -vvv -i MyKeyPair.pem ec2-user@public-ip-address
+                
+                # SSH config file (~/.ssh/config)
+                Host myserver
+                    HostName public-ip-address
+                    User ec2-user
+                    IdentityFile ~/keys/MyKeyPair.pem
+                    ServerAliveInterval 60
+            </div>
+            
+            <h4>Default Usernames by AMI:</h4>
+            <table>
+                <tr>
+                    <th>AMI Type</th>
+                    <th>Default Username</th>
+                </tr>
+                <tr>
+                    <td>Amazon Linux 2</td>
+                    <td>ec2-user</td>
+                </tr>
+                <tr>
+                    <td>Ubuntu</td>
+                    <td>ubuntu</td>
+                </tr>
+                <tr>
+                    <td>RHEL</td>
+                    <td>ec2-user or root</td>
+                </tr>
+                <tr>
+                    <td>CentOS</td>
+                    <td>centos</td>
+                </tr>
+                <tr>
+                    <td>Debian</td>
+                    <td>admin</td>
+                </tr>
+                <tr>
+                    <td>SUSE</td>
+                    <td>ec2-user</td>
+                </tr>
+            </table>
+            
+            <h3>Windows Instances:</h3>
+            <div class="command-line">
+                # Get Windows password
+                aws ec2 get-password-data \
+                    --instance-id i-12345 \
+                    --priv-launch-key MyKeyPair.pem
+            </div>
+            
+            <h3>SSH Tunneling:</h3>
+            <div class="info-box">
+                Use SSH tunnels to securely access private resources through a bastion host
+            </div>
+            
+            <div class="command-line">
+                # Port forwarding (access RDS through bastion)
+                ssh -i MyKeyPair.pem -L 3306:rds-endpoint:3306 ec2-user@bastion-ip
+                
+                # Dynamic port forwarding (SOCKS proxy)
+                ssh -i MyKeyPair.pem -D 8080 ec2-user@bastion-ip
+                
+                # Jump through bastion to private instance
+                ssh -i MyKeyPair.pem -J ec2-user@bastion-ip ec2-user@private-ip
+            </div>
+            
+            <h3>EC2 Instance Connect:</h3>
+            <div class="tip-box">
+                Browser-based SSH without managing keys! Available for Amazon Linux 2 and Ubuntu.
+            </div>
+            
+            <div class="command-line">
+                # Enable EC2 Instance Connect
+                sudo yum install ec2-instance-connect
+                
+                # Connect using AWS CLI
+                aws ec2-instance-connect send-ssh-public-key \
+                    --instance-id i-12345 \
+                    --availability-zone us-east-1a \
+                    --instance-os-user ec2-user \
+                    --ssh-public-key file://my-public-key.pub
+            </div>
+            
+            <h3>Systems Manager Session Manager:</h3>
+            <div class="info-box">
+                No SSH keys needed! Access instances through AWS Console or CLI without opening port 22.
+            </div>
+            
+            <div class="command-line">
+                # Start session
+                aws ssm start-session --target i-12345
+                
+                # Port forwarding through Session Manager
+                aws ssm start-session \
+                    --target i-12345 \
+                    --document-name AWS-StartPortForwardingSession \
+                    --parameters '{"portNumber":["3306"],"localPortNumber":["3306"]}'
+            </div>
+        </div>
+        
+        <div id="ami" class="section">
+            <h2>> AMIs & SNAPSHOTS</h2>
+            
+            <p>Amazon Machine Images (AMIs) are templates for your EC2 instances.</p>
+            
+            <h3>AMI Components:</h3>
+            <ul>
+                <li>Root volume template (OS, applications)</li>
+                <li>Launch permissions</li>
+                <li>Block device mapping</li>
+                <li>Architecture (x86 or ARM)</li>
+                <li>Virtualization type (HVM or PV)</li>
+            </ul>
+            
+            <h3>Creating Custom AMIs:</h3>
+            
+            <div class="command-line">
+                # Prepare instance (on the instance)
+                # Remove sensitive data
+                sudo rm -rf /home/*/.ssh/authorized_keys
+                sudo rm -rf /root/.ssh/authorized_keys
+                sudo rm -rf /var/log/*
+                
+                # Clear history
+                history -c
+            </div>
+            
+            <div class="command-line">
+                # Create AMI from running instance
+                aws ec2 create-image \
+                    --instance-id i-12345 \
+                    --name "MyWebServer-v1.0" \
+                    --description "Web server with Apache and PHP" \
+                    --no-reboot
+            </div>
+            
+            <h3>AMI Best Practices:</h3>
+            <ul>
+                <li>Remove credentials and secrets before creating AMI</li>
+                <li>Use consistent naming convention</li>
+                <li>Tag AMIs with version, date, purpose</li>
+                <li>Test AMIs before production use</li>
+                <li>Regularly update base AMIs</li>
+                <li>Copy AMIs to multiple regions for DR</li>
+            </ul>
+            
+            <h3>Sharing AMIs:</h3>
+            <div class="command-line">
+                # Share with specific account
+                aws ec2 modify-image-attribute \
+                    --image-id ami-12345 \
+                    --launch-permission "Add=[{UserId=123456789012}]"
+                
+                # Make public (careful!)
+                aws ec2 modify-image-attribute \
+                    --image-id ami-12345 \
+                    --launch-permission "Add=[{Group=all}]"
+            </div>
+            
+            <h3>AMI Lifecycle:</h3>
+            <div class="diagram">
+<pre>
+    [Running Instance]
+            |
+      Create Image
+            |
+       [Creating]
+            |
+       [Available] ← Register from Snapshot
+            |
+     [Deregistered]
+</pre>
+            </div>
+            
+            <h3>Golden AMI Strategy:</h3>
+            <div class="info-box">
+                Create a "golden" base AMI with your standard configuration, security updates, and monitoring agents.
+            </div>
+            
+            <div class="command-line">
+                # Automation with Systems Manager
+                aws ssm create-document \
+                    --name "GoldenAMIAutomation" \
+                    --document-type "Automation" \
+                    --content file://golden-ami-automation.json
+            </div>
+            
+            <h3>AMI Costs:</h3>
+            <ul>
+                <li>No charge for AMI itself</li>
+                <li>Charged for underlying EBS snapshots</li>
+                <li>Snapshots are incremental</li>
+                <li>Delete unused AMIs to save costs</li>
+            </ul>
+        </div>
+        
+        <div id="pricing" class="section">
+            <h2>> EC2 PRICING MODELS</h2>
+            
+            <p>Choose the right pricing model to optimize costs.</p>
+            
+            <h3>Pricing Options Comparison:</h3>
+            
+            <table>
+                <tr>
+                    <th>Model</th>
+                    <th>Discount</th>
+                    <th>Commitment</th>
+                    <th>Use Case</th>
+                </tr>
+                <tr>
+                    <td>On-Demand</td>
+                    <td>0%</td>
+                    <td>None</td>
+                    <td>Variable workloads, testing</td>
+                </tr>
+                <tr>
+                    <td>Savings Plans</td>
+                    <td>Up to 72%</td>
+                    <td>1 or 3 years</td>
+                    <td>Flexible, predictable usage</td>
+                </tr>
+                <tr>
+                    <td>Reserved Instances</td>
+                    <td>Up to 75%</td>
+                    <td>1 or 3 years</td>
+                    <td>Steady-state workloads</td>
+                </tr>
+                <tr>
+                    <td>Spot Instances</td>
+                    <td>Up to 90%</td>
+                    <td>None</td>
+                    <td>Fault-tolerant, flexible</td>
+                </tr>
+            </table>
+            
+            <h3>On-Demand Instances:</h3>
+            <ul>
+                <li>Pay by the second (Linux) or hour (Windows)</li>
+                <li>No upfront payment</li>
+                <li>No long-term commitment</li>
+                <li>Ideal for unpredictable workloads</li>
+            </ul>
+            
+            <h3>Savings Plans:</h3>
+            <div class="info-box">
+                Commit to consistent usage ($/hour) for 1 or 3 years. More flexible than Reserved Instances.
+            </div>
+            
+            <div class="feature-comparison">
+                <div class="feature-item yes">
+                    <strong>Compute Savings Plan</strong>
+                    <p>Any instance family</p>
+                    <p>Any region</p>
+                    <p>Any OS</p>
+                </div>
+                <div class="feature-item yes">
+                    <strong>EC2 Instance Savings Plan</strong>
+                    <p>Specific instance family</p>
+                    <p>Specific region</p>
+                    <p>Higher discount</p>
+                </div>
+            </div>
+            
+            <h3>Reserved Instances:</h3>
+            <div class="command-line">
+                # Purchase Reserved Instance
+                aws ec2 purchase-reserved-instances-offering \
+                    --reserved-instances-offering-id offering-id \
+                    --instance-count 10
+                
+                # View savings
+                aws ce get-reservation-utilization \
+                    --time-period Start=2024-01-01,End=2024-01-31
+            </div>
+            
+            <h3>Spot Instances:</h3>
+            <div class="warning">
+                Spot instances can be terminated with 2-minute warning when AWS needs capacity!
+            </div>
+            
+            <div class="command-line">
+                # Request Spot Instance
+                aws ec2 request-spot-instances \
+                    --spot-price "0.03" \
+                    --instance-count 1 \
+                    --type "one-time" \
+                    --launch-specification file://spot-spec.json
+            </div>
+            
+            <h4>Spot Best Practices:</h4>
+            <ul>
+                <li>Use Spot Fleet for diversification</li>
+                <li>Handle interruptions gracefully</li>
+                <li>Mix with On-Demand instances</li>
+                <li>Use for stateless applications</li>
+                <li>Implement checkpointing for long jobs</li>
+            </ul>
+            
+            <h3>Cost Optimization Strategies:</h3>
+            <div class="progress-bar">
+                <div class="progress-fill"></div>
+            </div>
+            
+            <ol>
+                <li><strong>Right-size instances:</strong> Use CloudWatch metrics to identify underutilized instances</li>
+                <li><strong>Use Auto Scaling:</strong> Scale down during off-peak hours</li>
+                <li><strong>Leverage Spot:</strong> For fault-tolerant workloads</li>
+                <li><strong>Purchase Savings Plans:</strong> For predictable usage</li>
+                <li><strong>Schedule instances:</strong> Stop development instances at night</li>
+            </ol>
+            
+            <div class="tip-box">
+                Use AWS Compute Optimizer to get right-sizing recommendations based on your actual usage!
+            </div>
+        </div>
+        
+        <div id="monitoring" class="section">
+            <h2>> MONITORING & METRICS</h2>
+            
+            <p>Monitor your EC2 instances to ensure optimal performance and availability.</p>
+            
+            <h3>CloudWatch Metrics:</h3>
+            
+            <h4>Default EC2 Metrics (5-minute intervals):</h4>
+            <ul>
+                <li><strong>CPU Utilization:</strong> Percentage of allocated compute units used</li>
+                <li><strong>Network In/Out:</strong> Bytes received/sent on all interfaces</li>
+                <li><strong>Disk Read/Write Ops:</strong> Operations on all instance store volumes</li>
+                <li><strong>Status Checks:</strong> System and instance reachability</li>
+            </ul>
+            
+            <h4>Detailed Monitoring (1-minute intervals):</h4>
+            <div class="command-line">
+                # Enable detailed monitoring
+                aws ec2 monitor-instances --instance-ids i-12345
+                
+                # Get CPU metrics
+                aws cloudwatch get-metric-statistics \
+                    --namespace AWS/EC2 \
+                    --metric-name CPUUtilization \
+                    --dimensions Name=InstanceId,Value=i-12345 \
+                    --statistics Average \
+                    --start-time 2024-01-01T00:00:00Z \
+                    --end-time 2024-01-01T01:00:00Z \
+                    --period 300
+            </div>
+            
+            <h3>Custom Metrics:</h3>
+            <div class="info-box">
+                Default metrics don't include memory or disk space. Use CloudWatch Agent for these!
+            </div>
+            
+            <div class="command-line">
+                # Install CloudWatch Agent
+                wget https://s3.amazonaws.com/amazoncloudwatch-agent/amazon_linux/amd64/latest/amazon-cloudwatch-agent.rpm
+                sudo rpm -U ./amazon-cloudwatch-agent.rpm
+                
+                # Configure agent
+                sudo /opt/aws/amazon-cloudwatch-agent/bin/amazon-cloudwatch-agent-config-wizard
+            </div>
+            
+            <h3>CloudWatch Alarms:</h3>
+            <div class="command-line">
+                # Create high CPU alarm
+                aws cloudwatch put-metric-alarm \
+                    --alarm-name "HighCPU-i-12345" \
+                    --alarm-description "Alarm when CPU exceeds 80%" \
+                    --metric-name CPUUtilization \
+                    --namespace AWS/EC2 \
+                    --statistic Average \
+                    --period 300 \
+                    --threshold 80 \
+                    --comparison-operator GreaterThanThreshold \
+                    --evaluation-periods 2
+            </div>
+            
+            <h3>Status Checks:</h3>
+            
+            <div class="feature-comparison">
+                <div class="feature-item">
+                    <strong>System Status Check</strong>
+                    <p>AWS infrastructure</p>
+                    <p>Network, power, hardware</p>
+                    <p>Action: Stop/start instance</p>
+                </div>
+                <div class="feature-item">
+                    <strong>Instance Status Check</strong>
+                    <p>Guest OS and software</p>
+                    <p>Network config, memory</p>
+                    <p>Action: Reboot instance</p>
+                </div>
+            </div>
+            
+            <h3>EC2 Instance Recovery:</h3>
+            <div class="command-line">
+                # Create recovery alarm
+                aws cloudwatch put-metric-alarm \
+                    --alarm-name "AutoRecover-i-12345" \
+                    --metric-name StatusCheckFailed_System \
+                    --namespace AWS/EC2 \
+                    --statistic Maximum \
+                    --period 60 \
+                    --threshold 1 \
+                    --comparison-operator GreaterThanThreshold \
+                    --evaluation-periods 2 \
+                    --alarm-actions "arn:aws:automate:region:ec2:recover"
+            </div>
+            
+            <h3>Performance Insights:</h3>
+            <ul>
+                <li>Monitor CPU credits for T-series instances</li>
+                <li>Check network performance metrics</li>
+                <li>Track EBS volume performance</li>
+                <li>Monitor memory and swap usage</li>
+                <li>Set up log aggregation with CloudWatch Logs</li>
+            </ul>
+            
+            <div class="tip-box">
+                Use CloudWatch Dashboards to visualize all your metrics in one place!
+            </div>
+        </div>
+        
+        <div id="scaling" class="section">
+            <h2>> AUTO SCALING</h2>
+            
+            <p>Automatically adjust capacity to maintain performance and optimize costs.</p>
+            
+            <h3>Auto Scaling Components:</h3>
+            
+            <div class="diagram">
+<pre>
+    [Launch Template]
+            |
+    [Auto Scaling Group]
+            |
+    +-------+-------+
+    |       |       |
+  [EC2]   [EC2]   [EC2]
+    |       |       |
+    +-------+-------+
+            |
+    [Load Balancer]
+</pre>
+            </div>
+            
+            <h3>Creating Auto Scaling Group:</h3>
+            
+            <div class="command-line">
+                # Create launch template
+                aws ec2 create-launch-template \
+                    --launch-template-name MyTemplate \
+                    --launch-template-data '{
+                        "ImageId": "ami-12345",
+                        "InstanceType": "t3.micro",
+                        "SecurityGroupIds": ["sg-12345"],
+                        "UserData": "base64-encoded-script"
+                    }'
+                
+                # Create Auto Scaling group
+                aws autoscaling create-auto-scaling-group \
+                    --auto-scaling-group-name MyASG \
+                    --launch

@@ -1,0 +1,52 @@
+// Tangnet Stock Sim Dashboard - Scaffold
+
+import { Card, CardContent } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { useState } from "react";
+
+export default function Dashboard() {
+  const [query, setQuery] = useState("");
+  const [results, setResults] = useState([]);
+
+  const handleSubmit = async () => {
+    // Placeholder fetch to mock API route
+    const res = await fetch("/api/query", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ query }),
+    });
+    const data = await res.json();
+    setResults(data.results);
+  };
+
+  return (
+    <div className="min-h-screen bg-black text-white p-6">
+      <h1 className="text-3xl font-bold mb-6">Tangnet Stock Sim Dashboard</h1>
+
+      <Card className="mb-6">
+        <CardContent className="p-4">
+          <div className="flex items-center gap-4">
+            <Input
+              placeholder="Ask Tangnet..."
+              value={query}
+              onChange={(e) => setQuery(e.target.value)}
+              className="text-black"
+            />
+            <Button onClick={handleSubmit}>Submit</Button>
+          </div>
+        </CardContent>
+      </Card>
+
+      <div className="grid gap-4">
+        {results.map((result, idx) => (
+          <Card key={idx} className="bg-gray-800">
+            <CardContent className="p-4">
+              <pre>{JSON.stringify(result, null, 2)}</pre>
+            </CardContent>
+          </Card>
+        ))}
+      </div>
+    </div>
+  );
+}

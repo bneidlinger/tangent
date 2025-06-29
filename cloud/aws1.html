@@ -1,0 +1,800 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AWS Terminal Guide v1.0</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=VT323&display=swap');
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            background: #0a0a0a;
+            color: #00ff00;
+            font-family: 'VT323', monospace;
+            font-size: 18px;
+            line-height: 1.6;
+            overflow-x: hidden;
+        }
+        
+        .terminal-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+            background: #000;
+            min-height: 100vh;
+            box-shadow: 0 0 50px rgba(0, 255, 0, 0.3);
+        }
+        
+        .terminal-header {
+            border: 2px solid #00ff00;
+            padding: 15px;
+            margin-bottom: 30px;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .terminal-header::before {
+            content: '';
+            position: absolute;
+            top: -2px;
+            left: -100%;
+            width: 100%;
+            height: 2px;
+            background: linear-gradient(90deg, transparent, #00ff00, transparent);
+            animation: scan 3s linear infinite;
+        }
+        
+        @keyframes scan {
+            0% { left: -100%; }
+            100% { left: 100%; }
+        }
+        
+        h1 {
+            font-size: 48px;
+            text-shadow: 0 0 10px #00ff00;
+            animation: flicker 2s infinite;
+        }
+        
+        @keyframes flicker {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.8; }
+        }
+        
+        .nav-menu {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin-bottom: 30px;
+            padding: 15px;
+            border: 1px solid #00ff00;
+            background: rgba(0, 255, 0, 0.05);
+        }
+        
+        .nav-item {
+            padding: 8px 15px;
+            border: 1px solid #00ff00;
+            background: #000;
+            color: #00ff00;
+            text-decoration: none;
+            transition: all 0.3s;
+            cursor: pointer;
+        }
+        
+        .nav-item:hover {
+            background: #00ff00;
+            color: #000;
+            box-shadow: 0 0 15px #00ff00;
+        }
+        
+        .section {
+            margin-bottom: 40px;
+            padding: 20px;
+            border: 1px solid #00ff00;
+            background: rgba(0, 255, 0, 0.02);
+            display: none;
+        }
+        
+        .section.active {
+            display: block;
+            animation: fadeIn 0.5s;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        h2 {
+            font-size: 32px;
+            margin-bottom: 20px;
+            padding-bottom: 10px;
+            border-bottom: 2px solid #00ff00;
+            text-shadow: 0 0 5px #00ff00;
+        }
+        
+        h3 {
+            font-size: 24px;
+            margin: 20px 0 15px;
+            color: #00ff00;
+        }
+        
+        .command-line {
+            background: #111;
+            border: 1px solid #00ff00;
+            padding: 15px;
+            margin: 15px 0;
+            font-family: 'VT323', monospace;
+            overflow-x: auto;
+            position: relative;
+        }
+        
+        .command-line::before {
+            content: '$ ';
+            color: #00ff00;
+        }
+        
+        .output {
+            background: #0a0a0a;
+            border-left: 3px solid #00ff00;
+            padding: 10px 15px;
+            margin: 10px 0;
+            color: #00cc00;
+        }
+        
+        .warning {
+            background: rgba(255, 255, 0, 0.1);
+            border: 1px solid #ffff00;
+            color: #ffff00;
+            padding: 15px;
+            margin: 15px 0;
+        }
+        
+        .warning::before {
+            content: '⚠ WARNING: ';
+            font-weight: bold;
+        }
+        
+        .info-box {
+            background: rgba(0, 255, 255, 0.1);
+            border: 1px solid #00ffff;
+            color: #00ffff;
+            padding: 15px;
+            margin: 15px 0;
+        }
+        
+        .info-box::before {
+            content: 'ℹ INFO: ';
+            font-weight: bold;
+        }
+        
+        ul {
+            list-style: none;
+            padding-left: 20px;
+        }
+        
+        ul li::before {
+            content: '▸ ';
+            color: #00ff00;
+        }
+        
+        .service-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+            margin-top: 20px;
+        }
+        
+        .service-card {
+            border: 1px solid #00ff00;
+            padding: 15px;
+            background: rgba(0, 255, 0, 0.05);
+            transition: all 0.3s;
+        }
+        
+        .service-card:hover {
+            background: rgba(0, 255, 0, 0.1);
+            box-shadow: 0 0 20px rgba(0, 255, 0, 0.5);
+            transform: translateY(-2px);
+        }
+        
+        .service-card h4 {
+            color: #00ff00;
+            margin-bottom: 10px;
+            font-size: 22px;
+        }
+        
+        .cursor {
+            display: inline-block;
+            width: 10px;
+            height: 20px;
+            background: #00ff00;
+            animation: blink 1s infinite;
+        }
+        
+        @keyframes blink {
+            0%, 50% { opacity: 1; }
+            51%, 100% { opacity: 0; }
+        }
+        
+        .loading {
+            display: inline-block;
+            animation: rotate 1s linear infinite;
+        }
+        
+        @keyframes rotate {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        
+        code {
+            background: #111;
+            padding: 2px 6px;
+            border: 1px solid #00ff00;
+            color: #00ff00;
+        }
+        
+        .step-number {
+            display: inline-block;
+            width: 30px;
+            height: 30px;
+            background: #00ff00;
+            color: #000;
+            text-align: center;
+            line-height: 30px;
+            margin-right: 10px;
+            font-weight: bold;
+        }
+        
+        .ascii-art {
+            text-align: center;
+            color: #00ff00;
+            font-size: 14px;
+            line-height: 1.2;
+            margin: 20px 0;
+        }
+        
+        @media (max-width: 768px) {
+            h1 { font-size: 32px; }
+            h2 { font-size: 24px; }
+            .nav-menu { flex-direction: column; }
+            .nav-item { width: 100%; text-align: center; }
+        }
+    </style>
+</head>
+<body>
+    <div class="terminal-container">
+        <div class="terminal-header">
+            <h1>AWS TERMINAL v1.0</h1>
+            <p>AMAZON WEB SERVICES - BEGINNER'S GUIDE</p>
+            <p>STATUS: <span class="loading">◐</span> ONLINE</p>
+        </div>
+        
+        <div class="ascii-art">
+<pre>
+    ___        ______  
+   / \ \      / / ___| 
+  / _ \ \ /\ / /\___ \ 
+ / ___ \ V  V /  ___) |
+/_/   \_\_/\_/  |____/ 
+</pre>
+        </div>
+        
+        <nav class="nav-menu">
+            <a class="nav-item" onclick="showSection('intro')">INTRODUCTION</a>
+            <a class="nav-item" onclick="showSection('account')">ACCOUNT SETUP</a>
+            <a class="nav-item" onclick="showSection('console')">AWS CONSOLE</a>
+            <a class="nav-item" onclick="showSection('iam')">IAM & SECURITY</a>
+            <a class="nav-item" onclick="showSection('services')">CORE SERVICES</a>
+            <a class="nav-item" onclick="showSection('billing')">BILLING & COSTS</a>
+            <a class="nav-item" onclick="showSection('bestpractices')">BEST PRACTICES</a>
+        </nav>
+        
+        <div id="intro" class="section active">
+            <h2>> INTRODUCTION TO AWS</h2>
+            
+            <p>Welcome, user. You have accessed the AWS Terminal Guide v1.0. Amazon Web Services (AWS) is the world's most comprehensive cloud platform, offering over 200 fully featured services from data centers globally.</p>
+            
+            <div class="info-box">
+                AWS provides on-demand cloud computing platforms and APIs on a pay-as-you-go basis. Launch servers, store data, and run applications without managing physical hardware.
+            </div>
+            
+            <h3>Core Benefits:</h3>
+            <ul>
+                <li>Pay only for what you use</li>
+                <li>Scale up or down instantly</li>
+                <li>Global infrastructure</li>
+                <li>Enterprise-grade security</li>
+                <li>Extensive service catalog</li>
+            </ul>
+            
+            <div class="command-line">
+                echo "Welcome to AWS Cloud Computing!"
+            </div>
+            
+            <div class="output">
+                Welcome to AWS Cloud Computing!
+            </div>
+        </div>
+        
+        <div id="account" class="section">
+            <h2>> CREATING YOUR AWS ACCOUNT</h2>
+            
+            <p>Initializing AWS account creation protocol...</p>
+            
+            <h3>Requirements:</h3>
+            <ul>
+                <li>Valid email address</li>
+                <li>Phone number for verification</li>
+                <li>Credit or debit card</li>
+                <li>Basic contact information</li>
+            </ul>
+            
+            <h3>Step-by-Step Setup:</h3>
+            
+            <div>
+                <p><span class="step-number">1</span>Navigate to aws.amazon.com</p>
+                <div class="command-line">
+                    browse https://aws.amazon.com/
+                </div>
+            </div>
+            
+            <div>
+                <p><span class="step-number">2</span>Click "Create an AWS Account"</p>
+                <div class="command-line">
+                    click "Create an AWS Account" --top-right
+                </div>
+            </div>
+            
+            <div>
+                <p><span class="step-number">3</span>Enter Root User Email</p>
+                <div class="info-box">
+                    This email becomes your root account. Use a dedicated email for AWS management.
+                </div>
+            </div>
+            
+            <div>
+                <p><span class="step-number">4</span>Choose AWS Account Name</p>
+                <div class="command-line">
+                    set account_name="MyCompany-Production"
+                </div>
+            </div>
+            
+            <div>
+                <p><span class="step-number">5</span>Verify Email Address</p>
+                <div class="output">
+                    Verification code sent to your email...
+                </div>
+            </div>
+            
+            <div>
+                <p><span class="step-number">6</span>Create Root Password</p>
+                <div class="warning">
+                    Use a strong, unique password. This is your master account access!
+                </div>
+            </div>
+            
+            <div>
+                <p><span class="step-number">7</span>Contact Information</p>
+                <ul>
+                    <li>Choose account type: Personal or Business</li>
+                    <li>Enter full name and address</li>
+                    <li>Provide phone number</li>
+                </ul>
+            </div>
+            
+            <div>
+                <p><span class="step-number">8</span>Payment Information</p>
+                <div class="warning">
+                    AWS may charge $1 USD for verification (refunded). Free tier available for 12 months!
+                </div>
+            </div>
+            
+            <div>
+                <p><span class="step-number">9</span>Identity Verification</p>
+                <div class="command-line">
+                    verify --method="SMS" --or --method="voice-call"
+                </div>
+            </div>
+            
+            <div>
+                <p><span class="step-number">10</span>Choose Support Plan</p>
+                <div class="info-box">
+                    Start with Basic (Free) support. Upgrade later if needed.
+                </div>
+            </div>
+            
+            <div class="output">
+                Account creation complete! Welcome to AWS.
+            </div>
+        </div>
+        
+        <div id="console" class="section">
+            <h2>> NAVIGATING THE AWS CONSOLE</h2>
+            
+            <p>The AWS Management Console is your command center for all AWS services.</p>
+            
+            <h3>Console Layout:</h3>
+            <ul>
+                <li><strong>Navigation Bar:</strong> Account info, region selector, support</li>
+                <li><strong>Services Menu:</strong> Access all AWS services</li>
+                <li><strong>Search Bar:</strong> Quick service navigation</li>
+                <li><strong>Recently Visited:</strong> Your service history</li>
+                <li><strong>Resource Groups:</strong> Organize your resources</li>
+            </ul>
+            
+            <h3>Essential Console Features:</h3>
+            
+            <div class="command-line">
+                aws configure --region
+            </div>
+            
+            <div class="info-box">
+                Always check your region! Services and pricing vary by region. Default: US East (N. Virginia) us-east-1
+            </div>
+            
+            <h3>Key Navigation Tips:</h3>
+            <ul>
+                <li>Pin frequently used services to the navigation bar</li>
+                <li>Use the search bar with service abbreviations (e.g., "S3", "EC2")</li>
+                <li>Check CloudWatch for service health</li>
+                <li>Monitor billing dashboard regularly</li>
+                <li>Set up billing alerts immediately</li>
+            </ul>
+            
+            <div class="command-line">
+                list-services --favorites
+            </div>
+            
+            <div class="output">
+                EC2 | S3 | RDS | Lambda | CloudFront | Route 53
+            </div>
+        </div>
+        
+        <div id="iam" class="section">
+            <h2>> IAM & SECURITY CONFIGURATION</h2>
+            
+            <p>Identity and Access Management (IAM) is critical for AWS security.</p>
+            
+            <div class="warning">
+                Never use root account for daily operations! Create IAM users immediately.
+            </div>
+            
+            <h3>IAM Best Practices:</h3>
+            
+            <div>
+                <p><span class="step-number">1</span>Enable MFA on Root Account</p>
+                <div class="command-line">
+                    enable-mfa --account=root --device=virtual
+                </div>
+            </div>
+            
+            <div>
+                <p><span class="step-number">2</span>Create IAM Admin User</p>
+                <div class="command-line">
+                    create-user --name=admin --access=programmatic,console
+                </div>
+            </div>
+            
+            <div>
+                <p><span class="step-number">3</span>Apply Least Privilege Principle</p>
+                <div class="info-box">
+                    Grant only the permissions required to perform a task.
+                </div>
+            </div>
+            
+            <h3>IAM Components:</h3>
+            <ul>
+                <li><strong>Users:</strong> Individual accounts for people</li>
+                <li><strong>Groups:</strong> Collections of users with shared permissions</li>
+                <li><strong>Roles:</strong> Temporary credentials for services/users</li>
+                <li><strong>Policies:</strong> JSON documents defining permissions</li>
+            </ul>
+            
+            <h3>Sample IAM Policy:</h3>
+            <div class="command-line">
+{
+    "Version": "2012-10-17",
+    "Statement": [{
+        "Effect": "Allow",
+        "Action": "s3:GetObject",
+        "Resource": "arn:aws:s3:::my-bucket/*"
+    }]
+}
+            </div>
+            
+            <h3>Security Checklist:</h3>
+            <ul>
+                <li>Enable CloudTrail for audit logging</li>
+                <li>Use AWS Organizations for multi-account management</li>
+                <li>Implement password policies</li>
+                <li>Regular security audits with IAM Access Analyzer</li>
+                <li>Rotate access keys regularly</li>
+            </ul>
+        </div>
+        
+        <div id="services" class="section">
+            <h2>> ESSENTIAL AWS SERVICES</h2>
+            
+            <p>Core services every AWS user must understand:</p>
+            
+            <div class="service-grid">
+                <div class="service-card">
+                    <h4>EC2 (Elastic Compute Cloud)</h4>
+                    <p>Virtual servers in the cloud</p>
+                    <ul>
+                        <li>Launch instances in minutes</li>
+                        <li>Choose from 400+ instance types</li>
+                        <li>Pay per second (Linux) or hour (Windows)</li>
+                        <li>Auto-scaling capabilities</li>
+                    </ul>
+                    <div class="command-line">
+                        launch-instance --type=t3.micro --ami=amazon-linux-2
+                    </div>
+                </div>
+                
+                <div class="service-card">
+                    <h4>S3 (Simple Storage Service)</h4>
+                    <p>Object storage built to retrieve any amount of data</p>
+                    <ul>
+                        <li>99.999999999% durability</li>
+                        <li>Unlimited storage capacity</li>
+                        <li>Pay only for storage used</li>
+                        <li>Built-in encryption options</li>
+                    </ul>
+                    <div class="command-line">
+                        create-bucket --name=my-app-data --region=us-east-1
+                    </div>
+                </div>
+                
+                <div class="service-card">
+                    <h4>RDS (Relational Database Service)</h4>
+                    <p>Managed relational databases</p>
+                    <ul>
+                        <li>Supports MySQL, PostgreSQL, Oracle, SQL Server</li>
+                        <li>Automated backups</li>
+                        <li>Multi-AZ deployments</li>
+                        <li>Read replicas for performance</li>
+                    </ul>
+                    <div class="command-line">
+                        create-db --engine=mysql --class=db.t3.micro
+                    </div>
+                </div>
+                
+                <div class="service-card">
+                    <h4>Lambda</h4>
+                    <p>Serverless compute service</p>
+                    <ul>
+                        <li>Run code without managing servers</li>
+                        <li>Pay only for compute time used</li>
+                        <li>Automatic scaling</li>
+                        <li>Supports multiple languages</li>
+                    </ul>
+                    <div class="command-line">
+                        deploy-function --runtime=python3.9 --handler=main
+                    </div>
+                </div>
+                
+                <div class="service-card">
+                    <h4>VPC (Virtual Private Cloud)</h4>
+                    <p>Isolated cloud resources</p>
+                    <ul>
+                        <li>Complete control of virtual network</li>
+                        <li>Subnet configuration</li>
+                        <li>Route tables and gateways</li>
+                        <li>Network ACLs and security groups</li>
+                    </ul>
+                    <div class="command-line">
+                        create-vpc --cidr=10.0.0.0/16 --name=production
+                    </div>
+                </div>
+                
+                <div class="service-card">
+                    <h4>CloudFront</h4>
+                    <p>Content Delivery Network (CDN)</p>
+                    <ul>
+                        <li>Global edge locations</li>
+                        <li>Low latency content delivery</li>
+                        <li>DDoS protection</li>
+                        <li>HTTPS support included</li>
+                    </ul>
+                    <div class="command-line">
+                        create-distribution --origin=s3://my-bucket
+                    </div>
+                </div>
+            </div>
+            
+            <h3>Service Integration Example:</h3>
+            <div class="info-box">
+                Common Architecture: CloudFront → S3 → Lambda → RDS
+                <br>Static content served from S3 via CloudFront, dynamic requests processed by Lambda, data stored in RDS.
+            </div>
+        </div>
+        
+        <div id="billing" class="section">
+            <h2>> BILLING & COST MANAGEMENT</h2>
+            
+            <p>Understanding AWS billing is crucial to avoid unexpected charges.</p>
+            
+            <div class="warning">
+                Set up billing alerts on day one! AWS charges can accumulate quickly if not monitored.
+            </div>
+            
+            <h3>Free Tier Benefits (12 months):</h3>
+            <ul>
+                <li>EC2: 750 hours/month of t2.micro or t3.micro</li>
+                <li>S3: 5GB standard storage</li>
+                <li>RDS: 750 hours of db.t2.micro</li>
+                <li>Lambda: 1 million requests/month</li>
+                <li>CloudFront: 50GB data transfer out</li>
+            </ul>
+            
+            <h3>Cost Control Setup:</h3>
+            
+            <div>
+                <p><span class="step-number">1</span>Enable Billing Alerts</p>
+                <div class="command-line">
+                    set-billing-alert --threshold=10 --currency=USD
+                </div>
+            </div>
+            
+            <div>
+                <p><span class="step-number">2</span>Use AWS Budgets</p>
+                <div class="command-line">
+                    create-budget --amount=50 --period=monthly
+                </div>
+            </div>
+            
+            <div>
+                <p><span class="step-number">3</span>Enable Cost Explorer</p>
+                <div class="info-box">
+                    Visualize and analyze your costs and usage patterns
+                </div>
+            </div>
+            
+            <h3>Cost Optimization Tips:</h3>
+            <ul>
+                <li>Use Reserved Instances for predictable workloads (up to 72% savings)</li>
+                <li>Implement auto-scaling to match demand</li>
+                <li>Delete unused resources (especially EBS volumes)</li>
+                <li>Use S3 lifecycle policies for data archival</li>
+                <li>Monitor data transfer costs</li>
+                <li>Tag resources for cost allocation</li>
+            </ul>
+            
+            <div class="command-line">
+                analyze-costs --by=service --period=last-month
+            </div>
+            
+            <div class="output">
+                EC2: $23.45 (45%)
+                S3: $12.30 (24%)
+                RDS: $10.20 (20%)
+                Data Transfer: $5.60 (11%)
+            </div>
+        </div>
+        
+        <div id="bestpractices" class="section">
+            <h2>> AWS BEST PRACTICES</h2>
+            
+            <p>Follow these guidelines for a secure, efficient AWS environment:</p>
+            
+            <h3>Architecture Best Practices:</h3>
+            <ul>
+                <li><strong>Design for Failure:</strong> Assume everything fails, build resilient systems</li>
+                <li><strong>Decouple Components:</strong> Use queues and load balancers</li>
+                <li><strong>Implement Elasticity:</strong> Scale horizontally, not vertically</li>
+                <li><strong>Think Parallel:</strong> Design for concurrent operations</li>
+                <li><strong>Keep it Simple:</strong> Avoid over-engineering</li>
+            </ul>
+            
+            <h3>Security Best Practices:</h3>
+            <ul>
+                <li>Enable MFA everywhere possible</li>
+                <li>Encrypt data at rest and in transit</li>
+                <li>Use VPC for network isolation</li>
+                <li>Regular security audits</li>
+                <li>Implement least privilege access</li>
+                <li>Enable AWS CloudTrail</li>
+            </ul>
+            
+            <h3>Operational Excellence:</h3>
+            <ul>
+                <li>Automate everything (Infrastructure as Code)</li>
+                <li>Monitor all resources with CloudWatch</li>
+                <li>Document your architecture</li>
+                <li>Regular disaster recovery testing</li>
+                <li>Use AWS Well-Architected Framework</li>
+            </ul>
+            
+            <h3>Common Mistakes to Avoid:</h3>
+            <div class="warning">
+                <ul>
+                    <li>Leaving default security groups open to 0.0.0.0/0</li>
+                    <li>Not backing up critical data</li>
+                    <li>Hardcoding credentials in code</li>
+                    <li>Ignoring AWS Trusted Advisor recommendations</li>
+                    <li>Not setting up billing alerts</li>
+                    <li>Using root account for daily operations</li>
+                </ul>
+            </div>
+            
+            <h3>Learning Resources:</h3>
+            <ul>
+                <li>AWS Documentation (docs.aws.amazon.com)</li>
+                <li>AWS Free Tier hands-on tutorials</li>
+                <li>AWS Well-Architected Labs</li>
+                <li>AWS re:Invent videos on YouTube</li>
+                <li>AWS Certification paths</li>
+            </ul>
+            
+            <div class="command-line">
+                echo "Congratulations! You're ready to begin your AWS journey."
+            </div>
+            
+            <div class="output">
+                Congratulations! You're ready to begin your AWS journey.
+                Remember: Start small, learn continuously, and scale gradually.
+                <span class="cursor"></span>
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        function showSection(sectionId) {
+            // Hide all sections
+            const sections = document.querySelectorAll('.section');
+            sections.forEach(section => section.classList.remove('active'));
+            
+            // Show selected section
+            const selectedSection = document.getElementById(sectionId);
+            if (selectedSection) {
+                selectedSection.classList.add('active');
+            }
+            
+            // Scroll to top
+            window.scrollTo(0, 0);
+        }
+        
+        // Add some retro effects
+        document.addEventListener('DOMContentLoaded', function() {
+            // Terminal typing effect for headers
+            const headers = document.querySelectorAll('h2');
+            headers.forEach(header => {
+                header.style.opacity = '0';
+                setTimeout(() => {
+                    header.style.opacity = '1';
+                }, 100);
+            });
+            
+            // Add click sound effect simulation (visual feedback)
+            const navItems = document.querySelectorAll('.nav-item');
+            navItems.forEach(item => {
+                item.addEventListener('click', function() {
+                    this.style.transform = 'scale(0.95)';
+                    setTimeout(() => {
+                        this.style.transform = 'scale(1)';
+                    }, 100);
+                });
+            });
+        });
+        
+        // Random glitch effect
+        setInterval(() => {
+            const glitchTarget = Math.random() > 0.9;
+            if (glitchTarget) {
+                document.body.style.opacity = '0.99';
+                setTimeout(() => {
+                    document.body.style.opacity = '1';
+                }, 50);
+            }
+        }, 3000);
+    </script>
+</body>
+</html>

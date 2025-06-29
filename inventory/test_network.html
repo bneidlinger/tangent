@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Network View Test</title>
+  <style>
+    body {
+      background: #000;
+      color: #00ff00;
+      font-family: monospace;
+    }
+    
+    .container {
+      width: 800px;
+      height: 600px;
+      border: 2px solid #00ff00;
+      position: relative;
+      background: rgba(0, 20, 0, 0.5);
+      margin: 20px;
+    }
+    
+    .node {
+      position: absolute;
+      background: rgba(0, 40, 0, 0.9);
+      border: 2px solid #00ff00;
+      padding: 10px;
+      cursor: move;
+    }
+  </style>
+</head>
+<body>
+  <h1>Network View Test</h1>
+  <div class="container" id="container">
+    <div class="node" style="top: 100px; left: 100px;">Test Node 1</div>
+    <div class="node" style="top: 200px; left: 300px;">Test Node 2</div>
+  </div>
+  
+  <script>
+    console.log('Container:', document.getElementById('container'));
+  </script>
+</body>
+</html>

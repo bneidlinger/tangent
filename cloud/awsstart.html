@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF‑8">
+  <title>🔧 Tangnet Cloud: AWS 101</title>
+  <style>
+    body { background: #111; color: #ddd; font-family: Courier, monospace; padding: 1rem; }
+    h1 { color: #0f0; }
+    code { background: #222; padding: 2px 4px; border-radius: 3px; }
+    .section { margin: 1.5rem 0; }
+  </style>
+</head>
+<body>
+  <h1>🔧 Tangnet Cloud: AWS 101</h1>
+
+  <div class="section">
+    <h2>1. Create Your AWS Account</h2>
+    <ol>
+      <li>Go to <a href="https://aws.amazon.com/free">aws.amazon.com/free</a> and click **Create a Free AWS Account**.</li>
+      <li>Enter your email/password, select the **Free Tier** plan, add a credit/debit card.</li>
+      <li>Verify by phone and choose a basic support plan.</li>
+    </ol>
+  </div>
+
+  <div class="section">
+    <h2>2. Create IAM Admin User</h2>
+    <ol>
+      <li>In AWS Console, open **IAM** → **Add user** &mdash; name: <code>tangnet-admin</code>.</li>
+      <li>Select **Programmatic access** + **AWS Management Console** login.</li>
+      <li>Attach policies: <code>AmazonEC2FullAccess</code>, <code>AmazonS3FullAccess</code>, <code>AWSLambda_FullAccess</code>, <code>AmazonAPIGatewayAdministrator</code>.</li>
+      <li>Turn on MFA and download credentials.</li>
+    </ol>
+  </div>
+
+  <div class="section">
+    <h2>3. Install & Configure AWS CLI</h2>
+    <pre><code># macOS/Linux
+curl "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o awscliv2.zip
+unzip awscliv2.zip && sudo ./aws/install
+
+# Configure
+aws configure
+# Enter access key, secret key, region (e.g., us-east-1), output=json</code></pre>
+  </div>
+
+  <div class="section">
+    <h2>4. Quick Test: S3 & Lambda</h2>
+    <ul>
+      <li>Create a public S3 bucket:<br>
+        <code>aws s3 mb s3://tangnet-test-bucket</code><br>
+        <code>aws s3 cp index.html s3://tangnet-test-bucket --acl public-read</code></li>
+      <li>Create a Lambda function named <code>helloTangnet</code> returning `"Hello from Tangnet!"`, then front it with an API Gateway endpoint.</li>
+    </ul>
+  </div>
+
+  <div class="section">
+    <h2>5. Optional: EC2 ARM Instance (Free Tier)</h2>
+    <ol>
+      <li>Launch a **t4g.micro** (Graviton) Linux instance.</li>
+      <li>Open ports 22 (SSH) and 5000 (if running local API).</li>
+      <li>SSH in:<br><code>ssh -i key.pem ec2-user@YOUR_INSTANCE_IP</code></li>
+    </ol>
+  </div>
+
+  <footer>
+    <hr>
+    <small>You get 12 months in Free Tier (e.g., 750 hours EC2 + Lambda). See AWS free limits on their site :contentReference[oaicite:1]{index=1}.</small>
+  </footer>
+</body>
+</html>

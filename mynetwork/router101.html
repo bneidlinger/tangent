@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>TangNet Networking 101</title>
+  <style>
+    body {
+      font-family: "Courier New", Courier, monospace;
+      background-color: #0d0d0d;
+      color: #39ff14;
+      padding: 20px;
+    }
+    h1, h2 {
+      color: #00ffff;
+    }
+    code {
+      background-color: #111;
+      color: #f8f8f2;
+      padding: 2px 6px;
+      border-radius: 4px;
+    }
+    .section {
+      margin-bottom: 30px;
+    }
+  </style>
+</head>
+<body>
+  <h1>🧠 TangNet: Networking 101</h1>
+
+  <div class="section">
+    <h2>⚙️ Hardware Overview</h2>
+    <ul>
+      <li><strong>Router:</strong> TP-Link AXE75 (Tri-Band, Wi-Fi 6E Boss Mode)</li>
+      <li><strong>Mesh Nodes:</strong> 2x Raspberry Pi (TangNet Cluster)</li>
+      <li><strong>Devices:</strong> Smart plugs, smart lights, main rig, laptop, phones</li>
+    </ul>
+  </div>
+
+  <div class="section">
+    <h2>🧩 IP Addressing Tips</h2>
+    <p>Use static IPs for mission-critical gear (RPis, main rig):</p>
+    <code>192.168.0.10 - RPi1<br>
+192.168.0.11 - RPi2<br>
+192.168.0.20 - Main Rig</code>
+    <p>Let phones and lights float on DHCP—just make sure DHCP range doesn’t conflict.</p>
+  </div>
+
+  <div class="section">
+    <h2>🛡️ Security Basics</h2>
+    <ul>
+      <li>Change router admin password (seriously...)</li>
+      <li>Use WPA3 for Wi-Fi, no WEP/older crap</li>
+      <li>Guest Network = ON (keep freeloaders off TangNet Prime)</li>
+      <li>Firewall = Enabled</li>
+    </ul>
+  </div>
+
+  <div class="section">
+    <h2>🔌 Device Prioritization (QoS)</h2>
+    <p>Give bandwidth to your main rig and Pis for dev tasks. Phones? They can wait.</p>
+    <ul>
+      <li>Main Rig: High priority</li>
+      <li>RPis: Medium-High</li>
+      <li>Streaming devices: Medium</li>
+      <li>Phones: Low (you doomscroll, not launch nukes)</li>
+    </ul>
+  </div>
+
+  <div class="section">
+    <h2>🌐 Mesh Setup</h2>
+    <p>Use Ethernet backhaul if possible. If not, put Pis in line-of-sight from router for best signal.</p>
+  </div>
+
+  <div class="section">
+    <h2>🧠 Bonus Rick Tips</h2>
+    <ul>
+      <li>Reboot your router once a month. Not kidding.</li>
+      <li>Check for firmware updates every 2-3 months.</li>
+      <li>Backup your config after setup—future-you will thank past-you.</li>
+    </ul>
+  </div>
+
+  <footer>
+    <p><em>Created by Rick (well, kind of). Stay connected, you brilliant data monkey.</em></p>
+  </footer>
+</body>
+</html>

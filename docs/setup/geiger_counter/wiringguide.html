@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<title>Geiger‑Pi Wiring Cheat‑Sheet (RadiatronDIY‑v1)</title>
+<style>
+ body{background:#101010;color:#d0fce7;font-family:'Fira Mono',monospace;margin:0;padding:1.2rem}
+ svg{background:#16221f;border:2px solid #3bffbe;border-radius:8px;display:block;margin:1rem auto;max-width:820px}
+ h1{color:#3bffbe;text-align:center;margin:0.4rem 0 1rem}
+ p{max-width:820px;margin:auto;line-height:1.5}
+ code{background:#0e1d19;padding:2px 5px;border-radius:4px;color:#9ff}
+</style>
+</head>
+<body>
+<h1>⚛ Geiger Counter → Raspberry Pi Wiring</h1>
+<p>Board: <strong>RadiatronDIY‑v1</strong> (blue PCB). Use the 3.5 mm jack <em>tip</em> for the TTL pulse.<br>
+Pi shown is a 40‑pin header; any free GPIO can be used (here we choose <code>GPIO 17</code>).</p>
+
+<svg viewBox="0 0 860 420" xmlns="http://www.w3.org/2000/svg" font-family="Fira Mono, monospace" font-size="13" fill="#d0fce7" stroke="#3bffbe">
+ <!-- Geiger board rectangle -->
+ <rect x="40" y="60" width="260" height="300" fill="#123029" stroke-width="3"/>
+ <text x="170" y="90" text-anchor="middle" font-weight="bold">RadiatronDIY‑v1</text>
+ <!-- 3.5 mm jack -->
+ <rect x="240" y="300" width="40" height="40" fill="#182d28" stroke-width="2"/>
+ <text x="260" y="325" text-anchor="middle">3.5 mm<br/>JACK</text>
+ <!-- tip pad -->
+ <circle cx="255" cy="315" r="6" fill="#3bffbe"/>
+ <text x="255" y="358" text-anchor="middle">Tip (Pulse)</text>
+ <!-- sleeve pad -->
+ <circle cx="285" cy="315" r="6" fill="#3bffbe"/>
+ <text x="285" y="358" text-anchor="middle">Sleeve (GND)</text>
+ <!-- USB barrel in -->
+ <rect x="130" y="280" width="60" height="30" fill="#182d28" stroke-width="2"/>
+ <text x="160" y="300" text-anchor="middle">5 V IN</text>
+ <!-- wires to Pi -->
+ <polyline points="255,315 400,315 400,200 560,200" stroke="#3bffbe" stroke-width="3" fill="none"/>
+ <polyline points="285,315 420,315 420,250 560,250" stroke="#3bffbe" stroke-width="3" fill="none" stroke-dasharray="5 5"/>
+ <!-- labels -->
+ <text x="410" y="190" fill="#9ff" font-size="12">dupont female</text>
+ <text x="410" y="240" fill="#9ff" font-size="12">dupont female</text>
+ <!-- Pi header -->
+ <rect x="560" y="80" width="220" height="300" fill="#123029" stroke-width="3"/>
+ <text x="670" y="100" text-anchor="middle" font-weight="bold">Raspberry Pi 40‑pin</text>
+ <!-- highlight pins -->
+ <!-- GPIO17 pin 11 -->
+ <circle cx="600" cy="200" r="8" fill="#3bffbe"/>
+ <text x="615" y="205" font-size="11">GPIO17</text>
+ <!-- GND pin 9 -->
+ <circle cx="600" cy="250" r="8" fill="#3bffbe"/>
+ <text x="615" y="255" font-size="11">GND</text>
+</svg>
+
+<p><strong>Wire list</strong></p>
+<ul>
+ <li><code>Tip pad → Pi GPIO17 (pin 11)</code> — counts arrive as 5 V pulses (≈150 µs).</li>
+ <li><code>Sleeve pad → Pi GND (pin 9)</code> — shared ground.</li>
+ <li>Power the Geiger board via its barrel jack: <code>USB‑A (Pi) → 5 V barrel cable</code> or use a separate 5 V adapter.</li>
+</ul>
+
+<p>Now run the Python <code>RPi.GPIO</code> script from earlier. Each click triggers an interrupt on GPIO17, giving live CPM readouts.</p>
+</body>
+</html>

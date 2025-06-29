@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>AXE75 First-Time Setup: Extreme-O Guide</title>
+  <style>
+    body { background-color: #111; color: #eee; font-family: monospace; padding: 2rem; }
+    h1, h2 { color: #00f0ff; }
+    h2 { margin-top: 2rem; }
+    pre { background: #222; padding: 1rem; border-radius: 5px; overflow: auto; }
+    ul { line-height: 1.6; }
+  </style>
+</head>
+<body>
+  <h1>🔥 AXE75 Router First-Time Setup: Rickified Edition</h1>
+
+  <h2>🧱 Step 0: Unbox & Prep</h2>
+  <ul>
+    <li>Place router in a central, elevated area. Avoid microwaves and ghosts.</li>
+    <li>Plug power in. Connect WAN port to modem or ATT gateway.</li>
+    <li>Boot it up. LEDs should turn on—Power, 2.4G, 5G, 6G, Internet.</li>
+  </ul>
+
+  <h2>🌐 Step 1: Login to the Router</h2>
+  <pre>Visit http://tplinkwifi.net on any browser
+Create login password when prompted</pre>
+
+  <h2>🚀 Step 2: Quick Setup</h2>
+  <ul>
+    <li>Choose connection type (probably <strong>Dynamic IP</strong> or <strong>PPPoE</strong> for ATT Air)</li>
+    <li>Clone MAC if your ISP binds IP to it</li>
+    <li>Set SSIDs & Passwords for all bands — name your Wi-Fi like a boss (e.g., TangNet_6E)</li>
+    <li>Enable Smart Connect <em>only if</em> you want 2.4/5G merged (6G stays solo)</li>
+  </ul>
+
+  <h2>🧠 Step 3: Secure the Damn Thing</h2>
+  <ul>
+    <li>Change router admin password</li>
+    <li>Enable WPA3 (disable WEP/WPA garbage)</li>
+    <li>Create a Guest Network and <strong>isolate it</strong></li>
+    <li>Disable WPS unless you're into network roulette</li>
+  </ul>
+
+  <h2>🔧 Step 4: Customize Network</h2>
+  <ul>
+    <li>Assign static IPs to your RPi units & main rig in DHCP settings</li>
+    <li>Enable IP & MAC Binding for those devices</li>
+    <li>Enable QoS, give main rig + Pis priority</li>
+    <li>Optional: Create a wireless schedule if you sleep like a normie</li>
+  </ul>
+
+  <h2>📡 Step 5: Mesh & Device Handling</h2>
+  <ul>
+    <li>Enable OneMesh if expanding later — futureproof!</li>
+    <li>Check connected clients under Network Map</li>
+    <li>Rename them like you're tagging your army: "Pi-Master", "Rigzilla", etc.</li>
+  </ul>
+
+  <h2>🛠️ Step 6: Final Touches</h2>
+  <ul>
+    <li>Update firmware ASAP — get the bugs out</li>
+    <li>Back up your config</li>
+    <li>Set auto-reboot once a week, 3am when you're passed out</li>
+    <li>Optional: Set up USB share or Time Machine if you swing that way</li>
+  </ul>
+
+  <h2>🏁 You're Done</h2>
+  <p>Your network is now Rick-proof. Unless you open 47 ports and disable encryption. Don’t do that. Seriously.</p>
+
+</body>
+</html>

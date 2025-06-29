@@ -1,0 +1,2164 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>TANGNET NODE INVENTORY SYSTEM</title>
+  <style>
+    @font-face {
+      font-family: 'TerminalFont';
+      src: local('Courier New'), local('monospace');
+    }
+
+    * { 
+      box-sizing: border-box; 
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      background: #000;
+      color: #00ff00;
+      font-family: 'TerminalFont', 'Courier New', monospace;
+      overflow-x: hidden;
+      position: relative;
+      min-height: 100vh;
+    }
+
+    /* CRT Monitor Effect Container */
+    .crt-container {
+      position: relative;
+      min-height: 100vh;
+      background: radial-gradient(ellipse at center, #001100 0%, #000 100%);
+      padding: 20px;
+      overflow: hidden;
+    }
+
+    /* Scanline Effect */
+    .crt-container::before {
+      content: "";
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: repeating-linear-gradient(
+        0deg,
+        rgba(0, 0, 0, 0) 0,
+        rgba(0, 0, 0, 0) 2px,
+        rgba(0, 255, 0, 0.03) 2px,
+        rgba(0, 255, 0, 0.03) 4px
+      );
+      pointer-events: none;
+      z-index: 1;
+    }
+
+    /* Flicker Effect */
+    @keyframes flicker {
+      0%, 100% { opacity: 0.97; }
+      50% { opacity: 1; }
+    }
+
+    .crt-container::after {
+      content: "";
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0, 255, 0, 0.02);
+      opacity: 0;
+      pointer-events: none;
+      z-index: 2;
+      animation: flicker 0.15s infinite;
+    }
+
+    /* Screen curve effect */
+    .screen-curve {
+      position: fixed;
+      top: -4%;
+      left: -4%;
+      width: 106%;
+      height: 106%;
+      border: 2px solid rgba(0, 255, 0, 0.1);
+      border-radius: 20px / 200px;
+      pointer-events: none;
+      z-index: 3;
+      box-shadow: 
+        inset 0 0 40px rgba(0, 255, 0, 0.1),
+        inset 0 0 20px rgba(0, 255, 0, 0.05);
+    }
+
+    /* Main Content */
+    .main-content {
+      position: relative;
+      z-index: 10;
+      max-width: 1400px;
+      margin: 0 auto;
+    }
+
+    /* Glowing Text Effect */
+    @keyframes textGlow {
+      0%, 100% { text-shadow: 0 0 10px #00ff00, 0 0 20px #00ff00, 0 0 30px #00ff00; }
+      50% { text-shadow: 0 0 5px #00ff00, 0 0 15px #00ff00, 0 0 25px #00ff00; }
+    }
+
+    h1 {
+      text-align: center;
+      color: #00ff00;
+      font-size: 2.5em;
+      margin-bottom: 10px;
+      font-weight: bold;
+      text-transform: uppercase;
+      letter-spacing: 4px;
+      animation: textGlow 2s ease-in-out infinite;
+      position: relative;
+    }
+
+    .subtitle {
+      text-align: center;
+      color: #00cc00;
+      font-size: 0.9em;
+      margin-bottom: 30px;
+      opacity: 0.8;
+      letter-spacing: 2px;
+    }
+
+    /* Terminal Style Container */
+    .terminal-container {
+      background: rgba(0, 20, 0, 0.8);
+      border: 2px solid #00ff00;
+      border-radius: 5px;
+      padding: 20px;
+      margin-bottom: 20px;
+      position: relative;
+      box-shadow: 
+        0 0 20px rgba(0, 255, 0, 0.5),
+        inset 0 0 20px rgba(0, 255, 0, 0.1);
+    }
+
+    .terminal-container::before {
+      content: "TANGNET://INVENTORY.SYS";
+      position: absolute;
+      top: -12px;
+      left: 20px;
+      background: #000;
+      padding: 0 10px;
+      color: #00ff00;
+      font-size: 12px;
+      letter-spacing: 2px;
+    }
+
+    /* Controls */
+    .controls {
+      display: flex;
+      gap: 15px;
+      flex-wrap: wrap;
+      align-items: center;
+      margin-bottom: 20px;
+    }
+
+    button {
+      background: rgba(0, 40, 0, 0.8);
+      color: #00ff00;
+      border: 1px solid #00ff00;
+      padding: 10px 20px;
+      cursor: pointer;
+      font-family: inherit;
+      font-size: 14px;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      transition: all 0.3s;
+      position: relative;
+      overflow: hidden;
+    }
+
+    button::before {
+      content: "";
+      position: absolute;
+      top: 0;
+      left: -100%;
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(90deg, transparent, rgba(0, 255, 0, 0.4), transparent);
+      transition: left 0.5s;
+    }
+
+    button:hover::before {
+      left: 100%;
+    }
+
+    button:hover {
+      background: rgba(0, 60, 0, 1);
+      box-shadow: 0 0 15px rgba(0, 255, 0, 0.8);
+      transform: translateY(-2px);
+    }
+
+    button.primary {
+      background: rgba(0, 80, 0, 0.8);
+      box-shadow: 0 0 10px rgba(0, 255, 0, 0.5);
+    }
+
+    button.danger {
+      border-color: #ff0000;
+      color: #ff0000;
+      background: rgba(40, 0, 0, 0.8);
+    }
+
+    button.danger:hover {
+      background: rgba(60, 0, 0, 1);
+      box-shadow: 0 0 15px rgba(255, 0, 0, 0.8);
+    }
+
+    input[type="text"],
+    input[type="number"],
+    select,
+    textarea {
+      background: rgba(0, 20, 0, 0.6);
+      border: 1px solid #00ff00;
+      color: #00ff00;
+      padding: 8px;
+      font-family: inherit;
+      font-size: 14px;
+    }
+
+    input:focus,
+    select:focus,
+    textarea:focus {
+      outline: none;
+      box-shadow: 0 0 10px rgba(0, 255, 0, 0.5);
+    }
+
+    /* View Toggle */
+    .view-toggle {
+      display: flex;
+      gap: 5px;
+      margin-left: auto;
+    }
+
+    .view-toggle button {
+      padding: 8px 15px;
+      font-size: 12px;
+    }
+
+    .view-toggle button.active {
+      background: rgba(0, 100, 0, 1);
+      box-shadow: 0 0 15px rgba(0, 255, 0, 0.8);
+    }
+
+    /* Stats Display */
+    .stats-container {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+      gap: 15px;
+      margin-bottom: 20px;
+    }
+
+    .stat-box {
+      background: rgba(0, 20, 0, 0.6);
+      border: 1px solid #00ff00;
+      padding: 15px;
+      text-align: center;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .stat-box::before {
+      content: "";
+      position: absolute;
+      top: -2px;
+      left: -2px;
+      right: -2px;
+      bottom: -2px;
+      background: linear-gradient(45deg, #00ff00, transparent);
+      opacity: 0;
+      transition: opacity 0.3s;
+      z-index: -1;
+    }
+
+    .stat-box:hover::before {
+      opacity: 0.3;
+    }
+
+    .stat-value {
+      font-size: 2em;
+      font-weight: bold;
+      color: #00ff00;
+      text-shadow: 0 0 10px currentColor;
+    }
+
+    .stat-label {
+      font-size: 0.9em;
+      text-transform: uppercase;
+      opacity: 0.8;
+      margin-top: 5px;
+    }
+
+    /* Network Diagram View */
+    .network-view {
+      background: rgba(0, 10, 0, 0.8);
+      border: 2px solid #00ff00;
+      min-height: 600px;
+      height: 600px;
+      position: relative;
+      overflow: hidden;
+      display: block !important;
+    }
+
+    .network-canvas {
+      position: relative;
+      width: 2000px;
+      height: 2000px;
+      background: rgba(0, 10, 0, 0.3);
+    }
+
+    /* Grid View */
+    .grid-view {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+      gap: 20px;
+      padding: 20px;
+      display: none;
+    }
+
+    .node-card {
+      background: rgba(0, 20, 0, 0.8);
+      border: 1px solid #00ff00;
+      padding: 15px;
+      position: relative;
+      transition: all 0.3s;
+      cursor: pointer;
+    }
+
+    .node-card:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 5px 20px rgba(0, 255, 0, 0.5);
+      border-color: #00ff00;
+    }
+
+    .node-card.pi-node {
+      border-color: #00ffff;
+    }
+
+    .node-card.gpu-node {
+      border-color: #ff00ff;
+    }
+
+    .node-card.peripheral-node {
+      border-color: #ffff00;
+    }
+
+    .node-card.parts-node {
+      border-color: #ff8800;
+      opacity: 0.9;
+    }
+
+    .node-image {
+      width: 80px;
+      height: 80px;
+      object-fit: cover;
+      margin: 0 0 10px 0;
+      border: 1px solid #00ff00;
+      background: #001100;
+      cursor: pointer;
+      transition: all 0.3s;
+      display: block;
+    }
+    
+    .node-image:hover {
+      transform: scale(1.1);
+      box-shadow: 0 0 15px rgba(0, 255, 0, 0.6);
+    }
+    
+    /* Image hover preview */
+    .image-preview-hover {
+      position: fixed;
+      z-index: 1000;
+      background: rgba(0, 20, 0, 0.95);
+      border: 2px solid #00ff00;
+      padding: 10px;
+      box-shadow: 0 0 30px rgba(0, 255, 0, 0.8);
+      max-width: 500px;
+      max-height: 500px;
+      display: none;
+      pointer-events: none;
+    }
+    
+    .image-preview-hover img {
+      max-width: 100%;
+      max-height: 100%;
+      display: block;
+    }
+    
+    .node-card .image-placeholder {
+      width: 80px;
+      height: 80px;
+      margin: 0 0 10px 0;
+      border: 1px solid #00ff00;
+      background: rgba(0, 20, 0, 0.5);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #00ff00;
+      font-size: 30px;
+    }
+
+    /* Form Styles */
+    .node-form {
+      display: none;
+      background: rgba(0, 20, 0, 0.9);
+      border: 2px solid #00ff00;
+      padding: 20px;
+      position: fixed;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      z-index: 100;
+      max-width: 600px;
+      width: 90%;
+      max-height: 80vh;
+      overflow-y: auto;
+      box-shadow: 0 0 50px rgba(0, 255, 0, 0.8);
+    }
+
+    .form-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 15px;
+      margin-bottom: 20px;
+    }
+
+    .form-group {
+      display: flex;
+      flex-direction: column;
+    }
+
+    .form-group.full-width {
+      grid-column: 1 / -1;
+    }
+
+    .form-group label {
+      color: #00ff00;
+      margin-bottom: 5px;
+      font-size: 12px;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+    }
+
+    /* Image Upload Area */
+    .image-upload-area {
+      border: 2px dashed #00ff00;
+      padding: 20px;
+      text-align: center;
+      cursor: pointer;
+      transition: all 0.3s;
+      position: relative;
+      min-height: 150px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-direction: column;
+    }
+
+    .image-upload-area:hover {
+      background: rgba(0, 255, 0, 0.1);
+      border-color: #00ff00;
+    }
+
+    .image-upload-area.dragover {
+      background: rgba(0, 255, 0, 0.2);
+      border-color: #00ff00;
+      box-shadow: 0 0 20px rgba(0, 255, 0, 0.5);
+    }
+
+    .image-preview {
+      max-width: 100%;
+      max-height: 200px;
+      margin: 10px 0;
+      border: 1px solid #00ff00;
+    }
+
+    /* Modal Overlay */
+    .modal-overlay {
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0, 0, 0, 0.8);
+      z-index: 99;
+    }
+
+    /* Loading Animation */
+    @keyframes pulse {
+      0%, 100% { opacity: 0.4; }
+      50% { opacity: 1; }
+    }
+
+    .loading {
+      display: inline-block;
+      color: #00ff00;
+      animation: pulse 1s infinite;
+    }
+
+    /* Network Node Styles */
+    .network-node {
+      position: absolute;
+      background: rgba(0, 40, 0, 0.9);
+      border: 2px solid #00ff00;
+      border-radius: 5px;
+      padding: 10px;
+      cursor: move;
+      transition: transform 0.1s, box-shadow 0.3s;
+      min-width: 140px;
+      text-align: center;
+      user-select: none;
+      -webkit-user-select: none;
+      z-index: 10;
+    }
+    
+    .network-node.dragging {
+      cursor: grabbing !important;
+      z-index: 1000 !important;
+      transition: none !important;
+    }
+
+    .network-node:hover:not(.dragging) {
+      transform: scale(1.05);
+      box-shadow: 0 0 20px rgba(0, 255, 0, 0.8);
+      z-index: 100;
+    }
+
+    .network-node.pi-node {
+      border-color: #00ffff;
+      box-shadow: 0 0 10px rgba(0, 255, 255, 0.5);
+    }
+
+    .network-node.gpu-node {
+      border-color: #ff00ff;
+      box-shadow: 0 0 10px rgba(255, 0, 255, 0.5);
+    }
+
+    .network-node.peripheral-node {
+      border-color: #ffff00;
+      box-shadow: 0 0 10px rgba(255, 255, 0, 0.5);
+    }
+
+    .network-node.parts-node {
+      border-color: #ff8800;
+      box-shadow: 0 0 10px rgba(255, 136, 0, 0.5);
+      opacity: 0.8;
+    }
+
+    .network-node .node-thumbnail {
+      width: 40px;
+      height: 40px;
+      object-fit: cover;
+      border: 1px solid currentColor;
+      border-radius: 3px;
+      margin-bottom: 5px;
+      display: block;
+      margin-left: auto;
+      margin-right: auto;
+    }
+
+    .network-node .node-name {
+      font-weight: bold;
+      margin-bottom: 5px;
+    }
+
+    .network-node .node-info {
+      font-size: 0.8em;
+      opacity: 0.8;
+    }
+
+    /* Live status indicator */
+    .network-node .status-indicator {
+      position: absolute;
+      top: 5px;
+      right: 5px;
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: #00ff00;
+    }
+
+    @keyframes pulse {
+      0% {
+        box-shadow: 0 0 0 0 rgba(0, 255, 0, 0.7);
+      }
+      70% {
+        box-shadow: 0 0 0 6px rgba(0, 255, 0, 0);
+      }
+      100% {
+        box-shadow: 0 0 0 0 rgba(0, 255, 0, 0);
+      }
+    }
+
+    .network-node.active .status-indicator {
+      animation: pulse 2s infinite;
+    }
+
+    .network-node.inactive .status-indicator {
+      background: #666666;
+      animation: none;
+    }
+
+    .network-node.maintenance .status-indicator {
+      background: #ff8800;
+      animation: pulse 3s infinite;
+    }
+
+    /* Connection Lines */
+    .network-line {
+      position: absolute;
+      height: 2px;
+      background: #00ff00;
+      transform-origin: left center;
+      opacity: 0.3;
+      pointer-events: none;
+    }
+
+    .network-line.dotted {
+      background: none;
+      border-top: 2px dotted #00ff00;
+      opacity: 0.5;
+    }
+
+    /* Network Canvas for zoom/pan */
+    .network-viewport {
+      width: 100%;
+      height: 100%;
+      overflow: hidden;
+      position: relative;
+      cursor: grab;
+    }
+
+    .network-viewport.dragging {
+      cursor: grabbing;
+    }
+
+    .network-container {
+      position: absolute;
+      width: 2000px;
+      height: 2000px;
+      top: 50%;
+      left: 50%;
+      margin-top: -1000px;
+      margin-left: -1000px;
+      transform-origin: center center;
+      transition: transform 0.1s ease-out;
+    }
+
+    /* Phosphor Glow Effect */
+    @keyframes phosphor {
+      0%, 100% { opacity: 0.9; }
+      50% { opacity: 1; }
+    }
+
+    .phosphor-text {
+      animation: phosphor 4s ease-in-out infinite;
+    }
+
+    /* Table View */
+    .table-view {
+      overflow-x: auto;
+      margin-top: 20px;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      background: rgba(0, 10, 0, 0.6);
+    }
+
+    th, td {
+      border: 1px solid #00ff00;
+      padding: 10px;
+      text-align: left;
+    }
+
+    th {
+      background: rgba(0, 40, 0, 0.8);
+      font-weight: bold;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      position: sticky;
+      top: 0;
+      z-index: 10;
+    }
+
+    tr:hover {
+      background: rgba(0, 255, 0, 0.1);
+    }
+
+    .node-thumbnail {
+      width: 50px;
+      height: 50px;
+      object-fit: cover;
+      border: 1px solid #00ff00;
+      cursor: pointer;
+    }
+
+    /* JSON Editor */
+    .json-editor {
+      display: none;
+      background: rgba(0, 10, 0, 0.9);
+      border: 1px solid #00ff00;
+      padding: 20px;
+      margin-top: 20px;
+    }
+
+    .json-editor textarea {
+      width: 100%;
+      height: 400px;
+      font-family: 'Courier New', monospace;
+      font-size: 12px;
+      background: rgba(0, 20, 0, 0.8);
+      color: #00ff00;
+      border: 1px solid #00ff00;
+      padding: 10px;
+    }
+
+    /* About Modal */
+    .about-modal {
+      display: none;
+      position: fixed;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      width: 600px;
+      max-width: 90%;
+      background: rgba(0, 10, 0, 0.95);
+      border: 2px solid #00ff00;
+      border-radius: 10px;
+      padding: 40px;
+      z-index: 101;
+      box-shadow: 0 0 50px rgba(0, 255, 0, 0.8);
+      overflow: hidden;
+    }
+    
+    .about-modal::before {
+      content: "";
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background-image: url('images/tangnet_hal.png');
+      background-size: cover;
+      background-position: center;
+      opacity: 0.1;
+      z-index: -1;
+    }
+    
+    .about-content {
+      position: relative;
+      z-index: 1;
+      text-align: center;
+    }
+    
+    .about-content h2 {
+      color: #00ff00;
+      font-size: 2em;
+      margin-bottom: 20px;
+      text-shadow: 0 0 20px #00ff00;
+      letter-spacing: 3px;
+    }
+    
+    .about-content .version {
+      font-size: 1.2em;
+      color: #00ffff;
+      margin-bottom: 30px;
+      font-family: 'Courier New', monospace;
+    }
+    
+    .about-content p {
+      margin: 15px 0;
+      line-height: 1.6;
+      color: #00ff00;
+      opacity: 0.9;
+    }
+    
+    .about-content .credits {
+      margin-top: 30px;
+      padding-top: 20px;
+      border-top: 1px solid #00ff00;
+      opacity: 0.8;
+    }
+    
+    .about-content .hal-quote {
+      margin: 30px 0;
+      font-style: italic;
+      color: #ff0000;
+      text-shadow: 0 0 10px #ff0000;
+      opacity: 0.8;
+    }
+
+    /* Alert Messages */
+    .alert {
+      position: fixed;
+      top: 20px;
+      right: 20px;
+      background: rgba(0, 40, 0, 0.95);
+      border: 2px solid #00ff00;
+      padding: 15px 20px;
+      color: #00ff00;
+      z-index: 1000;
+      box-shadow: 0 0 20px rgba(0, 255, 0, 0.8);
+      animation: slideIn 0.3s ease-out;
+    }
+
+    @keyframes slideIn {
+      from {
+        transform: translateX(100%);
+        opacity: 0;
+      }
+      to {
+        transform: translateX(0);
+        opacity: 1;
+      }
+    }
+
+    .alert.error {
+      border-color: #ff0000;
+      color: #ff0000;
+      box-shadow: 0 0 20px rgba(255, 0, 0, 0.8);
+    }
+
+    /* Boot Sequence */
+    @keyframes bootSequence {
+      0% { transform: scaleY(0); }
+      100% { transform: scaleY(1); }
+    }
+
+    .boot-screen {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: #000;
+      z-index: 10000;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-family: 'Courier New', monospace;
+      color: #00ff00;
+      animation: bootSequence 0.5s ease-out;
+      overflow: hidden;
+    }
+    
+    .boot-screen::before {
+      content: "";
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background-image: url('images/tangnet_hal.png');
+      background-size: cover;
+      background-position: center;
+      opacity: 0.2;
+      filter: contrast(1.2) brightness(0.8);
+      z-index: -1;
+      animation: halPulse 4s ease-in-out infinite;
+    }
+    
+    @keyframes halPulse {
+      0%, 100% { opacity: 0.15; transform: scale(1); }
+      50% { opacity: 0.25; transform: scale(1.02); }
+    }
+
+    .boot-text {
+      text-align: center;
+      position: relative;
+      z-index: 1;
+      padding: 40px;
+      background: rgba(0, 0, 0, 0.8);
+      border: 2px solid #00ff00;
+      border-radius: 10px;
+      box-shadow: 0 0 50px rgba(0, 255, 0, 0.5);
+    }
+
+    .boot-text .line {
+      margin: 8px 0;
+      opacity: 0;
+      animation: fadeInLine 0.3s ease-out forwards;
+      text-shadow: 0 0 10px #00ff00, 0 0 20px #00ff00;
+      font-size: 1.1em;
+      letter-spacing: 2px;
+    }
+
+    @keyframes fadeInLine {
+      to { opacity: 1; }
+    }
+  </style>
+</head>
+<body>
+  <div class="boot-screen" id="bootScreen">
+    <div class="boot-text">
+      <div class="line" style="animation-delay: 0.2s">TANGNET INVENTORY SYSTEM v2.0</div>
+      <div class="line" style="animation-delay: 0.6s">INITIALIZING...</div>
+      <div class="line" style="animation-delay: 1.2s">LOADING NODE DATABASE...</div>
+      <div class="line" style="animation-delay: 1.8s">ESTABLISHING CONNECTIONS...</div>
+      <div class="line" style="animation-delay: 2.4s">SYSTEM READY</div>
+    </div>
+  </div>
+
+  <div class="crt-container">
+    <div class="screen-curve"></div>
+    
+    <div class="main-content">
+      <h1 class="phosphor-text">TANGNET NODE INVENTORY</h1>
+      <div class="subtitle">DISTRIBUTED AI CLUSTER MANAGEMENT SYSTEM</div>
+
+      <div class="terminal-container">
+        <div class="controls">
+          <button onclick="toggleNodeForm()" class="primary">+ ADD NODE</button>
+          <button onclick="loadFromFile()">LOAD DATA</button>
+          <button onclick="saveToFile()">SAVE DATA</button>
+          <button onclick="toggleJsonEditor()">JSON MODE</button>
+          <button onclick="toggleAbout()">ABOUT</button>
+          <div class="view-toggle">
+            <button id="tableBtn" class="active" onclick="switchView('table')">TABLE</button>
+            <button id="gridBtn" onclick="switchView('grid')">GRID</button>
+            <button id="networkBtn" onclick="switchView('network')">NETWORK</button>
+          </div>
+        </div>
+
+        <div class="stats-container" id="statsContainer"></div>
+      </div>
+
+      <!-- Table View -->
+      <div class="table-view" id="tableView">
+        <div class="terminal-container">
+          <table id="nodeTable">
+            <thead>
+              <tr>
+                <th>ID</th>
+                <th>IMAGE</th>
+                <th>NAME</th>
+                <th>TYPE</th>
+                <th>LOCATION</th>
+                <th>OS</th>
+                <th>RAM</th>
+                <th>CPU/GPU</th>
+                <th>CONNECTED TO</th>
+                <th>STATUS</th>
+                <th>ACTIONS</th>
+              </tr>
+            </thead>
+            <tbody id="tableBody"></tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- Grid View -->
+      <div class="grid-view" id="gridView"></div>
+
+      <!-- Network View -->
+      <div id="networkView" style="display: none;">
+        <div class="terminal-container">
+          <div class="network-view">
+            <div class="network-viewport" id="networkViewport">
+              <div class="network-container" id="networkContainer">
+                <div class="network-canvas" id="networkCanvas"></div>
+              </div>
+            </div>
+            <div style="position: absolute; bottom: 10px; right: 10px; background: rgba(0, 20, 0, 0.8); padding: 10px; border: 1px solid #00ff00; border-radius: 5px; z-index: 100;">
+              <button onclick="zoomIn()" style="padding: 5px 10px; font-size: 16px;">+</button>
+              <button onclick="zoomOut()" style="padding: 5px 10px; font-size: 16px;">-</button>
+              <button onclick="resetZoom()" style="padding: 5px 10px; font-size: 12px;">RESET</button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- JSON Editor -->
+      <div class="json-editor" id="jsonEditor">
+        <div class="terminal-container">
+          <h3>JSON EDITOR</h3>
+          <textarea id="jsonTextarea"></textarea>
+          <div style="margin-top: 10px;">
+            <button onclick="applyJson()" class="primary">APPLY CHANGES</button>
+            <button onclick="toggleJsonEditor()">CANCEL</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal Overlay -->
+  <div class="modal-overlay" id="modalOverlay" onclick="closeModals()"></div>
+
+  <!-- Node Form -->
+  <div class="node-form" id="nodeForm">
+    <h2 id="formTitle">ADD NEW NODE</h2>
+    <form id="nodeFormElement" onsubmit="saveNode(event)">
+      <div class="form-grid">
+        <div class="form-group">
+          <label>NODE ID</label>
+          <input type="text" id="nodeId" required placeholder="e.g., PI-001">
+        </div>
+        <div class="form-group">
+          <label>NODE NAME</label>
+          <input type="text" id="nodeName" required placeholder="e.g., Brain Node">
+        </div>
+        <div class="form-group">
+          <label>NODE TYPE</label>
+          <select id="nodeType" required onchange="handleTypeChange()">
+            <option value="pi">Raspberry Pi</option>
+            <option value="gpu">GPU Rig</option>
+            <option value="controller">Controller</option>
+            <option value="peripheral">Peripheral</option>
+            <option value="parts">Parts/Misc</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label>LOCATION</label>
+          <input type="text" id="nodeLocation" placeholder="e.g., Lab Rack A">
+        </div>
+        <div class="form-group">
+          <label>OPERATING SYSTEM</label>
+          <input type="text" id="nodeOs" placeholder="e.g., Raspbian">
+        </div>
+        <div class="form-group">
+          <label>RAM</label>
+          <input type="text" id="nodeRam" placeholder="e.g., 8GB">
+        </div>
+        <div class="form-group">
+          <label>CPU</label>
+          <input type="text" id="nodeCpu" placeholder="e.g., ARM Cortex-A76">
+        </div>
+        <div class="form-group">
+          <label>GPU</label>
+          <input type="text" id="nodeGpu" placeholder="e.g., RTX 5090">
+        </div>
+        <div class="form-group" id="connectedToGroup" style="display: none;">
+          <label>CONNECTED TO</label>
+          <select id="nodeConnectedTo">
+            <option value="">Not Connected</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label>STATUS</label>
+          <select id="nodeStatus" required>
+            <option value="active">Active</option>
+            <option value="inactive">Inactive</option>
+            <option value="maintenance">Maintenance</option>
+          </select>
+        </div>
+        <div class="form-group full-width">
+          <label>NOTES</label>
+          <textarea id="nodeNotes" rows="3" placeholder="Additional information..."></textarea>
+        </div>
+        <div class="form-group full-width">
+          <label>NODE IMAGE</label>
+          <div class="image-upload-area" id="imageUploadArea" onclick="document.getElementById('nodeImage').click()">
+            <input type="file" id="nodeImage" accept="image/*" style="display: none;" onchange="handleImageSelect(event)">
+            <div id="uploadText">
+              <p>CLICK TO UPLOAD IMAGE</p>
+              <p style="font-size: 0.8em; opacity: 0.7;">or drag and drop</p>
+            </div>
+            <img id="imagePreview" class="image-preview" style="display: none;">
+          </div>
+        </div>
+      </div>
+      <div style="margin-top: 20px; text-align: right;">
+        <button type="submit" class="primary">SAVE NODE</button>
+        <button type="button" onclick="toggleNodeForm()">CANCEL</button>
+      </div>
+    </form>
+  </div>
+
+  <input type="file" id="fileInput" accept=".json" style="display: none;" onchange="handleFileLoad(event)">
+
+  <!-- About Modal -->
+  <div class="about-modal" id="aboutModal">
+    <div class="about-content">
+      <h2>TANGNET INVENTORY SYSTEM</h2>
+      <div class="version">Version 2.0</div>
+      
+      <p>A distributed AI cluster management system for tracking and organizing the TANGNET infrastructure.</p>
+      
+      <p>TANGNET is building a 100-node Raspberry Pi network for decentralized AI inference, currently in Phase 1 with plans to scale to include GPU rigs.</p>
+      
+      <div class="hal-quote">"I'm sorry Dave, I'm afraid I can't do that."</div>
+      
+      <div class="credits">
+        <p>Built for the TANGNET AI Cluster Project</p>
+        <p>© 2025 TANGNET Labs</p>
+      </div>
+      
+      <button onclick="toggleAbout()" style="margin-top: 20px;">CLOSE</button>
+    </div>
+  </div>
+
+  <script>
+    let nodes = [];
+    let currentEditId = null;
+    let networkPositions = {};
+    let draggedNode = null;
+    
+    // Zoom and pan variables
+    let scale = 1;
+    let panX = 0;
+    let panY = 0;
+    let isPanning = false;
+    let startPanX = 0;
+    let startPanY = 0;
+
+    // Boot sequence - increased to 3.5 seconds to enjoy HAL
+    setTimeout(() => {
+      document.getElementById('bootScreen').style.display = 'none';
+    }, 3500);
+
+    // Load data on startup
+    window.addEventListener('load', () => {
+      loadFromLocalStorage();
+      updateDisplay();
+    });
+
+    // Auto-save to localStorage
+    function saveToLocalStorage() {
+      localStorage.setItem('tangnetInventory', JSON.stringify({
+        nodes: nodes,
+        positions: networkPositions
+      }));
+    }
+
+    function loadFromLocalStorage() {
+      const saved = localStorage.getItem('tangnetInventory');
+      if (saved) {
+        const data = JSON.parse(saved);
+        nodes = data.nodes || [];
+        networkPositions = data.positions || {};
+      } else {
+        // Try to load from tangnet_inventory.json
+        fetch('tangnet_inventory.json')
+          .then(response => response.json())
+          .then(data => {
+            nodes = data.nodes || [];
+            // Add a sample node if empty for testing
+            if (nodes.length === 0) {
+              nodes = [{
+                id: 'PI-001',
+                name: 'Brain Node',
+                type: 'pi',
+                location: 'Lab Rack A',
+                os: 'Raspbian',
+                hardware: { ram: '8GB', cpu: 'ARM Cortex-A76' },
+                status: 'active',
+                notes: 'Primary controller node'
+              }];
+            }
+            updateDisplay();
+          })
+          .catch(err => {
+            console.log('No existing inventory found');
+            // Add a sample node for testing
+            nodes = [{
+              id: 'PI-001',
+              name: 'Brain Node',
+              type: 'pi',
+              location: 'Lab Rack A',
+              os: 'Raspbian',
+              hardware: { ram: '8GB', cpu: 'ARM Cortex-A76' },
+              status: 'active',
+              notes: 'Primary controller node'
+            }];
+            updateDisplay();
+          });
+      }
+    }
+
+    // Image handling with security
+    async function handleImageSelect(event) {
+      const file = event.target.files[0];
+      if (!file) return;
+
+      // Validate file type
+      const validTypes = ['image/jpeg', 'image/jpg', 'image/png', 'image/gif', 'image/webp'];
+      if (!validTypes.includes(file.type)) {
+        showAlert('Please select a valid image file (JPG, PNG, GIF, WebP)', 'error');
+        return;
+      }
+
+      // Size limit: 5MB
+      if (file.size > 5 * 1024 * 1024) {
+        showAlert('Image size must be less than 5MB', 'error');
+        return;
+      }
+
+      try {
+        const imageData = await convertToPNG(file);
+        document.getElementById('imagePreview').src = imageData;
+        document.getElementById('imagePreview').style.display = 'block';
+        document.getElementById('uploadText').style.display = 'none';
+      } catch (error) {
+        showAlert('Error processing image', 'error');
+      }
+    }
+
+    // Convert image to PNG with size optimization
+    function convertToPNG(file) {
+      return new Promise((resolve, reject) => {
+        const reader = new FileReader();
+        reader.onload = (e) => {
+          const img = new Image();
+          img.onload = () => {
+            const canvas = document.createElement('canvas');
+            const ctx = canvas.getContext('2d');
+            
+            // Max dimensions
+            const maxWidth = 800;
+            const maxHeight = 600;
+            let width = img.width;
+            let height = img.height;
+
+            // Calculate new dimensions
+            if (width > maxWidth || height > maxHeight) {
+              const ratio = Math.min(maxWidth / width, maxHeight / height);
+              width *= ratio;
+              height *= ratio;
+            }
+
+            canvas.width = width;
+            canvas.height = height;
+            
+            // Apply CRT-style filter
+            ctx.filter = 'contrast(1.1) brightness(1.05)';
+            ctx.drawImage(img, 0, 0, width, height);
+            
+            // Convert to PNG
+            canvas.toBlob((blob) => {
+              const reader = new FileReader();
+              reader.onloadend = () => resolve(reader.result);
+              reader.onerror = reject;
+              reader.readAsDataURL(blob);
+            }, 'image/png', 0.9);
+          };
+          img.onerror = reject;
+          img.src = e.target.result;
+        };
+        reader.onerror = reject;
+        reader.readAsDataURL(file);
+      });
+    }
+
+    // Drag and drop support
+    const uploadArea = document.getElementById('imageUploadArea');
+    if (uploadArea) {
+      uploadArea.addEventListener('dragover', (e) => {
+        e.preventDefault();
+        uploadArea.classList.add('dragover');
+      });
+
+      uploadArea.addEventListener('dragleave', () => {
+        uploadArea.classList.remove('dragover');
+      });
+
+      uploadArea.addEventListener('drop', (e) => {
+        e.preventDefault();
+        uploadArea.classList.remove('dragover');
+        const files = e.dataTransfer.files;
+        if (files.length > 0) {
+          document.getElementById('nodeImage').files = files;
+          handleImageSelect({ target: { files: files } });
+        }
+      });
+    }
+
+    // Handle type change to show/hide connected to field
+    function handleTypeChange() {
+      const type = document.getElementById('nodeType').value;
+      const connectedToGroup = document.getElementById('connectedToGroup');
+      
+      if (type === 'peripheral') {
+        connectedToGroup.style.display = 'block';
+        updateConnectedToOptions();
+      } else {
+        connectedToGroup.style.display = 'none';
+      }
+    }
+
+    // Update connected to options
+    function updateConnectedToOptions() {
+      const select = document.getElementById('nodeConnectedTo');
+      const currentValue = select.value;
+      
+      // Get all non-peripheral, non-parts nodes
+      const availableNodes = nodes.filter(n => n.type !== 'peripheral' && n.type !== 'parts');
+      
+      select.innerHTML = '<option value="">Not Connected</option>';
+      availableNodes.forEach(node => {
+        const option = document.createElement('option');
+        option.value = node.id;
+        option.textContent = `${node.id} - ${node.name}`;
+        if (node.id === currentValue) option.selected = true;
+        select.appendChild(option);
+      });
+    }
+
+    // Form handling
+    function toggleNodeForm(editId = null) {
+      const form = document.getElementById('nodeForm');
+      const overlay = document.getElementById('modalOverlay');
+      
+      if (editId) {
+        currentEditId = editId;
+        const node = nodes.find(n => n.id === editId);
+        if (node) {
+          document.getElementById('formTitle').textContent = 'EDIT NODE';
+          document.getElementById('nodeId').value = node.id;
+          document.getElementById('nodeId').disabled = true;
+          document.getElementById('nodeName').value = node.name;
+          document.getElementById('nodeType').value = node.type || 'pi';
+          document.getElementById('nodeLocation').value = node.location || '';
+          document.getElementById('nodeOs').value = node.os || '';
+          document.getElementById('nodeRam').value = node.hardware?.ram || '';
+          document.getElementById('nodeCpu').value = node.hardware?.cpu || '';
+          document.getElementById('nodeGpu').value = node.hardware?.gpu || '';
+          document.getElementById('nodeNotes').value = node.notes || '';
+          document.getElementById('nodeStatus').value = node.status || 'active';
+          
+          // Handle connected to field
+          if (node.type === 'peripheral') {
+            document.getElementById('connectedToGroup').style.display = 'block';
+            updateConnectedToOptions();
+            document.getElementById('nodeConnectedTo').value = node.connectedTo || '';
+          } else {
+            document.getElementById('connectedToGroup').style.display = 'none';
+          }
+          
+          if (node.image) {
+            document.getElementById('imagePreview').src = node.image;
+            document.getElementById('imagePreview').style.display = 'block';
+            document.getElementById('uploadText').style.display = 'none';
+          }
+        }
+      } else {
+        currentEditId = null;
+        document.getElementById('formTitle').textContent = 'ADD NEW NODE';
+        document.getElementById('nodeFormElement').reset();
+        document.getElementById('nodeId').disabled = false;
+        document.getElementById('imagePreview').style.display = 'none';
+        document.getElementById('uploadText').style.display = 'block';
+        document.getElementById('connectedToGroup').style.display = 'none';
+      }
+      
+      form.style.display = form.style.display === 'block' ? 'none' : 'block';
+      overlay.style.display = form.style.display;
+    }
+
+    function saveNode(event) {
+      event.preventDefault();
+      
+      const nodeData = {
+        id: document.getElementById('nodeId').value,
+        name: document.getElementById('nodeName').value,
+        type: document.getElementById('nodeType').value,
+        location: document.getElementById('nodeLocation').value,
+        os: document.getElementById('nodeOs').value,
+        hardware: {
+          ram: document.getElementById('nodeRam').value,
+          cpu: document.getElementById('nodeCpu').value,
+          gpu: document.getElementById('nodeGpu').value
+        },
+        notes: document.getElementById('nodeNotes').value,
+        image: document.getElementById('imagePreview').src !== window.location.href ? 
+               document.getElementById('imagePreview').src : null,
+        status: document.getElementById('nodeStatus').value,
+        addedDate: new Date().toISOString()
+      };
+
+      // Add connectedTo field for peripherals
+      if (nodeData.type === 'peripheral') {
+        nodeData.connectedTo = document.getElementById('nodeConnectedTo').value;
+      }
+
+      if (currentEditId) {
+        const index = nodes.findIndex(n => n.id === currentEditId);
+        if (index !== -1) {
+          nodes[index] = { ...nodes[index], ...nodeData };
+        }
+      } else {
+        if (nodes.find(n => n.id === nodeData.id)) {
+          showAlert('Node ID already exists!', 'error');
+          return;
+        }
+        nodes.push(nodeData);
+      }
+
+      saveToLocalStorage();
+      updateDisplay();
+      toggleNodeForm();
+      showAlert(currentEditId ? 'Node updated successfully' : 'Node added successfully');
+    }
+
+    function deleteNode(id) {
+      if (confirm(`Delete node ${id}?`)) {
+        nodes = nodes.filter(n => n.id !== id);
+        delete networkPositions[id];
+        saveToLocalStorage();
+        updateDisplay();
+        showAlert('Node deleted successfully');
+      }
+    }
+
+    // View switching
+    function switchView(view) {
+      console.log('Switching to view:', view);
+      
+      // Hide all views first
+      document.getElementById('tableView').style.display = 'none';
+      document.getElementById('gridView').style.display = 'none';
+      document.getElementById('networkView').style.display = 'none';
+      
+      // Remove active class from all buttons
+      document.getElementById('tableBtn').classList.remove('active');
+      document.getElementById('gridBtn').classList.remove('active');
+      document.getElementById('networkBtn').classList.remove('active');
+      
+      // Show the selected view
+      const viewElement = document.getElementById(view + 'View');
+      if (viewElement) {
+        viewElement.style.display = 'block';
+        document.getElementById(view + 'Btn').classList.add('active');
+        
+        if (view === 'network') {
+          console.log('Calling renderNetworkView');
+          renderNetworkView();
+        }
+      } else {
+        console.error('View element not found:', view + 'View');
+      }
+    }
+
+    // Update displays
+    function updateDisplay() {
+      updateStats();
+      updateTableView();
+      updateGridView();
+      if (document.getElementById('networkView').style.display === 'block') {
+        renderNetworkView();
+      }
+    }
+
+    function updateStats() {
+      const stats = {
+        total: nodes.length,
+        pi: nodes.filter(n => n.type === 'pi').length,
+        gpu: nodes.filter(n => n.type === 'gpu').length,
+        peripheral: nodes.filter(n => n.type === 'peripheral').length,
+        parts: nodes.filter(n => n.type === 'parts').length,
+        active: nodes.filter(n => n.status === 'active').length
+      };
+
+      document.getElementById('statsContainer').innerHTML = `
+        <div class="stat-box">
+          <div class="stat-value">${stats.total}</div>
+          <div class="stat-label">TOTAL ITEMS</div>
+        </div>
+        <div class="stat-box">
+          <div class="stat-value">${stats.pi}</div>
+          <div class="stat-label">RASPBERRY PI</div>
+        </div>
+        <div class="stat-box">
+          <div class="stat-value">${stats.gpu}</div>
+          <div class="stat-label">GPU RIGS</div>
+        </div>
+        <div class="stat-box">
+          <div class="stat-value">${stats.peripheral}</div>
+          <div class="stat-label">PERIPHERALS</div>
+        </div>
+        <div class="stat-box">
+          <div class="stat-value">${stats.parts}</div>
+          <div class="stat-label">PARTS/MISC</div>
+        </div>
+        <div class="stat-box">
+          <div class="stat-value">${stats.active}</div>
+          <div class="stat-label">ACTIVE</div>
+        </div>
+      `;
+    }
+
+    function updateTableView() {
+      const tbody = document.getElementById('tableBody');
+      tbody.innerHTML = nodes.map(node => {
+        let connectedInfo = '-';
+        if (node.type === 'peripheral' && node.connectedTo) {
+          const parentNode = nodes.find(n => n.id === node.connectedTo);
+          connectedInfo = parentNode ? `${parentNode.id}` : 'Unknown';
+        }
+        
+        return `
+          <tr>
+            <td>${node.id}</td>
+            <td>${node.image ? `<img src="${node.image}" class="node-thumbnail" onclick="showImage('${node.image}')" onmouseenter="showImagePreview(event, '${node.image}')" onmouseleave="hideImagePreview()">` : '-'}</td>
+            <td>${node.name}</td>
+            <td style="color: ${getTypeColor(node.type)}">${node.type.toUpperCase()}</td>
+            <td>${node.location || '-'}</td>
+            <td>${node.os || '-'}</td>
+            <td>${node.hardware?.ram || '-'}</td>
+            <td>${node.hardware?.cpu || node.hardware?.gpu || '-'}</td>
+            <td>${connectedInfo}</td>
+            <td><span style="color: ${getStatusColor(node.status)}">${node.status?.toUpperCase() || 'UNKNOWN'}</span></td>
+            <td>
+              <button onclick="toggleNodeForm('${node.id}')" style="padding: 5px 10px; font-size: 12px;">EDIT</button>
+              <button onclick="deleteNode('${node.id}')" class="danger" style="padding: 5px 10px; font-size: 12px;">DELETE</button>
+            </td>
+          </tr>
+        `;
+      }).join('');
+    }
+
+    function updateGridView() {
+      const grid = document.getElementById('gridView');
+      grid.innerHTML = nodes.map(node => {
+        let connectedInfo = '';
+        if (node.type === 'peripheral' && node.connectedTo) {
+          const parentNode = nodes.find(n => n.id === node.connectedTo);
+          connectedInfo = parentNode ? `<p>Connected to: ${parentNode.name}</p>` : '<p>Connected to: Unknown</p>';
+        }
+        
+        // Choose icon based on node type
+        const iconMap = {
+          'pi': '◆',
+          'gpu': '▲',
+          'controller': '■',
+          'peripheral': '●',
+          'parts': '○'
+        };
+        const icon = iconMap[node.type] || '◆';
+        
+        return `
+          <div class="node-card ${node.type}-node">
+            ${node.image ? 
+              `<img src="${node.image}" class="node-image" onmouseenter="showImagePreview(event, '${node.image}')" onmouseleave="hideImagePreview()">` : 
+              `<div class="image-placeholder">${icon}</div>`
+            }
+            <h3>${node.name}</h3>
+            <p>ID: ${node.id}</p>
+            <p>Type: <span style="color: ${getTypeColor(node.type)}">${node.type.toUpperCase()}</span></p>
+            <p>Location: ${node.location || 'Unknown'}</p>
+            ${connectedInfo}
+            <p>Status: <span style="color: ${getStatusColor(node.status)}">${node.status?.toUpperCase() || 'UNKNOWN'}</span></p>
+            <div style="margin-top: 10px;">
+              <button onclick="toggleNodeForm('${node.id}')" style="padding: 5px 10px; font-size: 12px;">EDIT</button>
+              <button onclick="deleteNode('${node.id}')" class="danger" style="padding: 5px 10px; font-size: 12px;">DELETE</button>
+            </div>
+          </div>
+        `;
+      }).join('');
+    }
+
+    // Network diagram view
+    function renderNetworkView() {
+      console.log('Rendering network view with nodes:', nodes.length);
+      
+      const canvas = document.getElementById('networkCanvas');
+      const container = document.getElementById('networkContainer');
+      
+      if (!canvas || !container) {
+        console.error('Canvas or container not found');
+        return;
+      }
+      
+      // Clear canvas
+      canvas.innerHTML = '';
+      
+      // Make sure canvas has proper dimensions
+      canvas.style.width = '2000px';
+      canvas.style.height = '2000px';
+      canvas.style.position = 'relative';
+      
+      // Update container transform
+      container.style.transform = `translate(${panX}px, ${panY}px) scale(${scale})`;
+      
+      // Calculate positions if not set
+      const networkNodes = nodes.filter(n => n.type !== 'parts' && n.type !== 'peripheral');
+      const peripheralNodes = nodes.filter(n => n.type === 'peripheral');
+      const partsNodes = nodes.filter(n => n.type === 'parts');
+      
+      // Position network nodes in a circle
+      networkNodes.forEach((node, index) => {
+        if (!networkPositions[node.id]) {
+          const angle = (index / networkNodes.length) * 2 * Math.PI;
+          const radius = 250;
+          const centerX = 900;
+          const centerY = 1000;
+          
+          networkPositions[node.id] = {
+            x: centerX + radius * Math.cos(angle),
+            y: centerY + radius * Math.sin(angle)
+          };
+        }
+      });
+      
+      // Position peripherals near their connected nodes
+      peripheralNodes.forEach((node, index) => {
+        if (!networkPositions[node.id]) {
+          if (node.connectedTo && networkPositions[node.connectedTo]) {
+            // Position near the connected node
+            const parentPos = networkPositions[node.connectedTo];
+            const offsetAngle = (index * 45) * Math.PI / 180; // Spread peripherals around parent
+            const offsetRadius = 150;
+            
+            networkPositions[node.id] = {
+              x: parentPos.x + offsetRadius * Math.cos(offsetAngle),
+              y: parentPos.y + offsetRadius * Math.sin(offsetAngle)
+            };
+          } else {
+            // Unconnected peripherals go to the right side
+            networkPositions[node.id] = {
+              x: 1400,
+              y: 800 + (index * 100)
+            };
+          }
+        }
+      });
+      
+      // Position parts/misc items on the left side
+      partsNodes.forEach((node, index) => {
+        if (!networkPositions[node.id]) {
+          networkPositions[node.id] = {
+            x: 200,
+            y: 800 + (index * 100)
+          };
+        }
+      });
+
+      // Create connections
+      // First, draw peripheral connections
+      nodes.forEach(node => {
+        if (node.type === 'peripheral' && node.connectedTo) {
+          const targetNode = nodes.find(n => n.id === node.connectedTo);
+          if (targetNode && networkPositions[node.id] && networkPositions[targetNode.id]) {
+            const line = document.createElement('div');
+            line.className = 'network-line';
+            line.style.background = '#ffff00'; // Yellow for peripheral connections
+            line.style.height = '3px';
+            line.style.opacity = '0.8';
+            
+            const pos1 = networkPositions[node.id];
+            const pos2 = networkPositions[targetNode.id];
+            
+            const dx = pos2.x - pos1.x;
+            const dy = pos2.y - pos1.y;
+            const length = Math.sqrt(dx * dx + dy * dy);
+            const angle = Math.atan2(dy, dx) * 180 / Math.PI;
+            
+            line.style.left = pos1.x + 'px';
+            line.style.top = pos1.y + 'px';
+            line.style.width = length + 'px';
+            line.style.transform = `rotate(${angle}deg)`;
+            
+            canvas.appendChild(line);
+          }
+        }
+      });
+      
+      // Then draw network connections (all non-peripheral/parts nodes connected with dotted lines)
+      // (reuse networkNodes from above)
+      networkNodes.forEach((node, i) => {
+        networkNodes.forEach((target, j) => {
+          if (i < j) { // Connect all network nodes
+            const line = document.createElement('div');
+            line.className = 'network-line dotted';
+            const pos1 = networkPositions[node.id];
+            const pos2 = networkPositions[target.id];
+            
+            const dx = pos2.x - pos1.x;
+            const dy = pos2.y - pos1.y;
+            const length = Math.sqrt(dx * dx + dy * dy);
+            const angle = Math.atan2(dy, dx) * 180 / Math.PI;
+            
+            line.style.left = pos1.x + 'px';
+            line.style.top = pos1.y + 'px';
+            line.style.width = length + 'px';
+            line.style.transform = `rotate(${angle}deg)`;
+            
+            canvas.appendChild(line);
+          }
+        });
+      });
+
+      
+      // Create nodes
+      console.log('Creating nodes on canvas');
+      nodes.forEach(node => {
+        const nodeEl = document.createElement('div');
+        nodeEl.className = `network-node ${node.type}-node ${node.status || 'active'}`;
+        nodeEl.style.position = 'absolute';
+        nodeEl.style.zIndex = '100';
+        
+        // Build node content with thumbnail
+        let thumbnailHtml = '';
+        if (node.image) {
+          thumbnailHtml = `<img src="${node.image}" class="node-thumbnail" alt="${node.name}">`;
+        } else {
+          thumbnailHtml = `<div class="node-thumbnail" style="background: rgba(0, 20, 0, 0.5); display: flex; align-items: center; justify-content: center; color: currentColor;">◆</div>`;
+        }
+        
+        nodeEl.innerHTML = `
+          <div class="status-indicator"></div>
+          ${thumbnailHtml}
+          <div class="node-name">${node.name}</div>
+          <div class="node-info">${node.id}</div>
+          <div class="node-info">${node.type.toUpperCase()}</div>
+        `;
+        
+        const pos = networkPositions[node.id];
+        nodeEl.style.left = (pos.x - 70) + 'px';
+        nodeEl.style.top = (pos.y - 40) + 'px';
+        
+        console.log(`Placing node ${node.id} at position:`, pos);
+        
+        // Make draggable - bind directly to the node element
+        nodeEl.addEventListener('mousedown', function(e) {
+          e.stopPropagation();
+          e.stopImmediatePropagation();
+          startNodeDrag.call(this, e, node.id);
+        }, true); // Use capture phase
+        
+        canvas.appendChild(nodeEl);
+      });
+      
+      // Add a message if no nodes
+      if (nodes.length === 0) {
+        const testEl = document.createElement('div');
+        testEl.style.cssText = 'position: absolute; top: 1000px; left: 1000px; color: #00ff00; font-size: 20px;';
+        testEl.textContent = 'No nodes to display - add some nodes first!';
+        canvas.appendChild(testEl);
+      }
+      
+      // Initialize pan functionality after a short delay to ensure DOM is ready
+      setTimeout(() => {
+        initNetworkPan();
+      }, 100);
+    }
+
+    // Drag functionality for network nodes
+    function startNodeDrag(e, nodeId) {
+      // Prevent any parent handlers from firing
+      e.stopPropagation();
+      e.preventDefault();
+      
+      if (isPanning) return; // Don't drag nodes while panning
+      
+      const node = e.currentTarget || e.target.closest('.network-node');
+      if (!node) return;
+      
+      draggedNode = nodeId;
+      node.classList.add('dragging');
+      
+      // Store the initial mouse position and node position
+      const startMouseX = e.pageX;
+      const startMouseY = e.pageY;
+      const startNodeLeft = parseInt(node.style.left) || 0;
+      const startNodeTop = parseInt(node.style.top) || 0;
+      
+      function drag(e) {
+        if (!draggedNode || draggedNode !== nodeId) return;
+        
+        e.preventDefault();
+        
+        // Calculate the distance moved by the mouse
+        const deltaX = (e.pageX - startMouseX) / scale;
+        const deltaY = (e.pageY - startMouseY) / scale;
+        
+        // Apply the movement to the node
+        const newLeft = startNodeLeft + deltaX;
+        const newTop = startNodeTop + deltaY;
+        
+        node.style.left = newLeft + 'px';
+        node.style.top = newTop + 'px';
+        
+        // Update position in networkPositions (center of node)
+        networkPositions[nodeId] = { 
+          x: newLeft + 70, 
+          y: newTop + 40 
+        };
+        
+        // Redraw connections in real-time
+        redrawConnections();
+      }
+      
+      function stopDrag(e) {
+        if (draggedNode === nodeId) {
+          draggedNode = null;
+          node.classList.remove('dragging');
+          document.removeEventListener('mousemove', drag);
+          document.removeEventListener('mouseup', stopDrag);
+          saveToLocalStorage();
+        }
+      }
+      
+      // Attach to document for reliable tracking
+      document.addEventListener('mousemove', drag);
+      document.addEventListener('mouseup', stopDrag);
+    }
+    
+    // Redraw connections without re-rendering entire view
+    function redrawConnections() {
+      const canvas = document.getElementById('networkCanvas');
+      
+      // Remove all existing lines
+      const existingLines = canvas.querySelectorAll('.network-line');
+      existingLines.forEach(line => line.remove());
+      
+      // Redraw peripheral connections
+      nodes.forEach(node => {
+        if (node.type === 'peripheral' && node.connectedTo) {
+          const targetNode = nodes.find(n => n.id === node.connectedTo);
+          if (targetNode && networkPositions[node.id] && networkPositions[targetNode.id]) {
+            const line = document.createElement('div');
+            line.className = 'network-line';
+            line.style.background = '#ffff00';
+            line.style.height = '3px';
+            line.style.opacity = '0.8';
+            
+            const pos1 = networkPositions[node.id];
+            const pos2 = networkPositions[targetNode.id];
+            
+            const dx = pos2.x - pos1.x;
+            const dy = pos2.y - pos1.y;
+            const length = Math.sqrt(dx * dx + dy * dy);
+            const angle = Math.atan2(dy, dx) * 180 / Math.PI;
+            
+            line.style.left = pos1.x + 'px';
+            line.style.top = pos1.y + 'px';
+            line.style.width = length + 'px';
+            line.style.transform = `rotate(${angle}deg)`;
+            
+            canvas.insertBefore(line, canvas.firstChild);
+          }
+        }
+      });
+      
+      // Redraw network connections
+      const networkNodesForRedraw = nodes.filter(n => n.type !== 'parts' && n.type !== 'peripheral');
+      networkNodesForRedraw.forEach((node, i) => {
+        networkNodesForRedraw.forEach((target, j) => {
+          if (i < j) {
+            const line = document.createElement('div');
+            line.className = 'network-line dotted';
+            const pos1 = networkPositions[node.id];
+            const pos2 = networkPositions[target.id];
+            
+            const dx = pos2.x - pos1.x;
+            const dy = pos2.y - pos1.y;
+            const length = Math.sqrt(dx * dx + dy * dy);
+            const angle = Math.atan2(dy, dx) * 180 / Math.PI;
+            
+            line.style.left = pos1.x + 'px';
+            line.style.top = pos1.y + 'px';
+            line.style.width = length + 'px';
+            line.style.transform = `rotate(${angle}deg)`;
+            
+            canvas.insertBefore(line, canvas.firstChild);
+          }
+        });
+      });
+    }
+
+    // Initialize network pan functionality
+    function initNetworkPan() {
+      const viewport = document.getElementById('networkViewport');
+      if (!viewport) return;
+      
+      // Remove any existing listeners first
+      const newViewport = viewport.cloneNode(true);
+      viewport.parentNode.replaceChild(newViewport, viewport);
+      
+      newViewport.addEventListener('mousedown', (e) => {
+        // Only start panning if we're not clicking on a node and not already dragging
+        if (e.target.closest('.network-node') || draggedNode) {
+          return; // Let the node handle its own drag
+        }
+        
+        isPanning = true;
+        startPanX = e.clientX - panX;
+        startPanY = e.clientY - panY;
+        newViewport.classList.add('dragging');
+        e.preventDefault();
+      });
+      
+      newViewport.addEventListener('mousemove', (e) => {
+        if (!isPanning || draggedNode) return;
+        
+        panX = e.clientX - startPanX;
+        panY = e.clientY - startPanY;
+        
+        const container = document.getElementById('networkContainer');
+        container.style.transform = `translate(${panX}px, ${panY}px) scale(${scale})`;
+      });
+      
+      newViewport.addEventListener('mouseup', () => {
+        isPanning = false;
+        newViewport.classList.remove('dragging');
+      });
+      
+      newViewport.addEventListener('mouseleave', () => {
+        isPanning = false;
+        newViewport.classList.remove('dragging');
+      });
+      
+      // Mouse wheel zoom
+      newViewport.addEventListener('wheel', (e) => {
+        e.preventDefault();
+        const delta = e.deltaY > 0 ? 0.9 : 1.1;
+        const newScale = scale * delta;
+        
+        if (newScale >= 0.3 && newScale <= 3) {
+          scale = newScale;
+          const container = document.getElementById('networkContainer');
+          container.style.transform = `translate(${panX}px, ${panY}px) scale(${scale})`;
+        }
+      });
+    }
+
+    // Zoom controls
+    function zoomIn() {
+      if (scale < 3) {
+        scale *= 1.2;
+        const container = document.getElementById('networkContainer');
+        container.style.transform = `translate(${panX}px, ${panY}px) scale(${scale})`;
+      }
+    }
+
+    function zoomOut() {
+      if (scale > 0.3) {
+        scale /= 1.2;
+        const container = document.getElementById('networkContainer');
+        container.style.transform = `translate(${panX}px, ${panY}px) scale(${scale})`;
+      }
+    }
+
+    function resetZoom() {
+      scale = 1;
+      panX = 0;
+      panY = 0;
+      const container = document.getElementById('networkContainer');
+      container.style.transform = `translate(0px, 0px) scale(1)`;
+      
+      // Re-render to ensure everything is positioned correctly
+      if (document.getElementById('networkView').style.display === 'block') {
+        renderNetworkView();
+      }
+    }
+
+    // File operations
+    function loadFromFile() {
+      document.getElementById('fileInput').click();
+    }
+
+    function handleFileLoad(event) {
+      const file = event.target.files[0];
+      if (!file) return;
+      
+      const reader = new FileReader();
+      reader.onload = (e) => {
+        try {
+          const data = JSON.parse(e.target.result);
+          nodes = data.nodes || [];
+          networkPositions = data.positions || {};
+          saveToLocalStorage();
+          updateDisplay();
+          showAlert('Data loaded successfully');
+        } catch (error) {
+          showAlert('Error loading file', 'error');
+        }
+      };
+      reader.readAsText(file);
+    }
+
+    function saveToFile() {
+      const data = {
+        nodes: nodes,
+        positions: networkPositions,
+        exportDate: new Date().toISOString()
+      };
+      
+      const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `tangnet_inventory_${new Date().toISOString().split('T')[0]}.json`;
+      a.click();
+      URL.revokeObjectURL(url);
+      showAlert('Data saved successfully');
+    }
+
+    // JSON editor
+    function toggleJsonEditor() {
+      const editor = document.getElementById('jsonEditor');
+      const isVisible = editor.style.display === 'block';
+      
+      if (!isVisible) {
+        document.getElementById('jsonTextarea').value = JSON.stringify({ nodes }, null, 2);
+      }
+      
+      editor.style.display = isVisible ? 'none' : 'block';
+    }
+
+    function applyJson() {
+      try {
+        const data = JSON.parse(document.getElementById('jsonTextarea').value);
+        nodes = data.nodes || [];
+        saveToLocalStorage();
+        updateDisplay();
+        toggleJsonEditor();
+        showAlert('JSON applied successfully');
+      } catch (error) {
+        showAlert('Invalid JSON format', 'error');
+      }
+    }
+
+    // Utility functions
+    function showAlert(message, type = 'success') {
+      const alert = document.createElement('div');
+      alert.className = `alert ${type}`;
+      alert.textContent = message;
+      document.body.appendChild(alert);
+      
+      setTimeout(() => {
+        alert.style.opacity = '0';
+        setTimeout(() => alert.remove(), 300);
+      }, 3000);
+    }
+
+    function closeModals() {
+      document.getElementById('nodeForm').style.display = 'none';
+      document.getElementById('modalOverlay').style.display = 'none';
+      document.getElementById('aboutModal').style.display = 'none';
+    }
+    
+    function toggleAbout() {
+      const aboutModal = document.getElementById('aboutModal');
+      const overlay = document.getElementById('modalOverlay');
+      const isVisible = aboutModal.style.display === 'block';
+      
+      if (isVisible) {
+        aboutModal.style.display = 'none';
+        overlay.style.display = 'none';
+      } else {
+        aboutModal.style.display = 'block';
+        overlay.style.display = 'block';
+      }
+    }
+
+    function showImage(src) {
+      const modal = document.createElement('div');
+      modal.style.cssText = `
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(0, 0, 0, 0.9);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        z-index: 1000;
+        cursor: pointer;
+      `;
+      
+      const img = document.createElement('img');
+      img.src = src;
+      img.style.cssText = 'max-width: 90%; max-height: 90%; border: 2px solid #00ff00;';
+      
+      modal.appendChild(img);
+      modal.onclick = () => modal.remove();
+      document.body.appendChild(modal);
+    }
+
+    // Get color for node type
+    function getTypeColor(type) {
+      const colors = {
+        pi: '#00ffff',
+        gpu: '#ff00ff',
+        controller: '#00ff00',
+        peripheral: '#ffff00',
+        parts: '#ff8800'
+      };
+      return colors[type] || '#00ff00';
+    }
+
+    // Get color for status
+    function getStatusColor(status) {
+      const colors = {
+        active: '#00ff00',
+        inactive: '#666666',
+        maintenance: '#ff8800'
+      };
+      return colors[status] || '#ff0000';
+    }
+
+    // Image preview functions
+    let imagePreviewElement = null;
+    
+    function showImagePreview(event, imageSrc) {
+      if (!imagePreviewElement) {
+        imagePreviewElement = document.createElement('div');
+        imagePreviewElement.className = 'image-preview-hover';
+        imagePreviewElement.innerHTML = '<img src="" alt="Preview">';
+        document.body.appendChild(imagePreviewElement);
+      }
+      
+      const img = imagePreviewElement.querySelector('img');
+      img.src = imageSrc;
+      
+      // Position the preview near the mouse but ensure it stays on screen
+      const updatePosition = (e) => {
+        const previewWidth = 520; // max-width + padding + border
+        const previewHeight = 520; // max-height + padding + border
+        const offset = 20;
+        
+        let left = e.clientX + offset;
+        let top = e.clientY + offset;
+        
+        // Keep preview on screen
+        if (left + previewWidth > window.innerWidth) {
+          left = e.clientX - previewWidth - offset;
+        }
+        if (top + previewHeight > window.innerHeight) {
+          top = e.clientY - previewHeight - offset;
+        }
+        
+        imagePreviewElement.style.left = left + 'px';
+        imagePreviewElement.style.top = top + 'px';
+      };
+      
+      updatePosition(event);
+      imagePreviewElement.style.display = 'block';
+      
+      // Update position as mouse moves
+      event.target.addEventListener('mousemove', updatePosition);
+      event.target.dataset.updateHandler = updatePosition;
+    }
+    
+    function hideImagePreview() {
+      if (imagePreviewElement) {
+        imagePreviewElement.style.display = 'none';
+        // Remove the mousemove listener
+        const target = event.target;
+        if (target.dataset.updateHandler) {
+          target.removeEventListener('mousemove', target.dataset.updateHandler);
+          delete target.dataset.updateHandler;
+        }
+      }
+    }
+
+    // Keyboard shortcuts
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape') {
+        closeModals();
+        hideImagePreview();
+      }
+    });
+  </script>
+</body>
+</html>

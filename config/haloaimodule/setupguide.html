@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>⚡ Tangnet Guide • Hailo‑8 AI Module on Raspberry Pi 5 (16 GB)</title>
+  <style>
+      body{background:#0c0c0c;color:#baf7e2;font-family:'Fira Mono',monospace;margin:0;padding:0 0 4rem 0}
+      header{background:#132826;padding:1.3rem 0 0.8rem 0;text-align:center;border-bottom:3px solid #38ffc9;box-shadow:0 6px 24px #1effc355}
+      header h1{color:#38ffc9;font-size:1.9rem;letter-spacing:1px;margin:0}
+      section{max-width:940px;margin:2rem auto;padding:1.2rem 1.3rem;background:#162e2b;border-left:4px solid #38ffc9;border-radius:10px;box-shadow:0 4px 18px #38ffc345}
+      h2{color:#38ffc9;margin-top:0.3rem;border-bottom:1px solid #2affc3;padding-bottom:4px}
+      h3{color:#25ffb4;margin-bottom:0.4rem}
+      ol,ul{line-height:1.6;font-size:1rem}
+      code,pre{background:#091716;color:#aff;overflow-x:auto;padding:2px 6px;border-radius:4px;font-size:0.93rem}
+      .tip{background:#143b32;border-left:3px solid #47ffce;padding:0.5rem 1rem;border-radius:4px;margin:1rem 0;font-size:0.95rem;color:#b5ffe4}
+      .warn{background:#3a1e1e;border-left:3px solid #ff9352;color:#ffd4b0;padding:0.5rem 1rem;border-radius:4px;margin:1rem 0;font-size:0.95rem}
+      footer{margin-top:3rem;text-align:center;color:#7ef5d7;opacity:.8}
+  </style>
+</head>
+<body>
+<header>
+  <h1>Hailo‑8 AI Kit → Raspberry Pi 5 (16 GB) + 7'' Touch</h1>
+  <p style="color:#7ef5d7;margin-top:4px">Unbox ▸ Install ▸ Drivers ▸ Test ▸ Mesh‑ready</p>
+</header>
+
+<section>
+  <h2>📦 1. Unboxing Checklist</h2>
+  <ul>
+    <li>Hailo‑8 M.2 module (2280 form‑factor)</li>
+    <li>Raspberry Pi M.2 HAT+ board (with standoffs & screws)</li>
+    <li>Plastic heatsink strips + thermal pad (usually pre‑installed)</li>
+    <li>Phillips micro screwdriver</li>
+  </ul>
+</section>
+
+<section>
+  <h2>🔧 2. Physical Installation</h2>
+  <ol>
+    <li>Shutdown Pi:<br><code>sudo poweroff</code> then disconnect power.</li>
+    <li>Gently detach the 7" touchscreen ribbon if necessary (note port orientation).</li>
+    <li>Mount the <strong>M.2 HAT+</strong> onto the Pi 5 GPIO header; secure with standoffs.</li>
+    <li>Insert the <strong>Hailo‑8 module</strong> into the M‑key slot at a 30° angle, label up, contacts fully seated.</li>
+    <li>Press down and fasten the single 2280 screw.</li>
+    <li>Reconnect the touchscreen ribbon, ensuring zero twist.</li>
+    <li>Apply the included heat‑spreader pad if your kit supplies one.</li>
+  </ol>
+  <div class="tip">Position the Pi so ventilation holes & heat‑sink fins are unobstructed. Hailo‑8 can get warm under sustained inference.</div>
+</section>
+
+<section>
+  <h2>🖥️ 3. Firmware & Kernel Prep (Pi OS Bookworm 64‑bit)</h2>
+  <pre>sudo apt update && sudo apt full-upgrade -y
+sudo rpi-update  # pulls latest firmware supporting the M.2 HAT+
+reboot</pre>
+  <div class="warn">Skip <code>rpi-update</code> if you’re on the latest kernel (&gt;= 6.9) already; unnecessary updates can break custom modules.</div>
+</section>
+
+<section>
+  <h2>📦 4. Install Hailo Drivers & SDK</h2>
+  <ol>
+    <li>Add repo & keys:
+      <pre>wget https://repo.hailo.ai/KEY.gpg -O - | sudo apt-key add -
+echo "deb https://repo.hailo.ai/apt $(lsb_release -cs) main" | \
+  sudo tee /etc/apt/sources.list.d/hailo.list
+sudo apt update</pre></li>
+    <li>Install core packages:
+      <pre>sudo apt install -y hailo-all hailo-pcie-sdk python3-hailo
+sudo usermod -aG hailo $(whoami)</pre></li>
+    <li>Reboot to load the <code>hailo-pcie</code> kernel module.</li>
+  </ol>
+</section>
+
+<section>
+  <h2>🧪 5. Verification & First Run</h2>
+  <h3>5.1 Detect Device</h3>
+  <pre>hailo device list</pre>
+  Should return something like:
+  <pre>ID  | BUS | DEVICE | DEVICE-ID | DEVICE-SERIAL
+0   | pci | 00:00.0| 0x1aE3     | 123456789ABC</pre>
+
+  <h3>5.2 Run Classification Demo</h3>
+  <pre>hailo demo classification --source /dev/video0 --device-id 0</pre>
+  Expect an overlay with live predictions on your touchscreen or HDMI output.
+</section>
+
+<section>
+  <h2>🔗 6. Integrate with Tangnet</h2>
+  <ul>
+    <li>Add hostname <code>tangnet-edge-ai</code> (optional):
+      <pre>sudo hostnamectl set-hostname tangnet-edge-ai</pre></li>
+    <li>Update mesh inventory YAML:</li>
+  </ul>
+  <pre># tangnet_inventory.yaml
+- name: tangnet-edge-ai
+  ip: 192.168.1.43
+  role: vision
+  model: raspberry_pi_5_16gb_hailo
+  services:
+    - hailo_inference
+    - camera_monitor
+</pre>
+  <ul>
+    <li>Expose local service on port 8555:
+      <pre>hailo app run yolov5 --http-port 8555 &amp;</pre></li>
+    <li>From another node:
+      <pre>curl http://192.168.1.43:8555/stats</pre></li>
+  </ul>
+</section>
+
+<section>
+  <h2>🛠️ 7. Troubleshooting</h2>
+  <ul>
+    <li><code>hailo device list</code> returns empty → check PCIe ribbon, reseat module.</li>
+    <li>Kernel module missing → <pre>lsmod | grep hailo</pre>. If absent, reinstall <code>hailo-pcie-sdk</code>.</li>
+    <li>High temps → attach small heatsink/fan to Hailo or increase airflow.</li>
+  </ul>
+</section>
+
+<footer>
+  Tangnet • Hailo‑8 Setup Guide v1.0 — June 2025<br>
+  Build fast, build local, mesh smart.
+</footer>
+</body>
+</html>
