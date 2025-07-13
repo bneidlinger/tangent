@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Tangnet Node Booting...</title>
+  <style>
+    html, body {
+      margin: 0;
+      padding: 0;
+      background-color: #020326;
+      color: #00ffe1;
+      font-family: 'Courier New', Courier, monospace;
+      overflow: hidden;
+    }
+
+    .overlay {
+      position: absolute;
+      top: 0; left: 0;
+      width: 100vw;
+      height: 100vh;
+      background: repeating-linear-gradient(
+        0deg, #00ffe122 0px, #00ffe122 1px, transparent 1px, transparent 3px
+      );
+      animation: gridMove 10s linear infinite;
+    }
+
+    @keyframes gridMove {
+      from { background-position: 0 0; }
+      to { background-position: 0 100%; }
+    }
+
+    .container {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      text-align: center;
+    }
+
+    h1 {
+      font-size: 2em;
+      margin-bottom: 10px;
+      letter-spacing: 2px;
+    }
+
+    .terminal {
+      background-color: rgba(0, 255, 225, 0.05);
+      padding: 15px;
+      border: 1px solid #00ffe1;
+      text-align: left;
+      width: 400px;
+      max-width: 90vw;
+      margin: 0 auto;
+      font-size: 0.95em;
+      height: 180px;
+      overflow-y: auto;
+    }
+
+    .pulse {
+      animation: pulse 1.2s infinite;
+    }
+
+    @keyframes pulse {
+      0%, 100% { opacity: 0.2; }
+      50% { opacity: 1; }
+    }
+  </style>
+</head>
+<body>
+  <div class="overlay"></div>
+  <div class="container">
+    <h1>TANGNET NODE BOOTING<span class="pulse">_</span></h1>
+    <div class="terminal" id="terminalLog">
+      [00:00:01] Initializing hardware interfaces... OK<br>
+      [00:00:02] Authenticating AI cores... OK<br>
+      [00:00:03] Verifying honeycomb integrity... OK<br>
+      [00:00:04] Synchronizing heatsink telemetry... OK<br>
+    </div>
+  </div>
+
+  <script>
+    const terminal = document.getElementById('terminalLog');
+    const bootLines = [
+      "Scanning Pi Heatsink Tower... ONLINE",
+      "Calibrating Sensor Grid... OK",
+      "Sky Honeycomb Module: SIGNAL ACQUIRED",
+      "Node handshake received from Core: TangNode-01",
+      "Initializing user input firewall... OK",
+      "Finalizing boot sequence...",
+      "TANGNET NODE STATUS: ONLINE"
+    ];
+
+    let i = 0;
+    setInterval(() => {
+      if (i < bootLines.length) {
+        const time = new Date().toISOString().substr(11, 8);
+        terminal.innerHTML += `[${time}] ${bootLines[i]}<br>`;
+        terminal.scrollTop = terminal.scrollHeight;
+        i++;
+      }
+    }, 1300);
+  </script>
+</body>
+</html>

@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Raspberry Pi GPIO Pinout Guide</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background: #111;
+      color: #f0f0f0;
+      padding: 20px;
+      line-height: 1.6;
+    }
+    h1 {
+      color: #ff9800;
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      background: #222;
+      margin-top: 20px;
+    }
+    th, td {
+      padding: 10px;
+      border: 1px solid #444;
+      text-align: left;
+    }
+    th {
+      background-color: #333;
+    }
+    .power { color: #e91e63; }
+    .ground { color: #9e9e9e; }
+    .gpio { color: #4caf50; }
+    .i2c { color: #00bcd4; }
+    .uart { color: #ffeb3b; }
+    .spi { color: #ff5722; }
+    .pcm { color: #3f51b5; }
+  </style>
+</head>
+<body>
+  <h1>Raspberry Pi GPIO Header Pinout Guide</h1>
+  <p>This guide covers the standard 40-pin GPIO header found on most Raspberry Pi models. Each pin is described with its function and common use cases.</p>
+  <table>
+    <thead>
+      <tr>
+        <th>Pin</th>
+        <th>Name</th>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr><td>1</td><td>3.3V</td><td class="power">Power</td><td>Provides 3.3V power</td></tr>
+      <tr><td>2</td><td>5V</td><td class="power">Power</td><td>Provides 5V power</td></tr>
+      <tr><td>3</td><td>GPIO 2 (SDA)</td><td class="i2c">I²C</td><td>Data line for I²C</td></tr>
+      <tr><td>4</td><td>5V</td><td class="power">Power</td><td>Provides 5V power</td></tr>
+      <tr><td>5</td><td>GPIO 3 (SCL)</td><td class="i2c">I²C</td><td>Clock line for I²C</td></tr>
+      <tr><td>6</td><td>GND</td><td class="ground">Ground</td><td>Electrical ground</td></tr>
+      <tr><td>7</td><td>GPIO 4</td><td class="gpio">GPIO</td><td>General-purpose input/output</td></tr>
+      <tr><td>8</td><td>GPIO 14 (TXD)</td><td class="uart">UART</td><td>Transmit line for serial</td></tr>
+      <tr><td>9</td><td>GND</td><td class="ground">Ground</td><td>Electrical ground</td></tr>
+      <tr><td>10</td><td>GPIO 15 (RXD)</td><td class="uart">UART</td><td>Receive line for serial</td></tr>
+      <tr><td>11</td><td>GPIO 17</td><td class="gpio">GPIO</td><td>General-purpose input/output</td></tr>
+      <tr><td>12</td><td>GPIO 18</td><td class="gpio">GPIO / PCM_CLK</td><td>PWM output or PCM clock</td></tr>
+      <tr><td>13</td><td>GPIO 27</td><td class="gpio">GPIO</td><td>General-purpose input/output</td></tr>
+      <tr><td>14</td><td>GND</td><td class="ground">Ground</td><td>Electrical ground</td></tr>
+      <tr><td>15</td><td>GPIO 22</td><td class="gpio">GPIO</td><td>General-purpose input/output</td></tr>
+      <tr><td>16</td><td>GPIO 23</td><td class="gpio">GPIO</td><td>General-purpose input/output</td></tr>
+      <tr><td>17</td><td>3.3V</td><td class="power">Power</td><td>Provides 3.3V power</td></tr>
+      <tr><td>18</td><td>GPIO 24</td><td class="gpio">GPIO</td><td>General-purpose input/output</td></tr>
+      <tr><td>19</td><td>GPIO 10 (MOSI)</td><td class="spi">SPI</td><td>SPI Master Out, Slave In</td></tr>
+      <tr><td>20</td><td>GND</td><td class="ground">Ground</td><td>Electrical ground</td></tr>
+      <tr><td>21</td><td>GPIO 9 (MISO)</td><td class="spi">SPI</td><td>SPI Master In, Slave Out</td></tr>
+      <tr><td>22</td><td>GPIO 25</td><td class="gpio">GPIO</td><td>General-purpose input/output</td></tr>
+      <tr><td>23</td><td>GPIO 11 (SCLK)</td><td class="spi">SPI</td><td>SPI Clock</td></tr>
+      <tr><td>24</td><td>GPIO 8 (CE0)</td><td class="spi">SPI</td><td>SPI Chip Select 0</td></tr>
+      <tr><td>25</td><td>GND</td><td class="ground">Ground</td><td>Electrical ground</td></tr>
+      <tr><td>26</td><td>GPIO 7 (CE1)</td><td class="spi">SPI</td><td>SPI Chip Select 1</td></tr>
+      <tr><td>27</td><td>GPIO 0 (ID_SD)</td><td class="gpio">ID EEPROM</td><td>Reserved for HAT ID EEPROM (I²C)</td></tr>
+      <tr><td>28</td><td>GPIO 1 (ID_SC)</td><td class="gpio">ID EEPROM</td><td>Reserved for HAT ID EEPROM (I²C)</td></tr>
+      <tr><td>29</td><td>GPIO 5</td><td class="gpio">GPIO</td><td>General-purpose input/output</td></tr>
+      <tr><td>30</td><td>GND</td><td class="ground">Ground</td><td>Electrical ground</td></tr>
+      <tr><td>31</td><td>GPIO 6</td><td class="gpio">GPIO</td><td>General-purpose input/output</td></tr>
+      <tr><td>32</td><td>GPIO 12</td><td class="gpio">GPIO / PWM</td><td>Alternate PWM output</td></tr>
+      <tr><td>33</td><td>GPIO 13</td><td class="gpio">GPIO / PWM</td><td>Alternate PWM output</td></tr>
+      <tr><td>34</td><td>GND</td><td class="ground">Ground</td><td>Electrical ground</td></tr>
+      <tr><td>35</td><td>GPIO 19</td><td class="pcm">PCM / SPI</td><td>PCM Frame Sync or SPI MISO</td></tr>
+      <tr><td>36</td><td>GPIO 16</td><td class="gpio">GPIO</td><td>General-purpose input/output</td></tr>
+      <tr><td>37</td><td>GPIO 26</td><td class="gpio">GPIO</td><td>General-purpose input/output</td></tr>
+      <tr><td>38</td><td>GPIO 20</td><td class="pcm">PCM DIN</td><td>PCM Data In</td></tr>
+      <tr><td>39</td><td>GND</td><td class="ground">Ground</td><td>Electrical ground</td></tr>
+      <tr><td>40</td><td>GPIO 21</td><td class="pcm">PCM DOUT</td><td>PCM Data Out</td></tr>
+    </tbody>
+  </table>
+  <p style="margin-top:20px;">Guide adapted from CanaKit GPIO chart.</p>
+</body>
+</html>

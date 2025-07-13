@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Raspberry Pi GPIO Hover Guide</title>
+  <style>
+    body {
+      background: #111;
+      color: #eee;
+      font-family: Arial, sans-serif;
+      padding: 20px;
+      text-align: center;
+    }
+    h1 {
+      color: #ffa500;
+    }
+    .container {
+      position: relative;
+      display: inline-block;
+    }
+    img {
+      max-width: 100%;
+      height: auto;
+      border: 2px solid #444;
+    }
+    .pin {
+      position: absolute;
+      width: 20px;
+      height: 20px;
+      border-radius: 50%;
+      background: rgba(255, 165, 0, 0.2);
+      cursor: pointer;
+    }
+    .pin:hover::after {
+      content: attr(data-info);
+      position: absolute;
+      top: -40px;
+      left: 50%;
+      transform: translateX(-50%);
+      background: #222;
+      color: #fff;
+      padding: 8px;
+      border-radius: 5px;
+      white-space: nowrap;
+      font-size: 14px;
+      z-index: 10;
+      box-shadow: 0 0 10px #000;
+    }
+  </style>
+</head>
+<body>
+  <h1>Raspberry Pi GPIO Header Pinout (Hover)</h1>
+  <div class="container">
+    <img src="piheader.png" alt="Pi Header Image">
+
+    <!-- Left Column Pins (1, 3, 5, ..., 39) -->
+    <div class="pin" style="top: 55px; left: 60px;" data-info="Pin 1: 3.3V Power"></div>
+    <div class="pin" style="top: 95px; left: 60px;" data-info="Pin 3: GPIO 2 (SDA, I²C)"></div>
+    <div class="pin" style="top: 135px; left: 60px;" data-info="Pin 5: GPIO 3 (SCL, I²C)"></div>
+    <div class="pin" style="top: 175px; left: 60px;" data-info="Pin 7: GPIO 4 (GPCLK0)"></div>
+    <div class="pin" style="top: 215px; left: 60px;" data-info="Pin 9: GND"></div>
+    <div class="pin" style="top: 255px; left: 60px;" data-info="Pin 11: GPIO 17"></div>
+    <div class="pin" style="top: 295px; left: 60px;" data-info="Pin 13: GPIO 27"></div>
+    <div class="pin" style="top: 335px; left: 60px;" data-info="Pin 15: GPIO 22"></div>
+    <div class="pin" style="top: 375px; left: 60px;" data-info="Pin 17: 3.3V Power"></div>
+    <div class="pin" style="top: 415px; left: 60px;" data-info="Pin 19: GPIO 10 (MOSI, SPI)"></div>
+    <div class="pin" style="top: 455px; left: 60px;" data-info="Pin 21: GPIO 9 (MISO, SPI)"></div>
+    <div class="pin" style="top: 495px; left: 60px;" data-info="Pin 23: GPIO 11 (SCLK, SPI)"></div>
+    <div class="pin" style="top: 535px; left: 60px;" data-info="Pin 25: GND"></div>
+    <div class="pin" style="top: 575px; left: 60px;" data-info="Pin 27: GPIO 0 (ID_SD)"></div>
+    <div class="pin" style="top: 615px; left: 60px;" data-info="Pin 29: GPIO 5"></div>
+    <div class="pin" style="top: 655px; left: 60px;" data-info="Pin 31: GPIO 6"></div>
+    <div class="pin" style="top: 695px; left: 60px;" data-info="Pin 33: GPIO 13 (PWM)"></div>
+    <div class="pin" style="top: 735px; left: 60px;" data-info="Pin 35: GPIO 19 (PCM/Alt SPI MISO)"></div>
+    <div class="pin" style="top: 775px; left: 60px;" data-info="Pin 37: GPIO 26"></div>
+    <div class="pin" style="top: 815px; left: 60px;" data-info="Pin 39: GND"></div>
+
+    <!-- Right Column Pins (2, 4, ..., 40) -->
+    <div class="pin" style="top: 55px; left: 130px;" data-info="Pin 2: 5V Power"></div>
+    <div class="pin" style="top: 95px; left: 130px;" data-info="Pin 4: 5V Power"></div>
+    <div class="pin" style="top: 135px; left: 130px;" data-info="Pin 6: GND"></div>
+    <div class="pin" style="top: 175px; left: 130px;" data-info="Pin 8: GPIO 14 (TXD, UART)"></div>
+    <div class="pin" style="top: 215px; left: 130px;" data-info="Pin 10: GPIO 15 (RXD, UART)"></div>
+    <div class="pin" style="top: 255px; left: 130px;" data-info="Pin 12: GPIO 18 (PCM_CLK / PWM)"></div>
+    <div class="pin" style="top: 295px; left: 130px;" data-info="Pin 14: GND"></div>
+    <div class="pin" style="top: 335px; left: 130px;" data-info="Pin 16: GPIO 23"></div>
+    <div class="pin" style="top: 375px; left: 130px;" data-info="Pin 18: GPIO 24"></div>
+    <div class="pin" style="top: 415px; left: 130px;" data-info="Pin 20: GND"></div>
+    <div class="pin" style="top: 455px; left: 130px;" data-info="Pin 22: GPIO 25"></div>
+    <div class="pin" style="top: 495px; left: 130px;" data-info="Pin 24: GPIO 8 (SPI CE0)"></div>
+    <div class="pin" style="top: 535px; left: 130px;" data-info="Pin 26: GPIO 7 (SPI CE1)"></div>
+    <div class="pin" style="top: 575px; left: 130px;" data-info="Pin 28: GPIO 1 (ID_SC)"></div>
+    <div class="pin" style="top: 615px; left: 130px;" data-info="Pin 30: GND"></div>
+    <div class="pin" style="top: 655px; left: 130px;" data-info="Pin 32: GPIO 12 (PWM)"></div>
+    <div class="pin" style="top: 695px; left: 130px;" data-info="Pin 34: GND"></div>
+    <div class="pin" style="top: 735px; left: 130px;" data-info="Pin 36: GPIO 16"></div>
+    <div class="pin" style="top: 775px; left: 130px;" data-info="Pin 38: GPIO 20 (PCM DIN)"></div>
+    <div class="pin" style="top: 815px; left: 130px;" data-info="Pin 40: GPIO 21 (PCM DOUT)"></div>
+
+  </div>
+</body>
+</html>

@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Tangnet Linux Command Cards - Vol. 1</title>
+  <style>
+    body {
+      font-family: "Courier New", monospace;
+      background-color: #111;
+      color: #f0f0f0;
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      padding: 2rem;
+    }
+    .card {
+      background: #1e1e1e;
+      border: 1px solid #444;
+      border-radius: 12px;
+      margin: 1rem;
+      padding: 1rem 1.5rem;
+      max-width: 300px;
+      box-shadow: 0 0 15px #0ff3;
+    }
+    .command {
+      font-size: 1.2rem;
+      color: #00ffe1;
+    }
+    .section-title {
+      color: #ffa500;
+      margin-top: 0.5rem;
+      font-weight: bold;
+    }
+    pre {
+      background: #000;
+      padding: 0.5rem;
+      border-radius: 6px;
+      color: #0f0;
+      overflow-x: auto;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="card">
+    <div class="command">sudo</div>
+    <div class="section-title">What</div>
+    Allows you to run a command as another user (usually root).
+    <div class="section-title">Why</div>
+    Required for admin tasks like installing software or editing system files.
+    <div class="section-title">Example</div>
+    <pre>sudo reboot</pre>
+  </div>
+
+  <div class="card">
+    <div class="command">apt update</div>
+    <div class="section-title">What</div>
+    Refreshes your system's list of available packages.
+    <div class="section-title">Why</div>
+    Keeps your Pi aware of the latest versions and security patches.
+    <div class="section-title">Example</div>
+    <pre>sudo apt update</pre>
+  </div>
+
+  <div class="card">
+    <div class="command">apt upgrade</div>
+    <div class="section-title">What</div>
+    Installs newer versions of your installed packages.
+    <div class="section-title">Why</div>
+    Keeps your Pi running the latest software.
+    <div class="section-title">Example</div>
+    <pre>sudo apt upgrade</pre>
+  </div>
+
+  <div class="card">
+    <div class="command">hostnamectl</div>
+    <div class="section-title">What</div>
+    View or change the name of your Pi.
+    <div class="section-title">Why</div>
+    Useful for naming your Pi in the Tangnet mesh.
+    <div class="section-title">Example</div>
+    <pre>sudo hostnamectl set-hostname brand-node-01</pre>
+  </div>
+
+  <div class="card">
+    <div class="command">whoami</div>
+    <div class="section-title">What</div>
+    Displays your current username.
+    <div class="section-title">Why</div>
+    Confirm you're not root (or that you are!).
+    <div class="section-title">Example</div>
+    <pre>whoami</pre>
+  </div>
+
+  <div class="card">
+    <div class="command">pwd</div>
+    <div class="section-title">What</div>
+    Prints your current working directory.
+    <div class="section-title">Why</div>
+    Know where you are in the filesystem.
+    <div class="section-title">Example</div>
+    <pre>pwd</pre>
+  </div>
+
+  <div class="card">
+    <div class="command">ls</div>
+    <div class="section-title">What</div>
+    Lists files and directories in the current folder.
+    <div class="section-title">Why</div>
+    It’s how you see what’s there. Like peeking into a toolbox.
+    <div class="section-title">Example</div>
+    <pre>ls -l /home/brand</pre>
+  </div>
+
+  <div class="card">
+    <div class="command">cd</div>
+    <div class="section-title">What</div>
+    Changes the current directory.
+    <div class="section-title">Why</div>
+    You need to move around to get anything done.
+    <div class="section-title">Example</div>
+    <pre>cd /home/brand/Documents</pre>
+  </div>
+
+  <div class="card">
+    <div class="command">nano</div>
+    <div class="section-title">What</div>
+    Opens a basic text editor in the terminal.
+    <div class="section-title">Why</div>
+    Edit config files and scripts directly.
+    <div class="section-title">Example</div>
+    <pre>sudo nano /etc/hostname</pre>
+  </div>
+
+  <div class="card">
+    <div class="command">shutdown</div>
+    <div class="section-title">What</div>
+    Shuts the system down safely.
+    <div class="section-title">Why</div>
+    Prevent file corruption when powering off.
+    <div class="section-title">Example</div>
+    <pre>sudo shutdown now</pre>
+  </div>
+
+  <div class="card">
+    <div class="command">reboot</div>
+    <div class="section-title">What</div>
+    Restarts the system.
+    <div class="section-title">Why</div>
+    Applies changes, resets hung systems.
+    <div class="section-title">Example</div>
+    <pre>sudo reboot</pre>
+  </div>
+
+  <div class="card">
+    <div class="command">top / htop</div>
+    <div class="section-title">What</div>
+    Monitors system processes and performance.
+    <div class="section-title">Why</div>
+    See CPU/memory usage, kill rogue processes.
+    <div class="section-title">Example</div>
+    <pre>top
+htop</pre>
+  </div>
+
+</body>
+</html>

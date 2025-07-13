@@ -507,14 +507,15 @@
       background: rgba(0, 40, 0, 0.9);
       border: 2px solid #00ff00;
       border-radius: 5px;
-      padding: 10px;
+      padding: 12px;
       cursor: move;
       transition: transform 0.1s, box-shadow 0.3s;
-      min-width: 140px;
+      min-width: 150px;
       text-align: center;
       user-select: none;
       -webkit-user-select: none;
       z-index: 10;
+      margin: 5px; /* Add margin to prevent touching */
     }
     
     .network-node.dragging {
@@ -919,7 +920,11 @@
           <button onclick="loadFromFile()">LOAD DATA</button>
           <button onclick="saveToFile()">SAVE DATA</button>
           <button onclick="toggleJsonEditor()">JSON MODE</button>
+          <button onclick="clearStorage()" class="danger">CLEAR CACHE</button>
           <button onclick="toggleAbout()">ABOUT</button>
+          <div style="flex: 1; margin: 0 20px;">
+            <input type="text" id="searchInput" placeholder="SEARCH NODES..." onkeyup="searchNodes()" style="width: 100%; background: rgba(0, 20, 0, 0.8);">
+          </div>
           <div class="view-toggle">
             <button id="tableBtn" class="active" onclick="switchView('table')">TABLE</button>
             <button id="gridBtn" onclick="switchView('grid')">GRID</button>
@@ -970,6 +975,7 @@
               <button onclick="zoomIn()" style="padding: 5px 10px; font-size: 16px;">+</button>
               <button onclick="zoomOut()" style="padding: 5px 10px; font-size: 16px;">-</button>
               <button onclick="resetZoom()" style="padding: 5px 10px; font-size: 12px;">RESET</button>
+              <button onclick="resetNodePositions()" style="padding: 5px 10px; font-size: 12px; margin-left: 10px;">RESET POSITIONS</button>
             </div>
           </div>
         </div>
@@ -1100,6 +1106,8 @@
     let currentEditId = null;
     let networkPositions = {};
     let draggedNode = null;
+    let filteredNodes = [];
+    let searchTerm = '';
     
     // Zoom and pan variables
     let scale = 1;
@@ -1117,15 +1125,32 @@
     // Load data on startup
     window.addEventListener('load', () => {
       loadFromLocalStorage();
+      filteredNodes = [...nodes]; // Initialize filtered nodes
       updateDisplay();
     });
 
     // Auto-save to localStorage
     function saveToLocalStorage() {
-      localStorage.setItem('tangnetInventory', JSON.stringify({
-        nodes: nodes,
-        positions: networkPositions
-      }));
+      try {
+        localStorage.setItem('tangnetInventory', JSON.stringify({
+          nodes: nodes,
+          positions: networkPositions
+        }));
+      } catch (e) {
+        if (e.name === 'QuotaExceededError') {
+          console.error('localStorage quota exceeded');
+          showAlert('Storage quota exceeded! Data is in memory but not saved. Saving to file...', 'error');
+          // Show a note about the issue
+          setTimeout(() => {
+            showAlert('TIP: Use "CLEAR CACHE" button to free up space, or reduce image sizes', 'error');
+          }, 2000);
+          // Automatically trigger file save
+          setTimeout(() => saveToFile(), 500);
+        } else {
+          console.error('Error saving to localStorage:', e);
+          showAlert('Error saving data: ' + e.message, 'error');
+        }
+      }
     }
 
     function loadFromLocalStorage() {
@@ -1201,7 +1226,7 @@
       }
     }
 
-    // Convert image to PNG with size optimization
+    // Convert image to JPEG with aggressive compression
     function convertToPNG(file) {
       return new Promise((resolve, reject) => {
         const reader = new FileReader();
@@ -1211,9 +1236,9 @@
             const canvas = document.createElement('canvas');
             const ctx = canvas.getContext('2d');
             
-            // Max dimensions
-            const maxWidth = 800;
-            const maxHeight = 600;
+            // Much smaller max dimensions for thumbnails
+            const maxWidth = 300;
+            const maxHeight = 300;
             let width = img.width;
             let height = img.height;
 
@@ -1231,13 +1256,20 @@
             ctx.filter = 'contrast(1.1) brightness(1.05)';
             ctx.drawImage(img, 0, 0, width, height);
             
-            // Convert to PNG
+            // Convert to JPEG with lower quality for smaller size
             canvas.toBlob((blob) => {
               const reader = new FileReader();
-              reader.onloadend = () => resolve(reader.result);
+              reader.onloadend = () => {
+                // Check size and warn if still too large
+                const sizeInKB = blob.size / 1024;
+                if (sizeInKB > 50) {
+                  console.warn(`Image size is ${sizeInKB.toFixed(2)}KB, may cause storage issues`);
+                }
+                resolve(reader.result);
+              };
               reader.onerror = reject;
               reader.readAsDataURL(blob);
-            }, 'image/png', 0.9);
+            }, 'image/jpeg', 0.6); // Lower quality for smaller size
           };
           img.onerror = reject;
           img.src = e.target.result;
@@ -1391,10 +1423,15 @@
         nodes.push(nodeData);
       }
 
-      saveToLocalStorage();
       updateDisplay();
       toggleNodeForm();
       showAlert(currentEditId ? 'Node updated successfully' : 'Node added successfully');
+      
+      // Try to save to localStorage but don't fail if it doesn't work
+      saveToLocalStorage();
+      
+      // Check storage usage after adding
+      checkStorageUsage();
     }
 
     function deleteNode(id) {
@@ -1436,8 +1473,32 @@
       }
     }
 
+    // Search functionality
+    function searchNodes() {
+      searchTerm = document.getElementById('searchInput').value.toLowerCase();
+      
+      if (searchTerm === '') {
+        filteredNodes = [...nodes];
+      } else {
+        filteredNodes = nodes.filter(node => {
+          return node.id.toLowerCase().includes(searchTerm) ||
+                 node.name.toLowerCase().includes(searchTerm) ||
+                 node.type.toLowerCase().includes(searchTerm) ||
+                 (node.location && node.location.toLowerCase().includes(searchTerm)) ||
+                 (node.status && node.status.toLowerCase().includes(searchTerm)) ||
+                 (node.os && node.os.toLowerCase().includes(searchTerm)) ||
+                 (node.notes && node.notes.toLowerCase().includes(searchTerm));
+        });
+      }
+      
+      updateDisplay();
+    }
+
     // Update displays
     function updateDisplay() {
+      // Use filtered nodes if search is active, otherwise use all nodes
+      const displayNodes = searchTerm ? filteredNodes : nodes;
+      
       updateStats();
       updateTableView();
       updateGridView();
@@ -1447,18 +1508,21 @@
     }
 
     function updateStats() {
+      const displayNodes = searchTerm ? filteredNodes : nodes;
       const stats = {
-        total: nodes.length,
-        pi: nodes.filter(n => n.type === 'pi').length,
-        gpu: nodes.filter(n => n.type === 'gpu').length,
-        peripheral: nodes.filter(n => n.type === 'peripheral').length,
-        parts: nodes.filter(n => n.type === 'parts').length,
-        active: nodes.filter(n => n.status === 'active').length
+        total: displayNodes.length,
+        pi: displayNodes.filter(n => n.type === 'pi').length,
+        gpu: displayNodes.filter(n => n.type === 'gpu').length,
+        peripheral: displayNodes.filter(n => n.type === 'peripheral').length,
+        parts: displayNodes.filter(n => n.type === 'parts').length,
+        active: displayNodes.filter(n => n.status === 'active').length
       };
+
+      const searchIndicator = searchTerm ? `<span style="color: #ffff00; font-size: 0.8em;"> (FILTERED)</span>` : '';
 
       document.getElementById('statsContainer').innerHTML = `
         <div class="stat-box">
-          <div class="stat-value">${stats.total}</div>
+          <div class="stat-value">${stats.total}${searchIndicator}</div>
           <div class="stat-label">TOTAL ITEMS</div>
         </div>
         <div class="stat-box">
@@ -1486,7 +1550,13 @@
 
     function updateTableView() {
       const tbody = document.getElementById('tableBody');
-      tbody.innerHTML = nodes.map(node => {
+      const displayNodes = searchTerm ? filteredNodes : nodes;
+      if (displayNodes.length === 0) {
+        tbody.innerHTML = '<tr><td colspan="11" style="text-align: center; padding: 40px; opacity: 0.6;">NO NODES FOUND MATCHING SEARCH CRITERIA</td></tr>';
+        return;
+      }
+      
+      tbody.innerHTML = displayNodes.map(node => {
         let connectedInfo = '-';
         if (node.type === 'peripheral' && node.connectedTo) {
           const parentNode = nodes.find(n => n.id === node.connectedTo);
@@ -1506,7 +1576,7 @@
             <td>${connectedInfo}</td>
             <td><span style="color: ${getStatusColor(node.status)}">${node.status?.toUpperCase() || 'UNKNOWN'}</span></td>
             <td>
-              <button onclick="toggleNodeForm('${node.id}')" style="padding: 5px 10px; font-size: 12px;">EDIT</button>
+              <button onclick="toggleNodeForm('${node.id}')" style="padding: 5px 10px; font-size: 12px; margin-right: 5px;">EDIT</button>
               <button onclick="deleteNode('${node.id}')" class="danger" style="padding: 5px 10px; font-size: 12px;">DELETE</button>
             </td>
           </tr>
@@ -1516,7 +1586,13 @@
 
     function updateGridView() {
       const grid = document.getElementById('gridView');
-      grid.innerHTML = nodes.map(node => {
+      const displayNodes = searchTerm ? filteredNodes : nodes;
+      if (displayNodes.length === 0) {
+        grid.innerHTML = '<div style="grid-column: 1 / -1; text-align: center; padding: 60px; opacity: 0.6;">NO NODES FOUND MATCHING SEARCH CRITERIA</div>';
+        return;
+      }
+      
+      grid.innerHTML = displayNodes.map(node => {
         let connectedInfo = '';
         if (node.type === 'peripheral' && node.connectedTo) {
           const parentNode = nodes.find(n => n.id === node.connectedTo);
@@ -1546,7 +1622,7 @@
             ${connectedInfo}
             <p>Status: <span style="color: ${getStatusColor(node.status)}">${node.status?.toUpperCase() || 'UNKNOWN'}</span></p>
             <div style="margin-top: 10px;">
-              <button onclick="toggleNodeForm('${node.id}')" style="padding: 5px 10px; font-size: 12px;">EDIT</button>
+              <button onclick="toggleNodeForm('${node.id}')" style="padding: 5px 10px; font-size: 12px; margin-right: 5px;">EDIT</button>
               <button onclick="deleteNode('${node.id}')" class="danger" style="padding: 5px 10px; font-size: 12px;">DELETE</button>
             </div>
           </div>
@@ -1556,7 +1632,8 @@
 
     // Network diagram view
     function renderNetworkView() {
-      console.log('Rendering network view with nodes:', nodes.length);
+      const displayNodes = searchTerm ? filteredNodes : nodes;
+      console.log('Rendering network view with nodes:', displayNodes.length);
       
       const canvas = document.getElementById('networkCanvas');
       const container = document.getElementById('networkContainer');
@@ -1578,9 +1655,9 @@
       container.style.transform = `translate(${panX}px, ${panY}px) scale(${scale})`;
       
       // Calculate positions if not set
-      const networkNodes = nodes.filter(n => n.type !== 'parts' && n.type !== 'peripheral');
-      const peripheralNodes = nodes.filter(n => n.type === 'peripheral');
-      const partsNodes = nodes.filter(n => n.type === 'parts');
+      const networkNodes = displayNodes.filter(n => n.type !== 'parts' && n.type !== 'peripheral');
+      const peripheralNodes = displayNodes.filter(n => n.type === 'peripheral');
+      const partsNodes = displayNodes.filter(n => n.type === 'parts');
       
       // Position network nodes in a circle
       networkNodes.forEach((node, index) => {
@@ -1598,41 +1675,52 @@
       });
       
       // Position peripherals near their connected nodes
+      let unconnectedPeripheralIndex = 0;
       peripheralNodes.forEach((node, index) => {
         if (!networkPositions[node.id]) {
           if (node.connectedTo && networkPositions[node.connectedTo]) {
-            // Position near the connected node
+            // Position near the connected node with better spacing
             const parentPos = networkPositions[node.connectedTo];
-            const offsetAngle = (index * 45) * Math.PI / 180; // Spread peripherals around parent
-            const offsetRadius = 150;
+            // Count how many peripherals are already connected to this parent
+            const connectedCount = peripheralNodes.filter(p => 
+              p.connectedTo === node.connectedTo && peripheralNodes.indexOf(p) < index
+            ).length;
+            
+            const offsetAngle = (connectedCount * 60 + 30) * Math.PI / 180; // Better spread
+            const offsetRadius = 200; // Increased distance from parent
             
             networkPositions[node.id] = {
               x: parentPos.x + offsetRadius * Math.cos(offsetAngle),
               y: parentPos.y + offsetRadius * Math.sin(offsetAngle)
             };
           } else {
-            // Unconnected peripherals go to the right side
+            // Unconnected peripherals go to the right side with better spacing
+            // Add slight horizontal stagger to prevent perfect vertical alignment
+            const stagger = (unconnectedPeripheralIndex % 2) * 50 - 25;
             networkPositions[node.id] = {
-              x: 1400,
-              y: 800 + (index * 100)
+              x: 1400 + stagger,
+              y: 600 + (unconnectedPeripheralIndex * 150) // Increased spacing to 150px
             };
+            unconnectedPeripheralIndex++;
           }
         }
       });
       
-      // Position parts/misc items on the left side
+      // Position parts/misc items on the left side with better spacing
       partsNodes.forEach((node, index) => {
         if (!networkPositions[node.id]) {
+          // Add slight horizontal stagger for visual interest
+          const stagger = (index % 2) * 50 - 25;
           networkPositions[node.id] = {
-            x: 200,
-            y: 800 + (index * 100)
+            x: 200 + stagger,
+            y: 600 + (index * 150) // Increased spacing to match peripherals
           };
         }
       });
 
       // Create connections
       // First, draw peripheral connections
-      nodes.forEach(node => {
+      displayNodes.forEach(node => {
         if (node.type === 'peripheral' && node.connectedTo) {
           const targetNode = nodes.find(n => n.id === node.connectedTo);
           if (targetNode && networkPositions[node.id] && networkPositions[targetNode.id]) {
@@ -1688,7 +1776,7 @@
       
       // Create nodes
       console.log('Creating nodes on canvas');
-      nodes.forEach(node => {
+      displayNodes.forEach(node => {
         const nodeEl = document.createElement('div');
         nodeEl.className = `network-node ${node.type}-node ${node.status || 'active'}`;
         nodeEl.style.position = 'absolute';
@@ -1711,8 +1799,8 @@
         `;
         
         const pos = networkPositions[node.id];
-        nodeEl.style.left = (pos.x - 70) + 'px';
-        nodeEl.style.top = (pos.y - 40) + 'px';
+        nodeEl.style.left = (pos.x - 75) + 'px';  // Half of min-width (150px)
+        nodeEl.style.top = (pos.y - 50) + 'px';   // Approximate half height
         
         console.log(`Placing node ${node.id} at position:`, pos);
         
@@ -1778,8 +1866,8 @@
         
         // Update position in networkPositions (center of node)
         networkPositions[nodeId] = { 
-          x: newLeft + 70, 
-          y: newTop + 40 
+          x: newLeft + 75,   // Match the offset used in positioning
+          y: newTop + 50 
         };
         
         // Redraw connections in real-time
@@ -1949,6 +2037,23 @@
         renderNetworkView();
       }
     }
+    
+    function resetNodePositions() {
+      if (confirm('Reset all node positions to default layout?')) {
+        // Clear all stored positions
+        networkPositions = {};
+        
+        // Save the cleared positions
+        saveToLocalStorage();
+        
+        // Re-render the network view
+        if (document.getElementById('networkView').style.display === 'block') {
+          renderNetworkView();
+        }
+        
+        showAlert('Node positions reset successfully');
+      }
+    }
 
     // File operations
     function loadFromFile() {
@@ -1995,25 +2100,33 @@
     // JSON editor
     function toggleJsonEditor() {
       const editor = document.getElementById('jsonEditor');
+      const overlay = document.getElementById('modalOverlay');
       const isVisible = editor.style.display === 'block';
       
       if (!isVisible) {
-        document.getElementById('jsonTextarea').value = JSON.stringify({ nodes }, null, 2);
+        document.getElementById('jsonTextarea').value = JSON.stringify({ 
+          nodes: nodes,
+          positions: networkPositions 
+        }, null, 2);
+        editor.style.display = 'block';
+        overlay.style.display = 'block';
+      } else {
+        editor.style.display = 'none';
+        overlay.style.display = 'none';
       }
-      
-      editor.style.display = isVisible ? 'none' : 'block';
     }
 
     function applyJson() {
       try {
         const data = JSON.parse(document.getElementById('jsonTextarea').value);
         nodes = data.nodes || [];
+        networkPositions = data.positions || {};
         saveToLocalStorage();
         updateDisplay();
         toggleJsonEditor();
         showAlert('JSON applied successfully');
       } catch (error) {
-        showAlert('Invalid JSON format', 'error');
+        showAlert('Invalid JSON format: ' + error.message, 'error');
       }
     }
 
@@ -2149,6 +2262,37 @@
           target.removeEventListener('mousemove', target.dataset.updateHandler);
           delete target.dataset.updateHandler;
         }
+      }
+    }
+
+    // Clear localStorage
+    function clearStorage() {
+      if (confirm('This will clear all cached data. Your data will be lost unless you save it to a file first. Continue?')) {
+        try {
+          localStorage.removeItem('tangnetInventory');
+          showAlert('Cache cleared successfully. Please reload the page.', 'success');
+          setTimeout(() => location.reload(), 1500);
+        } catch (e) {
+          showAlert('Error clearing cache: ' + e.message, 'error');
+        }
+      }
+    }
+    
+    // Check storage usage
+    function checkStorageUsage() {
+      try {
+        const data = JSON.stringify({
+          nodes: nodes,
+          positions: networkPositions
+        });
+        const sizeInKB = new Blob([data]).size / 1024;
+        const sizeInMB = sizeInKB / 1024;
+        
+        if (sizeInMB > 4) {
+          showAlert(`Warning: Storage usage is ${sizeInMB.toFixed(2)}MB. Consider saving to file.`, 'error');
+        }
+      } catch (e) {
+        console.error('Error checking storage:', e);
       }
     }
 
