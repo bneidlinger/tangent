@@ -14,9 +14,10 @@ def get_tailscale_devices():
 
 def device_to_dict(dev):
     ips = dev.get('addresses', [])
+    # Sanitize IP address - replace with "local network"
     return {
         'Name': dev['hostname'],
-        'IP': ips[0] if ips else '',
+        'IP': 'local network',  # Changed from showing actual IP
         'OS': dev.get('os', ''),
         'User': dev.get('user', '').split('@')[0] if dev.get('user') else '',
         'Tags': ', '.join(dev.get('tags', [])),
@@ -109,9 +110,9 @@ def main():
             print("⚠️  Tailscale not configured. Using fallback data.")
             # Fallback data when Tailscale isn't set up
             parsed = [
-                {'Name': 'tangent-brain', 'IP': '192.168.1.30', 'OS': 'Ubuntu', 'User': 'brandon', 'Tags': '', 'Online': False, 'Last Seen': ''},
-                {'Name': 'tangent-node-01', 'IP': '192.168.1.31', 'OS': 'RaspberryPi', 'User': 'brand', 'Tags': '', 'Online': True, 'Last Seen': ''},
-                {'Name': 'tangent-node-02', 'IP': '192.168.1.43', 'OS': 'RaspberryPi', 'User': 'brand', 'Tags': '', 'Online': False, 'Last Seen': ''}
+                {'Name': 'tangent-brain', 'IP': 'local network', 'OS': 'Ubuntu', 'User': 'brandon', 'Tags': '', 'Online': False, 'Last Seen': ''},
+                {'Name': 'tangent-node-01', 'IP': 'local network', 'OS': 'RaspberryPi', 'User': 'brand', 'Tags': '', 'Online': True, 'Last Seen': ''},
+                {'Name': 'tangent-node-02', 'IP': 'local network', 'OS': 'RaspberryPi', 'User': 'brand', 'Tags': '', 'Online': False, 'Last Seen': ''}
             ]
         else:
             devices = get_tailscale_devices()
@@ -127,9 +128,9 @@ def main():
         print("Using fallback data...")
         # Same fallback data on error
         parsed = [
-            {'Name': 'tangent-brain', 'IP': '192.168.1.30', 'OS': 'Ubuntu', 'User': 'brandon', 'Tags': '', 'Online': False, 'Last Seen': ''},
-            {'Name': 'tangent-node-01', 'IP': '192.168.1.31', 'OS': 'RaspberryPi', 'User': 'brand', 'Tags': '', 'Online': True, 'Last Seen': ''},
-            {'Name': 'tangent-node-02', 'IP': '192.168.1.43', 'OS': 'RaspberryPi', 'User': 'brand', 'Tags': '', 'Online': False, 'Last Seen': ''}
+            {'Name': 'tangent-brain', 'IP': 'local network', 'OS': 'Ubuntu', 'User': 'brandon', 'Tags': '', 'Online': False, 'Last Seen': ''},
+            {'Name': 'tangent-node-01', 'IP': 'local network', 'OS': 'RaspberryPi', 'User': 'brand', 'Tags': '', 'Online': True, 'Last Seen': ''},
+            {'Name': 'tangent-node-02', 'IP': 'local network', 'OS': 'RaspberryPi', 'User': 'brand', 'Tags': '', 'Online': False, 'Last Seen': ''}
         ]
         write_yaml(parsed)
         write_markdown(parsed)

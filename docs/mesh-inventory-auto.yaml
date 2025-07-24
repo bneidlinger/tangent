@@ -1,0 +1,22 @@
+tailscale_mesh:
+- IP: local network
+  Last Seen: ''
+  Name: tangent-brain
+  OS: Ubuntu
+  Online: false
+  Tags: ''
+  User: brandon
+- IP: local network
+  Last Seen: ''
+  Name: tangent-node-01
+  OS: RaspberryPi
+  Online: true
+  Tags: ''
+  User: brand
+- IP: local network
+  Last Seen: ''
+  Name: tangent-node-02
+  OS: RaspberryPi
+  Online: false
+  Tags: ''
+  User: brand

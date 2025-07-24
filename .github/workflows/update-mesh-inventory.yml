@@ -32,6 +32,15 @@ jobs:
         run: |
           git config --global user.name "github-actions[bot]"
           git config --global user.email "github-actions[bot]@users.noreply.github.com"
-          git add docs/mesh-inventory-auto.md docs/mesh-inventory-auto.yaml docs/mesh-status.svg docs/node-badges/
-          git commit -m "Automated: Update mesh inventory and status badges" || echo "No changes to commit"
-          git push
+          # Add files only if they exist
+          [ -f docs/mesh-inventory-auto.md ] && git add docs/mesh-inventory-auto.md
+          [ -f docs/mesh-inventory-auto.yaml ] && git add docs/mesh-inventory-auto.yaml
+          [ -f docs/mesh-status.svg ] && git add docs/mesh-status.svg
+          [ -d docs/node-badges ] && git add docs/node-badges/
+          # Check if there are any changes to commit
+          if git diff --staged --quiet; then
+            echo "No changes to commit"
+          else
+            git commit -m "Automated: Update mesh inventory and status badges"
+            git push
+          fi
