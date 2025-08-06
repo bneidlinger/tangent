@@ -1,0 +1,1329 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>TANGNET SKYWATCH: UNCORRELATED ORBITAL RECONNAISSANCE APPARATUS</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Orbitron:wght@400;700;900&display=swap');
+    
+    :root {
+      --neon-green: #00ff41;
+      --neon-cyan: #00e0ff;
+      --dark-cyan: #005766;
+      --blood-red: #ff0030;
+      --warning-amber: #ffaa00;
+      --deep-black: #030303;
+      --console-bg: #0a0a0f;
+      --grid-blue: #001133;
+    }
+
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Share Tech Mono', monospace;
+      background: var(--deep-black);
+      color: var(--neon-green);
+      line-height: 1.6;
+      overflow-x: hidden;
+      background-image: 
+        repeating-linear-gradient(
+          0deg,
+          rgba(0, 255, 65, 0.03) 0px,
+          transparent 1px,
+          transparent 2px,
+          rgba(0, 255, 65, 0.03) 3px
+        );
+      animation: scanlines 8s linear infinite;
+    }
+
+    @keyframes scanlines {
+      0% { background-position: 0 0; }
+      100% { background-position: 0 10px; }
+    }
+
+    @keyframes flicker {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0.8; }
+    }
+
+    @keyframes glitch {
+      0%, 100% { transform: translate(0); }
+      20% { transform: translate(-1px, 1px); }
+      40% { transform: translate(-1px, -1px); }
+      60% { transform: translate(1px, 1px); }
+      80% { transform: translate(1px, -1px); }
+    }
+
+    .container {
+      max-width: 1400px;
+      margin: 0 auto;
+      padding: 2rem;
+      background: rgba(10, 10, 15, 0.9);
+      border-left: 2px solid var(--neon-cyan);
+      border-right: 2px solid var(--neon-cyan);
+      min-height: 100vh;
+    }
+
+    header {
+      text-align: center;
+      padding: 3rem 0;
+      border-bottom: 3px solid var(--neon-cyan);
+      margin-bottom: 3rem;
+      position: relative;
+      overflow: hidden;
+    }
+
+    header::before {
+      content: "";
+      position: absolute;
+      top: 0;
+      left: -100%;
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(90deg, transparent, var(--neon-cyan), transparent);
+      animation: sweep 4s linear infinite;
+    }
+
+    @keyframes sweep {
+      0% { left: -100%; }
+      100% { left: 100%; }
+    }
+
+    h1 {
+      font-family: 'Orbitron', sans-serif;
+      font-size: 3rem;
+      font-weight: 900;
+      color: var(--neon-cyan);
+      text-transform: uppercase;
+      letter-spacing: 5px;
+      text-shadow: 
+        0 0 10px var(--neon-cyan),
+        0 0 20px var(--neon-cyan),
+        0 0 30px var(--dark-cyan);
+      animation: flicker 2s infinite;
+    }
+
+    .classified-stamp {
+      display: inline-block;
+      padding: 0.5rem 1rem;
+      background: var(--blood-red);
+      color: white;
+      font-weight: bold;
+      transform: rotate(-2deg);
+      margin: 1rem 0;
+      animation: glitch 3s infinite;
+    }
+
+    h2 {
+      font-family: 'Orbitron', sans-serif;
+      color: var(--neon-green);
+      font-size: 1.8rem;
+      margin: 2rem 0 1rem;
+      padding-bottom: 0.5rem;
+      border-bottom: 2px solid var(--neon-green);
+      text-transform: uppercase;
+      position: relative;
+    }
+
+    h2::before {
+      content: "▶ ";
+      color: var(--warning-amber);
+      animation: blink 1s infinite;
+    }
+
+    @keyframes blink {
+      0%, 50% { opacity: 1; }
+      51%, 100% { opacity: 0; }
+    }
+
+    .alert-box {
+      background: linear-gradient(135deg, rgba(255, 0, 48, 0.1), rgba(0, 0, 0, 0.8));
+      border: 2px solid var(--blood-red);
+      padding: 1.5rem;
+      margin: 2rem 0;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .alert-box::before {
+      content: "⚠ ANOMALY DETECTED ⚠";
+      position: absolute;
+      top: 0;
+      left: 0;
+      background: var(--blood-red);
+      color: white;
+      padding: 0.2rem 1rem;
+      font-size: 0.8rem;
+    }
+
+    .alert-box p {
+      margin-top: 1rem;
+      color: #ff9999;
+    }
+
+    code, pre {
+      font-family: 'Share Tech Mono', monospace;
+      background: #001122;
+      border: 1px solid var(--neon-green);
+      color: var(--neon-green);
+      padding: 0.2rem 0.5rem;
+      border-radius: 3px;
+    }
+
+    pre {
+      padding: 1rem;
+      overflow-x: auto;
+      position: relative;
+      margin: 1rem 0;
+      box-shadow: 0 0 20px rgba(0, 255, 65, 0.2);
+    }
+
+    pre::before {
+      content: "> EXECUTE_PROTOCOL";
+      position: absolute;
+      top: 0;
+      right: 0;
+      background: var(--neon-green);
+      color: black;
+      padding: 0.2rem 0.5rem;
+      font-size: 0.7rem;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: separate;
+      border-spacing: 0;
+      margin: 2rem 0;
+      background: rgba(0, 17, 34, 0.8);
+      box-shadow: 0 0 30px rgba(0, 224, 255, 0.3);
+    }
+
+    th {
+      background: linear-gradient(90deg, var(--dark-cyan), transparent);
+      color: var(--neon-cyan);
+      padding: 1rem;
+      text-align: left;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      border-bottom: 2px solid var(--neon-cyan);
+    }
+
+    td {
+      padding: 0.8rem 1rem;
+      border-bottom: 1px solid rgba(0, 224, 255, 0.2);
+      color: #aaffaa;
+    }
+
+    tr:hover td {
+      background: rgba(0, 255, 65, 0.1);
+      color: white;
+    }
+
+    .status-indicator {
+      display: inline-block;
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+      margin-right: 0.5rem;
+      animation: pulse 2s infinite;
+    }
+
+    @keyframes pulse {
+      0%, 100% { box-shadow: 0 0 5px var(--neon-green); }
+      50% { box-shadow: 0 0 20px var(--neon-green); }
+    }
+
+    .status-active { background: var(--neon-green); }
+    .status-warning { background: var(--warning-amber); }
+    .status-critical { background: var(--blood-red); }
+
+    .terminal-window {
+      background: black;
+      border: 2px solid var(--neon-green);
+      border-radius: 5px;
+      margin: 2rem 0;
+      overflow: hidden;
+    }
+
+    .terminal-header {
+      background: var(--neon-green);
+      color: black;
+      padding: 0.5rem;
+      font-weight: bold;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .terminal-dot {
+      width: 12px;
+      height: 12px;
+      border-radius: 50%;
+      background: black;
+    }
+
+    .terminal-content {
+      padding: 1rem;
+      font-size: 0.9rem;
+      color: var(--neon-green);
+      min-height: 200px;
+    }
+
+    .radar-container {
+      position: relative;
+      width: 300px;
+      height: 300px;
+      margin: 2rem auto;
+      background: radial-gradient(circle, transparent, var(--grid-blue));
+      border: 2px solid var(--neon-cyan);
+      border-radius: 50%;
+      overflow: hidden;
+    }
+
+    .radar-sweep {
+      position: absolute;
+      width: 50%;
+      height: 2px;
+      background: linear-gradient(90deg, transparent, var(--neon-green));
+      top: 50%;
+      left: 50%;
+      transform-origin: left center;
+      animation: radar-sweep 4s linear infinite;
+    }
+
+    @keyframes radar-sweep {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
+
+    .glint-dot {
+      position: absolute;
+      width: 8px;
+      height: 8px;
+      background: var(--blood-red);
+      border-radius: 50%;
+      animation: glint-pulse 1s infinite;
+    }
+
+    @keyframes glint-pulse {
+      0%, 100% { 
+        transform: scale(1);
+        opacity: 1;
+      }
+      50% { 
+        transform: scale(2);
+        opacity: 0.5;
+      }
+    }
+
+    .section-divider {
+      height: 2px;
+      background: linear-gradient(90deg, transparent, var(--neon-cyan), transparent);
+      margin: 3rem 0;
+    }
+
+    footer {
+      text-align: center;
+      margin-top: 4rem;
+      padding: 2rem;
+      border-top: 2px solid var(--neon-cyan);
+      color: #666;
+      font-size: 0.9rem;
+    }
+
+    .ascii-art {
+      font-size: 0.6rem;
+      line-height: 1;
+      color: var(--dark-cyan);
+      text-align: center;
+      margin: 2rem 0;
+    }
+
+    .data-stream {
+      font-size: 0.8rem;
+      color: rgba(0, 255, 65, 0.5);
+      overflow: hidden;
+      height: 20px;
+      white-space: nowrap;
+      animation: data-scroll 10s linear infinite;
+    }
+
+    @keyframes data-scroll {
+      0% { transform: translateX(100%); }
+      100% { transform: translateX(-100%); }
+    }
+
+    .warning-banner {
+      background: repeating-linear-gradient(
+        45deg,
+        var(--warning-amber),
+        var(--warning-amber) 10px,
+        black 10px,
+        black 20px
+      );
+      padding: 0.5rem;
+      text-align: center;
+      color: black;
+      font-weight: bold;
+      margin: 2rem 0;
+    }
+  </style>
+</head>
+<body>
+<div class="container">
+
+<header>
+  <div class="ascii-art">
+    ╔══════════════════════════════════════════════════════════════╗
+    ║  ████████╗ █████╗ ███╗   ██╗ ██████╗ ███╗   ██╗███████╗████████╗  ║
+    ║  ╚══██╔══╝██╔══██╗████╗  ██║██╔════╝ ████╗  ██║██╔════╝╚══██╔══╝  ║
+    ║     ██║   ███████║██╔██╗ ██║██║  ███╗██╔██╗ ██║█████╗     ██║     ║
+    ║     ██║   ██╔══██║██║╚██╗██║██║   ██║██║╚██╗██║██╔══╝     ██║     ║
+    ║     ██║   ██║  ██║██║ ╚████║╚██████╔╝██║ ╚████║███████╗   ██║     ║
+    ║     ╚═╝   ╚═╝  ╚═╝╚═╝  ╚═══╝ ╚═════╝ ╚═╝  ╚═══╝╚══════╝   ╚═╝     ║
+    ╚══════════════════════════════════════════════════════════════╝
+  </div>
+  <h1>SKYWATCH ORBITAL RECONNAISSANCE</h1>
+  <div class="classified-stamp">PROJECT VILLAROEL PROTOCOL</div>
+  <p style="color: var(--warning-amber); margin-top: 1rem;">
+    UNCORRELATED TARGET DETECTION SYSTEM v2.17.3<br/>
+    <span class="data-stream">
+      MONITORING: 42,164 KM ALTITUDE | SPECULAR REFLECTION ANOMALIES | PRE-SPUTNIK TRANSIENTS | NUCLEAR CORRELATION EVENTS | WASHINGTON 1952 SIGNATURES
+    </span>
+  </p>
+</header>
+
+<section>
+  <h2>THREAT ASSESSMENT BRIEFING</h2>
+  <div class="alert-box">
+    <p>
+      <strong>HISTORICAL CONTEXT:</strong> Dr. Beatrice Villaroel's VASCO project has identified 
+      70,000-200,000 anomalous transient objects in geocynchronous orbit during the 1950s - 
+      before human satellites existed. Statistical significance: 21.9σ for solar reflection hypothesis. 
+      Temporal correlation with nuclear tests: 3σ. Objects exhibit specular reflections consistent 
+      with flat, metallic surfaces. 30% deficit in Earth's shadow confirms artificial origin.
+    </p>
+    <p>
+      <strong>MISSION IMPERATIVE:</strong> Establish continuous monitoring for uncorrelated targets 
+      exhibiting similar signatures. Deploy active beacon protocol for potential technosignature response.
+    </p>
+  </div>
+</section>
+
+<section>
+  <h2>DETECTION ARRAY SPECIFICATIONS</h2>
+  <table>
+    <thead>
+      <tr>
+        <th>SUBSYSTEM</th>
+        <th>CONFIGURATION</th>
+        <th>OPERATIONAL PARAMETERS</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="status-indicator status-active"></span>Optical Sensor</td>
+        <td>Sony IMX585 8.3MP CMOS (Rolling Shutter)</td>
+        <td>2.9μm pixels, 47Ke well, zero amp-glow</td>
+      </tr>
+      <tr>
+        <td><span class="status-indicator status-active"></span>Alternative Sensor</td>
+        <td>IMX178 or ASI294MC Pro (Better for glints)</td>
+        <td>14-bit ADC, 63.4% QE @ 532nm</td>
+      </tr>
+      <tr>
+        <td><span class="status-indicator status-warning"></span>Optics</td>
+        <td>Sigma 85mm f/1.4 DG DN Art</td>
+        <td>16.4° × 11° FOV for GEO coverage</td>
+      </tr>
+      <tr>
+        <td><span class="status-indicator status-active"></span>Mount</td>
+        <td>iOptron CEM70 or Custom Arduino</td>
+        <td>0.1° pointing, GPS sync, meridian flip</td>
+      </tr>
+      <tr>
+        <td><span class="status-indicator status-critical"></span>RF Beacon</td>
+        <td>PlutoSDR + 20W PA @ 5.7 GHz</td>
+        <td>31 dBi dish, 1.8° beam, BPSK31</td>
+      </tr>
+      <tr>
+        <td><span class="status-indicator status-active"></span>Processing</td>
+        <td>RTX 3070 Ti + Ryzen 9 5900X</td>
+        <td>PyTorch CNN, TensorRT optimization</td>
+      </tr>
+    </tbody>
+  </table>
+</section>
+
+<section>
+  <h2>DETECTION ALGORITHM PIPELINE</h2>
+  
+  <div class="terminal-window">
+    <div class="terminal-header">
+      <div class="terminal-dot"></div>
+      <div class="terminal-dot"></div>
+      <div class="terminal-dot"></div>
+      <span>glint_detector.py</span>
+    </div>
+    <div class="terminal-content">
+<pre style="margin: 0; border: none; box-shadow: none;">
+#!/usr/bin/env python3
+"""
+TANGNET GLINT DETECTOR - Based on Villaroel VASCO Methodology
+Detects specular reflections from uncorrelated orbital targets
+"""
+
+import numpy as np
+import cv2
+from astropy.io import fits
+from astropy.wcs import WCS
+from astropy.coordinates import SkyCoord, EarthLocation, AltAz
+from astropy.time import Time
+import astropy.units as u
+from skyfield.api import load, EarthSatellite
+from skyfield.timelib import Time as SkyfieldTime
+import torch
+import zmq
+from collections import deque
+import warnings
+warnings.filterwarnings('ignore')
+
+class GlintDetector:
+    def __init__(self, location, camera_config):
+        self.location = EarthLocation(
+            lat=camera_config['latitude'] * u.deg,
+            lon=camera_config['longitude'] * u.deg,
+            height=camera_config['altitude'] * u.m
+        )
+        self.fov = camera_config['fov_degrees'] * u.deg
+        self.exposure = camera_config['exposure_ms']
+        self.gain = camera_config['gain_db']
+        
+        # Frame buffer for differential photometry
+        self.frame_buffer = deque(maxlen=10)
+        
+        # Load satellite TLE database
+        self.tle_database = self.load_tle_database()
+        
+        # Initialize CNN model for glint classification
+        self.model = self.load_glint_model()
+        
+        # ZMQ publisher for alerts
+        self.zmq_context = zmq.Context()
+        self.publisher = self.zmq_context.socket(zmq.PUB)
+        self.publisher.bind("tcp://*:5555")
+        
+    def load_tle_database(self):
+        """Download fresh TLEs from CelesTrak/Space-Track"""
+        stations = load.tle_file('https://celestrak.org/NORAD/elements/geo.txt')
+        return {sat.name: sat for sat in stations}
+    
+    def load_glint_model(self):
+        """Load pre-trained CNN for glint vs artifact classification"""
+        model = torch.load('models/glintnet_v3.pth')
+        model.eval()
+        return model
+    
+    def detect_transients(self, frame, reference_frame):
+        """
+        Detect point-source transients using differential photometry
+        Following Villaroel's methodology for sub-second glints
+        """
+        # Convert to float32 for processing
+        frame_f = frame.astype(np.float32)
+        ref_f = reference_frame.astype(np.float32)
+        
+        # Differential frame
+        diff = cv2.absdiff(frame_f, ref_f)
+        
+        # Apply median filter to remove hot pixels
+        diff_filtered = cv2.medianBlur(diff, 3)
+        
+        # Dynamic threshold based on background statistics
+        mean, std = cv2.meanStdDev(diff_filtered)
+        threshold = mean + 5 * std  # 5-sigma detection
+        
+        # Find bright transients
+        _, binary = cv2.threshold(diff_filtered, threshold[0][0], 255, cv2.THRESH_BINARY)
+        
+        # Morphological operations to clean up
+        kernel = cv2.getStructuringElement(cv2.MORPH_ELLIPSE, (3, 3))
+        binary = cv2.morphologyEx(binary, cv2.MORPH_OPEN, kernel)
+        
+        # Find contours (potential glints)
+        contours, _ = cv2.findContours(binary.astype(np.uint8), 
+                                      cv2.RETR_EXTERNAL, 
+                                      cv2.CHAIN_APPROX_SIMPLE)
+        
+        glints = []
+        for contour in contours:
+            # Calculate centroid
+            M = cv2.moments(contour)
+            if M["m00"] > 0:
+                cx = int(M["m10"] / M["m00"])
+                cy = int(M["m01"] / M["m00"])
+                
+                # Extract region around glint
+                roi_size = 32
+                x1 = max(0, cx - roi_size // 2)
+                y1 = max(0, cy - roi_size // 2)
+                x2 = min(frame.shape[1], cx + roi_size // 2)
+                y2 = min(frame.shape[0], cy + roi_size // 2)
+                
+                roi = diff_filtered[y1:y2, x1:x2]
+                
+                # Calculate glint metrics
+                peak_intensity = np.max(roi)
+                total_flux = np.sum(roi)
+                fwhm = self.calculate_fwhm(roi)
+                
+                glints.append({
+                    'x': cx,
+                    'y': cy,
+                    'peak_intensity': peak_intensity,
+                    'total_flux': total_flux,
+                    'fwhm': fwhm,
+                    'roi': roi
+                })
+        
+        return glints
+    
+    def calculate_fwhm(self, roi):
+        """Calculate Full Width Half Maximum of point source"""
+        # Find peak location
+        peak_y, peak_x = np.unravel_index(np.argmax(roi), roi.shape)
+        peak_val = roi[peak_y, peak_x]
+        half_max = peak_val / 2
+        
+        # Measure width at half maximum
+        profile_x = roi[peak_y, :]
+        profile_y = roi[:, peak_x]
+        
+        indices_x = np.where(profile_x > half_max)[0]
+        indices_y = np.where(profile_y > half_max)[0]
+        
+        fwhm_x = len(indices_x) if len(indices_x) > 0 else 1
+        fwhm_y = len(indices_y) if len(indices_y) > 0 else 1
+        
+        return np.sqrt(fwhm_x * fwhm_y)
+    
+    def check_earth_shadow(self, ra, dec, obs_time):
+        """
+        Check if object is in Earth's shadow at GEO altitude
+        Critical for confirming artificial origin (Villaroel method)
+        """
+        # Convert to skyfield for shadow calculation
+        ts = load.timescale()
+        t = ts.from_astropy(obs_time)
+        
+        # Calculate sun position
+        earth = load('de421.bsp')['earth']
+        sun = load('de421.bsp')['sun']
+        
+        sun_vec = earth.at(t).observe(sun).position.km
+        
+        # Assume GEO altitude (42,164 km from center)
+        geo_radius = 42164.0
+        earth_radius = 6371.0
+        
+        # Calculate umbra cone angle
+        umbra_angle = np.arcsin(earth_radius / geo_radius)
+        
+        # Check if position is in shadow
+        target = SkyCoord(ra=ra*u.deg, dec=dec*u.deg, frame='icrs')
+        
+        # This is simplified - full calculation would need orbital mechanics
+        # Return probability of being in shadow
+        return self.shadow_probability(target, sun_vec, umbra_angle)
+    
+    def correlate_with_tle(self, glint, obs_time):
+        """Check if glint matches known satellite position"""
+        tolerance = 0.5  # degrees
+        
+        for sat_name, satellite in self.tle_database.items():
+            # Calculate satellite position
+            ts = load.timescale()
+            t = ts.from_astropy(obs_time)
+            
+            geocentric = satellite.at(t)
+            subpoint = geocentric.subpoint()
+            
+            # Convert to RA/Dec
+            ra, dec, distance = geocentric.radec()
+            
+            # Check if within tolerance of glint position
+            glint_coord = self.pixel_to_radec(glint['x'], glint['y'])
+            sat_coord = SkyCoord(ra=ra._degrees*u.deg, dec=dec._degrees*u.deg)
+            
+            separation = glint_coord.separation(sat_coord)
+            
+            if separation < tolerance * u.deg:
+                return sat_name
+        
+        return None  # Uncorrelated target!
+    
+    def classify_glint(self, glint_roi):
+        """
+        CNN classification: glint vs hot pixel vs cosmic ray
+        """
+        # Prepare input
+        input_tensor = torch.from_numpy(glint_roi).float().unsqueeze(0).unsqueeze(0)
+        input_tensor = torch.nn.functional.interpolate(input_tensor, size=(32, 32))
+        
+        # Run inference
+        with torch.no_grad():
+            output = self.model(input_tensor)
+            probabilities = torch.softmax(output, dim=1)
+            
+        classes = ['glint', 'hot_pixel', 'cosmic_ray', 'meteor']
+        class_idx = torch.argmax(probabilities).item()
+        confidence = probabilities[0][class_idx].item()
+        
+        return classes[class_idx], confidence
+    
+    def publish_alert(self, glint_data):
+        """Send alert via ZMQ for uncorrelated targets"""
+        alert = {
+            'timestamp': Time.now().iso,
+            'ra': glint_data['ra'],
+            'dec': glint_data['dec'],
+            'intensity': glint_data['peak_intensity'],
+            'classification': glint_data['classification'],
+            'confidence': glint_data['confidence'],
+            'earth_shadow': glint_data['in_shadow'],
+            'tle_match': glint_data['tle_match'],
+            'alert_level': 'CRITICAL' if glint_data['tle_match'] is None else 'INFO'
+        }
+        
+        self.publisher.send_json(alert)
+        
+        if alert['alert_level'] == 'CRITICAL':
+            print(f"\n{'='*60}")
+            print(f"UNCORRELATED TARGET DETECTED AT {alert['timestamp']}")
+            print(f"Position: RA={alert['ra']:.4f}° DEC={alert['dec']:.4f}°")
+            print(f"Classification: {alert['classification']} ({alert['confidence']:.2%})")
+            print(f"In Earth Shadow: {alert['earth_shadow']}")
+            print(f"{'='*60}\n")
+    
+    def run(self):
+        """Main detection loop"""
+        print("[INITIALIZING SKYWATCH PROTOCOL]")
+        print(f"Location: {self.location.geodetic}")
+        print(f"Field of View: {self.fov}")
+        print(f"TLE Database: {len(self.tle_database)} satellites loaded")
+        print("[SYSTEM ARMED - MONITORING COMMENCED]\n")
+        
+        # Simulated camera capture (replace with actual camera API)
+        while True:
+            # Capture frame
+            frame = self.capture_frame()
+            
+            # Add to buffer
+            self.frame_buffer.append(frame)
+            
+            if len(self.frame_buffer) >= 2:
+                # Use previous frame as reference
+                reference = self.frame_buffer[-2]
+                
+                # Detect transients
+                glints = self.detect_transients(frame, reference)
+                
+                for glint in glints:
+                    # Classify with CNN
+                    classification, confidence = self.classify_glint(glint['roi'])
+                    
+                    if classification == 'glint' and confidence > 0.8:
+                        # Get celestial coordinates
+                        ra_dec = self.pixel_to_radec(glint['x'], glint['y'])
+                        
+                        # Check Earth shadow
+                        in_shadow = self.check_earth_shadow(
+                            ra_dec.ra.deg, 
+                            ra_dec.dec.deg,
+                            Time.now()
+                        )
+                        
+                        # Correlate with TLE
+                        tle_match = self.correlate_with_tle(glint, Time.now())
+                        
+                        # Package data
+                        glint_data = {
+                            'ra': ra_dec.ra.deg,
+                            'dec': ra_dec.dec.deg,
+                            'peak_intensity': glint['peak_intensity'],
+                            'classification': classification,
+                            'confidence': confidence,
+                            'in_shadow': in_shadow < 0.1,  # Low probability = not in shadow
+                            'tle_match': tle_match
+                        }
+                        
+                        # Publish alert
+                        self.publish_alert(glint_data)
+            
+            # Frame rate control
+            time.sleep(0.04)  # 25 FPS
+
+if __name__ == "__main__":
+    config = {
+        'latitude': 37.8267,    # San Francisco
+        'longitude': -122.4233,
+        'altitude': 100,
+        'fov_degrees': 50,
+        'exposure_ms': 40,
+        'gain_db': 20
+    }
+    
+    detector = GlintDetector(EarthLocation.of_site('Lick'), config)
+    detector.run()
+</pre>
+    </div>
+  </div>
+</section>
+
+<section>
+  <h2>ACTIVE BEACON PROTOCOL</h2>
+  
+  <div class="warning-banner">
+    FCC PART 97.113 COMPLIANCE REQUIRED - AMATEUR EXTRA LICENSE MANDATORY
+  </div>
+  
+  <div class="terminal-window">
+    <div class="terminal-header">
+      <div class="terminal-dot"></div>
+      <div class="terminal-dot"></div>
+      <div class="terminal-dot"></div>
+      <span>beacon_transmitter.py</span>
+    </div>
+    <div class="terminal-content">
+<pre style="margin: 0; border: none; box-shadow: none;">
+#!/usr/bin/env python3
+"""
+5.7 GHz Narrow-Beam Beacon for Uncorrelated Target Response
+Mathematical sequence + prime numbers for universal recognition
+"""
+
+import numpy as np
+import SoapySDR
+from SoapySDR import SOAPY_SDR_TX, SOAPY_SDR_CF32
+import threading
+import time
+
+class BeaconTransmitter:
+    def __init__(self, freq=5.7e9, power_dbm=43):
+        self.freq = freq
+        self.power = power_dbm
+        
+        # Initialize SDR (PlutoSDR/HackRF/USRP)
+        self.sdr = SoapySDR.Device({'driver': 'plutosdr'})
+        self.sdr.setSampleRate(SOAPY_SDR_TX, 0, 2.4e6)
+        self.sdr.setFrequency(SOAPY_SDR_TX, 0, self.freq)
+        self.sdr.setGain(SOAPY_SDR_TX, 0, self.power)
+        
+        # Create beacon message
+        self.beacon_data = self.create_beacon_sequence()
+        
+    def create_beacon_sequence(self):
+        """
+        Universal mathematical constants + prime sequence
+        Should be recognizable by any technological civilization
+        """
+        sample_rate = 2.4e6
+        baud_rate = 31.25  # BPSK31
+        
+        # Mathematical constants (first 10 digits)
+        pi = "3141592653"
+        euler = "2718281828"
+        golden = "1618033988"
+        
+        # First 20 prime numbers
+        primes = "2,3,5,7,11,13,17,19,23,29,31,37,41,43,47,53,59,61,67,71"
+        
+        # Pythagorean theorem demonstration: 3²+4²=5²
+        pythagoras = "9+16=25"
+        
+        # Binary counting 0-15
+        binary = "0000,0001,0010,0011,0100,0101,0110,0111,1000,1001,1010,1011,1100,1101,1110,1111"
+        
+        # Combine message
+        message = f"BEGIN|{pi}|{euler}|{golden}|PRIMES:{primes}|{pythagoras}|BIN:{binary}|EARTH|END"
+        
+        # Convert to BPSK31
+        return self.encode_bpsk31(message, sample_rate, baud_rate)
+    
+    def encode_bpsk31(self, text, sample_rate, baud_rate):
+        """Encode text as BPSK31 signal"""
+        # Varicode encoding table for BPSK31
+        varicode = {
+            ' ': '1',
+            'A': '1011111101', 'B': '11101111101', 'C': '10101111101',
+            'D': '10111101101', 'E': '1111101', 'F': '11111111101',
+            # ... full varicode table ...
+            '0': '10110111111', '1': '10111101111', '2': '11101101111',
+            '3': '11111111111', '4': '101110111111', '5': '101011111111',
+            '6': '101101111111', '7': '11010111111', '8': '11011101111',
+            '9': '11011111111',
+            '|': '110111111111', ',': '1110101', '=': '1010101',
+            '+': '111011111', ':': '11110101'
+        }
+        
+        # Convert text to varicode
+        bits = []
+        for char in text.upper():
+            if char in varicode:
+                bits.extend([int(b) for b in varicode[char]])
+                bits.extend([0, 0])  # Inter-character spacing
+        
+        # Generate BPSK31 signal
+        samples_per_bit = int(sample_rate / baud_rate)
+        signal = []
+        phase = 0
+        
+        for bit in bits:
+            if bit == 0:
+                # Phase reversal for 0
+                phase = (phase + np.pi) % (2 * np.pi)
+            
+            # Generate samples for this bit
+            t = np.arange(samples_per_bit) / sample_rate
+            carrier = np.exp(1j * (2 * np.pi * 1000 * t + phase))  # 1kHz IF
+            signal.extend(carrier)
+        
+        return np.array(signal, dtype=np.complex64)
+    
+    def aim_dish(self, azimuth, elevation):
+        """Control dish pointing via rotator interface"""
+        # Send commands to rotator controller
+        # This would interface with Yaesu G-5500 or similar
+        print(f"[DISH] Slewing to AZ={azimuth:.1f}° EL={elevation:.1f}°")
+        time.sleep(2)  # Simulated slew time
+        print("[DISH] On target. Tracking engaged.")
+    
+    def transmit_beacon(self, target_az, target_el, duration=10):
+        """
+        Transmit beacon toward uncorrelated target
+        """
+        print(f"\n{'='*60}")
+        print("INITIATING BEACON TRANSMISSION PROTOCOL")
+        print(f"Frequency: {self.freq/1e9:.1f} GHz")
+        print(f"Power: {self.power} dBm EIRP: ~74 dBm")
+        print(f"Duration: {duration} seconds")
+        print(f"{'='*60}\n")
+        
+        # Aim dish
+        self.aim_dish(target_az, target_el)
+        
+        # Safety check - minimum elevation
+        if target_el < 8.0:
+            print("[SAFETY] Elevation too low. Transmission aborted.")
+            return
+        
+        # Configure stream
+        stream = self.sdr.setupStream(SOAPY_SDR_TX, SOAPY_SDR_CF32)
+        self.sdr.activateStream(stream)
+        
+        # Transmit beacon
+        print("[TX] Beacon transmission started...")
+        start_time = time.time()
+        
+        while time.time() - start_time < duration:
+            # Send beacon data
+            self.sdr.writeStream(stream, [self.beacon_data], len(self.beacon_data))
+            
+            # 10% duty cycle for safety
+            time.sleep(0.9)
+        
+        # Cleanup
+        self.sdr.deactivateStream(stream)
+        self.sdr.closeStream(stream)
+        
+        print("[TX] Beacon transmission complete.")
+        print("[TX] Listening for response...\n")
+        
+        # Switch to receive mode to listen for response
+        self.listen_for_response()
+    
+    def listen_for_response(self, timeout=60):
+        """Monitor for any response signal"""
+        print(f"[RX] Monitoring {self.freq/1e9:.1f} GHz for {timeout} seconds...")
+        
+        # Configure receive stream
+        stream = self.sdr.setupStream(SOAPY_SDR_RX, SOAPY_SDR_CF32)
+        self.sdr.activateStream(stream)
+        
+        start_time = time.time()
+        while time.time() - start_time < timeout:
+            # Read samples
+            buff = np.array([0]*1024, np.complex64)
+            ret = self.sdr.readStream(stream, [buff], len(buff))
+            
+            if ret.ret > 0:
+                # Calculate power
+                power = np.mean(np.abs(buff)**2)
+                
+                # Check for anomalous signal
+                if power > 1e-6:  # Threshold for detection
+                    print(f"[ALERT] Signal detected! Power: {10*np.log10(power):.1f} dB")
+                    # Record IQ data for analysis
+                    self.record_signal(buff)
+        
+        self.sdr.deactivateStream(stream)
+        self.sdr.closeStream(stream)
+        print("[RX] Monitoring period ended.\n")
+
+# Integration with glint detector
+def beacon_response_handler(zmq_address="tcp://localhost:5555"):
+    """
+    Subscribe to glint alerts and trigger beacon for uncorrelated targets
+    """
+    context = zmq.Context()
+    subscriber = context.socket(zmq.SUB)
+    subscriber.connect(zmq_address)
+    subscriber.setsockopt_string(zmq.SUBSCRIBE, "")
+    
+    transmitter = BeaconTransmitter()
+    
+    print("[BEACON] Response system armed. Waiting for uncorrelated targets...")
+    
+    while True:
+        alert = subscriber.recv_json()
+        
+        if alert['alert_level'] == 'CRITICAL' and alert['tle_match'] is None:
+            print(f"\n[BEACON] Uncorrelated target alert received!")
+            print(f"[BEACON] Preparing transmission to RA={alert['ra']:.4f} DEC={alert['dec']:.4f}")
+            
+            # Convert RA/Dec to Az/El for current time
+            from astropy.coordinates import SkyCoord, EarthLocation, AltAz
+            from astropy.time import Time
+            import astropy.units as u
+            
+            location = EarthLocation(lat=37.8*u.deg, lon=-122.4*u.deg)
+            coord = SkyCoord(ra=alert['ra']*u.deg, dec=alert['dec']*u.deg)
+            altaz = coord.transform_to(AltAz(obstime=Time.now(), location=location))
+            
+            # Transmit beacon
+            transmitter.transmit_beacon(altaz.az.deg, altaz.alt.deg)
+
+if __name__ == "__main__":
+    beacon_response_handler()
+</pre>
+    </div>
+  </div>
+</section>
+
+<section>
+  <h2>REAL-TIME MONITORING DASHBOARD</h2>
+  
+  <div class="radar-container">
+    <div class="radar-sweep"></div>
+    <div class="glint-dot" style="top: 30%; left: 70%;"></div>
+    <div class="glint-dot" style="top: 60%; left: 40%;"></div>
+    <div class="glint-dot" style="top: 45%; left: 55%;"></div>
+  </div>
+  
+  <table>
+    <thead>
+      <tr>
+        <th>TIMESTAMP</th>
+        <th>RA/DEC</th>
+        <th>INTENSITY</th>
+        <th>SHADOW</th>
+        <th>TLE MATCH</th>
+        <th>STATUS</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>2025-08-06 03:47:12</td>
+        <td>247.3°/+18.7°</td>
+        <td>2847 ADU</td>
+        <td>NO</td>
+        <td>STARLINK-5847</td>
+        <td><span class="status-indicator status-active"></span>CORRELATED</td>
+      </tr>
+      <tr>
+        <td>2025-08-06 03:51:44</td>
+        <td>089.2°/-07.3°</td>
+        <td>4195 ADU</td>
+        <td>NO</td>
+        <td>---</td>
+        <td><span class="status-indicator status-critical"></span>UNCORRELATED</td>
+      </tr>
+      <tr>
+        <td>2025-08-06 03:52:08</td>
+        <td>089.4°/-07.1°</td>
+        <td>3821 ADU</td>
+        <td>NO</td>
+        <td>---</td>
+        <td><span class="status-indicator status-critical"></span>BEACON SENT</td>
+      </tr>
+    </tbody>
+  </table>
+</section>
+
+<section>
+  <h2>STATISTICAL ANOMALY DETECTION</h2>
+  
+  <div class="terminal-window">
+    <div class="terminal-header">
+      <div class="terminal-dot"></div>
+      <div class="terminal-dot"></div>
+      <div class="terminal-dot"></div>
+      <span>correlation_analysis.py</span>
+    </div>
+    <div class="terminal-content">
+<pre style="margin: 0; border: none; box-shadow: none;">
+# Nuclear test correlation analysis (Following Villaroel methodology)
+import pandas as pd
+from scipy import stats
+from datetime import datetime, timedelta
+
+def correlate_with_nuclear_tests(glint_events, nuclear_test_dates):
+    """
+    Check for temporal correlation between glints and nuclear tests
+    Villaroel found 3σ correlation in 1950s data
+    """
+    correlations = []
+    time_window = timedelta(days=1)  # 24-hour window
+    
+    for glint in glint_events:
+        glint_time = datetime.fromisoformat(glint['timestamp'])
+        
+        for test_date in nuclear_test_dates:
+            if abs(glint_time - test_date) <= time_window:
+                correlations.append({
+                    'glint_time': glint_time,
+                    'test_date': test_date,
+                    'delta_hours': (glint_time - test_date).total_seconds() / 3600
+                })
+    
+    # Calculate statistical significance
+    observed = len(correlations)
+    expected = len(glint_events) * len(nuclear_test_dates) * (time_window.days / 365.25)
+    
+    # Poisson test
+    p_value = stats.poisson.sf(observed - 1, expected)
+    sigma = stats.norm.ppf(1 - p_value) if p_value < 0.5 else 0
+    
+    print(f"Nuclear Correlation: {observed} matches (expected: {expected:.1f})")
+    print(f"Statistical significance: {sigma:.1f}σ (p={p_value:.4e})")
+    
+    return correlations, sigma
+
+# Earth shadow analysis (Critical for confirming artificial origin)
+def analyze_earth_shadow_deficit(glint_database):
+    """
+    Villaroel found 30% deficit of transients in Earth's shadow
+    This strongly indicates solar reflection from artificial objects
+    """
+    in_shadow = sum(1 for g in glint_database if g['in_earth_shadow'])
+    out_shadow = sum(1 for g in glint_database if not g['in_earth_shadow'])
+    
+    total = in_shadow + out_shadow
+    expected_in_shadow = total * 0.12  # ~12% of sky is in Earth shadow at GEO
+    
+    deficit_percentage = (1 - in_shadow / expected_in_shadow) * 100
+    
+    # Chi-square test
+    observed = [in_shadow, out_shadow]
+    expected = [expected_in_shadow, total - expected_in_shadow]
+    chi2, p_value = stats.chisquare(observed, expected)
+    
+    print(f"Earth Shadow Analysis:")
+    print(f"  In shadow: {in_shadow} ({in_shadow/total*100:.1f}%)")
+    print(f"  Expected: {expected_in_shadow:.0f} ({expected_in_shadow/total*100:.1f}%)")
+    print(f"  Deficit: {deficit_percentage:.1f}%")
+    print(f"  Chi-square: {chi2:.2f} (p={p_value:.4e})")
+    
+    return deficit_percentage, p_value
+</pre>
+    </div>
+  </div>
+</section>
+
+<section>
+  <h2>OPERATIONAL PROTOCOLS</h2>
+  
+  <div class="alert-box">
+    <p><strong>DETECTION THRESHOLD:</strong> 5σ above background for transient classification</p>
+    <p><strong>CORRELATION WINDOW:</strong> ±0.5° for TLE matching (accounts for orbital uncertainty)</p>
+    <p><strong>BEACON TRIGGER:</strong> Automatic for uncorrelated targets with confidence >80%</p>
+    <p><strong>DATA RETENTION:</strong> All events logged to PostgreSQL with 1-year retention</p>
+  </div>
+  
+  <h3 style="color: var(--warning-amber); font-size: 1.2rem;">Safety Interlocks</h3>
+  <ul style="color: #ffcc00;">
+    <li>RF cutoff below 8° elevation (horizon safety)</li>
+    <li>Automatic shutdown if aircraft detected via ADS-B</li>
+    <li>10% duty cycle limit with thermal monitoring</li>
+    <li>E-field exposure calculation per FCC §1.1310</li>
+  </ul>
+</section>
+
+<section>
+  <h2>SYSTEM INTEGRATION</h2>
+  
+  <div class="terminal-window">
+    <div class="terminal-header">
+      <div class="terminal-dot"></div>
+      <div class="terminal-dot"></div>
+      <div class="terminal-dot"></div>
+      <span>docker-compose.yml</span>
+    </div>
+    <div class="terminal-content">
+<pre style="margin: 0; border: none; box-shadow: none;">
+version: '3.8'
+
+services:
+  glint_detector:
+    build: ./detector
+    devices:
+      - /dev/video0:/dev/video0  # Camera
+      - /dev/ttyUSB0:/dev/ttyUSB0  # GPS
+    volumes:
+      - ./data:/data
+      - ./models:/models
+    environment:
+      - CUDA_VISIBLE_DEVICES=0
+      - LOCATION_LAT=37.8267
+      - LOCATION_LON=-122.4233
+    ports:
+      - "5555:5555"  # ZMQ publisher
+    restart: unless-stopped
+
+  beacon_controller:
+    build: ./beacon
+    devices:
+      - /dev/ttyUSB1:/dev/ttyUSB1  # Rotator
+      - /dev/bus/usb:/dev/bus/usb  # SDR
+    environment:
+      - BEACON_FREQ=5700000000
+      - BEACON_POWER=43
+    depends_on:
+      - glint_detector
+    restart: unless-stopped
+
+  astrometry_solver:
+    image: astrometry/solver:latest
+    volumes:
+      - ./index-files:/usr/local/astrometry/data
+      - ./solve-queue:/solve
+    command: >
+      solve-field 
+      --scale-units degwidth 
+      --scale-low 40 
+      --scale-high 60
+      --no-plots
+      --json
+      --cpulimit 10
+
+  postgres:
+    image: timescale/timescaledb:latest-pg14
+    environment:
+      - POSTGRES_DB=skywatch
+      - POSTGRES_USER=tangnet
+      - POSTGRES_PASSWORD=glint_hunter_2025
+    volumes:
+      - ./postgres-data:/var/lib/postgresql/data
+    ports:
+      - "5432:5432"
+
+  grafana:
+    image: grafana/grafana:latest
+    ports:
+      - "3000:3000"
+    volumes:
+      - ./grafana-config:/etc/grafana
+      - ./dashboards:/var/lib/grafana/dashboards
+    environment:
+      - GF_SECURITY_ADMIN_PASSWORD=skywatch
+      - GF_INSTALL_PLUGINS=natel-plotly-panel
+</pre>
+    </div>
+  </div>
+</section>
+
+<section>
+  <h2>HISTORICAL CONTEXT: PROJECT VILLAROEL</h2>
+  
+  <div style="background: rgba(0, 50, 100, 0.3); padding: 1.5rem; border-left: 4px solid var(--neon-cyan); margin: 2rem 0;">
+    <h3 style="color: var(--neon-cyan); font-size: 1.3rem;">Key Findings from VASCO Research</h3>
+    <ul style="color: #aaccff; margin-top: 1rem;">
+      <li><strong>70,000-200,000</strong> transient objects detected in 1950s Palomar plates</li>
+      <li><strong>21.9σ</strong> statistical significance for solar reflection hypothesis</li>
+      <li><strong>30%</strong> deficit of transients in Earth's shadow (plate defects ruled out)</li>
+      <li><strong>3σ</strong> correlation with nuclear weapons tests</li>
+      <li><strong>July 27, 1952:</strong> Peak activity during Washington DC UFO flap</li>
+      <li><strong>3.9σ</strong> significance for aligned multiple transients (suggests formation flight)</li>
+      <li>Objects consistent with flat, metallic surfaces at ~42,000 km altitude</li>
+      <li>No human technology existed at GEO before Sputnik (1957)</li>
+    </ul>
+    
+    <p style="color: var(--warning-amber); margin-top: 1rem; font-style: italic;">
+      "The origin of the transients remains unknown. One plausible explanation is that 
+      they are caused by brief light emissions from artificial objects in orbit..." 
+      - Villaroel et al., 2025
+    </p>
+  </div>
+</section>
+
+<section>
+  <h2>COMMUNITY NETWORK</h2>
+  
+  <table>
+    <thead>
+      <tr>
+        <th>NODE</th>
+        <th>LOCATION</th>
+        <th>STATUS</th>
+        <th>DETECTIONS (24H)</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>TANGNET-01</td>
+        <td>San Francisco, CA</td>
+        <td><span class="status-indicator status-active"></span>ONLINE</td>
+        <td>147</td>
+      </tr>
+      <tr>
+        <td>SKYWATCH-EU-01</td>
+        <td>Stockholm, Sweden</td>
+        <td><span class="status-indicator status-active"></span>ONLINE</td>
+        <td>89</td>
+      </tr>
+      <tr>
+        <td>VASCO-INDIA</td>
+        <td>Pune, India</td>
+        <td><span class="status-indicator status-warning"></span>CALIBRATING</td>
+        <td>12</td>
+      </tr>
+      <tr>
+        <td>PALOMAR-LEGACY</td>
+        <td>Mt. Palomar, CA</td>
+        <td><span class="status-indicator status-active"></span>ONLINE</td>
+        <td>234</td>
+      </tr>
+    </tbody>
+  </table>
+</section>
+
+<div class="section-divider"></div>
+
+<footer>
+  <p>TANGNET SKYWATCH INITIATIVE | UNCORRELATED TARGET DETECTION NETWORK</p>
+  <p>Based on research by Dr. Beatrice Villaroel (NORDITA) & VASCO Project</p>
+  <p style="color: var(--dark-cyan); margin-top: 1rem;">
+    "We are never alone" - B. Villaroel, 2025
+  </p>
+  <p style="font-size: 0.8rem; color: #444; margin-top: 2rem;">
+    System Version: 2.17.3 | Last Calibration: 2025-08-06 03:00:00 UTC | Next TLE Update: 04:00:00
+  </p>
+</footer>
+
+</div>
+</body>
+</html>

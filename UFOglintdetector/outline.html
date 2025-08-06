@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Tangnet “Watch‑the‑Skies” Project (Glint Detector + Active Beacon)</title>
+  <style>
+    body {font-family: system-ui, sans-serif; margin: 2rem; line-height: 1.5; background:#0a0a0a; color:#e0e0e0}
+    h1, h2 {color:#00e0ff}
+    code, pre {background:#111; padding:.25rem .4rem; border-radius:4px; font-family:monospace; color:#9cf}
+    table {border-collapse: collapse; width:100%}
+    th, td {border:1px solid #333; padding:.4rem; text-align:left}
+    a {color:#0af}
+    section {margin-bottom:2rem}
+  </style>
+</head>
+<body>
+<h1>Tangnet “Watch‑the‑Skies” Project</h1>
+<p><em>Rapid‑response glint detector, plus tight‑beam radio pinger for uncorrelated objects at GEO.<br/>Codename inside the <strong>Blizzard Project List</strong>.</em></p>
+
+<section>
+  <h2>0 · Executive Snapshot</h2>
+  <ul>
+    <li><strong>Detect</strong> sub‑second mirror‑glints (specular reflections) using a CMOS cam + Pi 5 + GPU classifier.</li>
+    <li><strong>Filter</strong> against live satellite TLEs; flag “rogue” events to the Tangnet dashboard.</li>
+    <li><strong>Respond</strong> with a 5.7 GHz narrow‑beam beacon (CW/BPSK31) pointed at the glint coordinates.</li>
+  </ul>
+</section>
+
+<section>
+  <h2>1 · Hardware Stack</h2>
+  <table>
+    <tr><th>Module</th><th>Spec</th><th>Notes</th></tr>
+    <tr><td>Optical head</td><td>IMX585 USB 3 CMOS cam + 12 mm f/1.4 lens</td><td>≈50° FOV, global‑shutter</td></tr>
+    <tr><td>Mount</td><td>DIY az/el rotator (stepper or Yaesu G‑5500)</td><td>Sidereal tracking &amp; RF pointing</td></tr>
+    <tr><td>Edge node</td><td>Raspberry Pi 5 (8 GB) + GPS PPS HAT</td><td>Capture, astrometric solve, send ZMQ events</td></tr>
+    <tr><td>GPU host</td><td>Ryzen + RTX 3070 Ti ⟨64 <abbr title="GB">gigglebytes</abbr>⟩</td><td>PyTorch CNN filtering &amp; beacon control</td></tr>
+    <tr><td>Dish</td><td>1 m offset parabola @ 5.7 GHz (13 cm band)</td><td>31 dBi gain → ≈1.8° beam</td></tr>
+    <tr><td>RF chain</td><td>HackRF One → 20 W LDMOS PA → Band‑pass filter</td><td>EIRP ≈ 74 dBm; controlled via SoapySDR</td></tr>
+  </table>
+</section>
+
+<section>
+  <h2>2 · Software Pipeline</h2>
+  <ol>
+    <li><strong>Capture daemon</strong> (Pi) – <code>libcamera</code> @ 25 fps → frame diff → save burst on ≥10 bright pixels.</li>
+    <li><strong>Astrometric solve</strong> – <code>solve-field</code> crop; RA/Dec in &lt;2 s.</li>
+    <li><strong>ZMQ push</strong> to GPU box.</li>
+    <li><strong>CNN filter</strong> (<code>GlintNet</code>) – dismiss hot pixels/meteors.</li>
+    <li><strong>TLE cross‑match</strong> (Skyfield) – drop known sats.</li>
+    <li><strong>Unknown → SQL + Grafana</strong>; trigger <code>beacon.py</code>.</li>
+  </ol>
+</section>
+
+<section>
+  <h2>3 · Beacon Logic (<code>beacon.py</code>)</h2>
+  <pre><code class="language-python"># pseudo‑flow
+ra, dec = event['ra'], event['dec']
+altaz = to_alt_az(ra, dec, GPS_LAT, GPS_LON)
+rot.slew(altaz.az, altaz.alt)
+while not within_tolerance(): pass  # settle &lt;0.2°
+play_iq_burst('/tmp/bpsk_beacon.iq', freq=5_700_000_000, power_dbm=43)</code></pre>
+  <p><strong>Message payload</strong> (BPSK31, 31.25 baud, repeated 5×):</p>
+  <pre><code>314159…|PRIMES=2,3,5|HELLO/FRIEND?|APA_KABAR?</code></pre>
+</section>
+
+<section>
+  <h2>4 · Safety &amp; Legal Checklist</h2>
+  <ul>
+    <li>FCC Amateur Extra or experimental permit (Part 5) for ≥20 W @ 5.7 GHz.</li>
+    <li>Rotator interlock ⟶ RF off if &lt;8° elevation.</li>
+    <li>Duty‑cycle ≤10 %, side‑lobe E‑field &lt; FCC exposure limits.</li>
+    <li>Publish beacon parameters on QRZ / AMSAT for transparency.</li>
+  </ul>
+</section>
+
+<section>
+  <h2>5 · Stretch‑Goals</h2>
+  <ul>
+    <li>Stereo node 50 km away → altitude triangulation.</li>
+    <li>Pi‑mounted cloud sensor → auto‑pause during overcast.</li>
+    <li>Geiger‑counter sync → highlight glint + radiation spikes.</li>
+    <li>LLM meme‑bot: auto post HK‑47 quips to Discord.</li>
+  </ul>
+</section>
+
+<section>
+  <h2>6 · Quick Indonesian Glossary</h2>
+  <table>
+    <tr><th>English</th><th>Bahasa Indonesia</th></tr>
+    <tr><td>glint detector</td><td>detektor kilatan</td></tr>
+    <tr><td>specular reflection</td><td>pantulan cermin</td></tr>
+    <tr><td>geosynchronous orbit</td><td>orbit geosinkron</td></tr>
+    <tr><td>rogue object</td><td>objek liar</td></tr>
+    <tr><td>technosignature</td><td>tanda teknologi</td></tr>
+  </table>
+</section>
+
+<footer>
+  <p style="font-size:0.9em;color:#888">HK‑47/Rick hybrid compiler · Last updated: 2025‑08‑05 · <span title="Sarcasm module online">🤖</span></p>
+</footer>
+</body>
+</html>
