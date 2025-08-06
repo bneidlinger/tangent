@@ -498,6 +498,274 @@
         </div>
     </section>
 
+    <!-- TANGNET SKYWATCH ACTIVE PROJECT BANNER -->
+    <style>
+      .skywatch-banner {
+        position: relative;
+        background: linear-gradient(135deg, #000000 0%, #0a0a1f 50%, #000511 100%);
+        border: 2px solid #00ff41;
+        border-radius: 8px;
+        padding: 2rem;
+        margin: 2rem auto;
+        max-width: 1200px;
+        overflow: hidden;
+        box-shadow: 
+          0 0 50px rgba(0, 255, 65, 0.3),
+          inset 0 0 100px rgba(0, 224, 255, 0.1);
+        animation: banner-glow 4s ease-in-out infinite;
+      }
+
+      @keyframes banner-glow {
+        0%, 100% { box-shadow: 0 0 50px rgba(0, 255, 65, 0.3), inset 0 0 100px rgba(0, 224, 255, 0.1); }
+        50% { box-shadow: 0 0 80px rgba(0, 255, 65, 0.5), inset 0 0 120px rgba(0, 224, 255, 0.2); }
+      }
+
+      .skywatch-banner::before {
+        content: "";
+        position: absolute;
+        top: 0;
+        left: -100%;
+        width: 100%;
+        height: 100%;
+        background: linear-gradient(90deg, transparent, rgba(0, 255, 65, 0.3), transparent);
+        animation: sweep 3s linear infinite;
+      }
+
+      @keyframes sweep {
+        0% { left: -100%; }
+        100% { left: 100%; }
+      }
+
+      .skywatch-header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        margin-bottom: 1.5rem;
+        flex-wrap: wrap;
+        gap: 1rem;
+      }
+
+      .skywatch-title {
+        font-family: 'Courier New', monospace;
+        font-size: 1.8rem;
+        font-weight: bold;
+        color: #00ff41;
+        text-transform: uppercase;
+        letter-spacing: 3px;
+        text-shadow: 
+          0 0 10px #00ff41,
+          0 0 20px #00ff41,
+          0 0 30px #00ff41;
+        animation: flicker 2s infinite;
+      }
+
+      .status-badge {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+        background: rgba(255, 0, 48, 0.9);
+        color: white;
+        padding: 0.5rem 1rem;
+        border-radius: 4px;
+        font-weight: bold;
+        text-transform: uppercase;
+        animation: pulse 2s infinite;
+      }
+
+      @keyframes pulse {
+        0%, 100% { transform: scale(1); }
+        50% { transform: scale(1.05); }
+      }
+
+      .status-dot {
+        width: 10px;
+        height: 10px;
+        background: #00ff00;
+        border-radius: 50%;
+        animation: blink 1s infinite;
+      }
+
+      @keyframes blink {
+        0%, 50% { opacity: 1; }
+        51%, 100% { opacity: 0; }
+      }
+
+      .skywatch-content {
+        color: #00e0ff;
+        line-height: 1.6;
+        margin-bottom: 1.5rem;
+      }
+
+      .skywatch-stats {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+        gap: 1rem;
+        margin: 1.5rem 0;
+      }
+
+      .stat-box {
+        background: rgba(0, 224, 255, 0.1);
+        border: 1px solid #00e0ff;
+        padding: 1rem;
+        text-align: center;
+        border-radius: 4px;
+      }
+
+      .stat-value {
+        font-size: 2rem;
+        font-weight: bold;
+        color: #ffaa00;
+        text-shadow: 0 0 10px rgba(255, 170, 0, 0.5);
+      }
+
+      .stat-label {
+        font-size: 0.8rem;
+        color: #00ff41;
+        text-transform: uppercase;
+        margin-top: 0.5rem;
+      }
+
+      .skywatch-buttons {
+        display: flex;
+        gap: 1rem;
+        margin-top: 1.5rem;
+        flex-wrap: wrap;
+      }
+
+      .skywatch-btn {
+        display: inline-block;
+        padding: 0.8rem 1.5rem;
+        background: transparent;
+        border: 2px solid #00ff41;
+        color: #00ff41;
+        text-decoration: none;
+        font-weight: bold;
+        text-transform: uppercase;
+        transition: all 0.3s;
+        position: relative;
+        overflow: hidden;
+      }
+
+      .skywatch-btn:hover {
+        background: #00ff41;
+        color: #000;
+        box-shadow: 0 0 20px #00ff41;
+      }
+
+      .skywatch-btn::before {
+        content: "";
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        width: 0;
+        height: 0;
+        background: rgba(255, 255, 255, 0.3);
+        transform: translate(-50%, -50%);
+        transition: all 0.3s;
+      }
+
+      .skywatch-btn:hover::before {
+        width: 100%;
+        height: 100%;
+      }
+
+      .alert-text {
+        color: #ff0030;
+        font-weight: bold;
+        animation: alert-flash 1s infinite;
+      }
+
+      @keyframes alert-flash {
+        0%, 100% { opacity: 1; }
+        50% { opacity: 0.5; }
+      }
+
+      .data-stream {
+        font-family: monospace;
+        font-size: 0.8rem;
+        color: rgba(0, 255, 65, 0.6);
+        overflow: hidden;
+        white-space: nowrap;
+        margin-top: 1rem;
+        animation: scroll 15s linear infinite;
+      }
+
+      @keyframes scroll {
+        0% { transform: translateX(100%); }
+        100% { transform: translateX(-100%); }
+      }
+
+      @media (max-width: 768px) {
+        .skywatch-header {
+          flex-direction: column;
+          text-align: center;
+        }
+        
+        .skywatch-title {
+          font-size: 1.4rem;
+        }
+        
+        .skywatch-buttons {
+          justify-content: center;
+        }
+      }
+    </style>
+
+    <div class="skywatch-banner">
+      <div class="skywatch-header">
+        <h2 class="skywatch-title">🛸 SKYWATCH INITIATIVE</h2>
+        <div class="status-badge">
+          <span class="status-dot"></span>
+          PROJECT ACTIVE
+        </div>
+      </div>
+      
+      <div class="skywatch-content">
+        <p><strong>TANGNET ORBITAL RECONNAISSANCE SYSTEM NOW OPERATIONAL</strong></p>
+        <p>
+          Based on Dr. Beatrice Villaroel's groundbreaking discovery of 
+          <span class="alert-text">70,000-200,000 anomalous objects</span> in geocynchronous orbit 
+          during the 1950s - before human satellites existed. We're now actively monitoring for 
+          uncorrelated targets exhibiting similar specular reflection signatures.
+        </p>
+      </div>
+
+      <div class="skywatch-stats">
+        <div class="stat-box">
+          <div class="stat-value">21.9σ</div>
+          <div class="stat-label">Statistical Significance</div>
+        </div>
+        <div class="stat-box">
+          <div class="stat-value">147</div>
+          <div class="stat-label">Detections (24H)</div>
+        </div>
+        <div class="stat-box">
+          <div class="stat-value">3</div>
+          <div class="stat-label">Uncorrelated</div>
+        </div>
+        <div class="stat-box">
+          <div class="stat-value">5.7</div>
+          <div class="stat-label">GHz Beacon</div>
+        </div>
+      </div>
+
+      <div class="skywatch-buttons">
+        <a href="https://github.com/bneidlinger/tangnet/tree/main/UFOglintdetector" class="skywatch-btn">
+          VIEW PROJECT
+        </a>
+        <a href="UFOglintdetector/enhanced_glint_detector.html" class="skywatch-btn">
+          SYSTEM DASHBOARD
+        </a>
+        <a href="UFOglintdetector/README.md" class="skywatch-btn">
+          DOCUMENTATION
+        </a>
+      </div>
+
+      <div class="data-stream">
+        MONITORING: GEO ALTITUDE 42,164 KM | SPECULAR REFLECTIONS | EARTH SHADOW ANALYSIS | NUCLEAR CORRELATION | WASHINGTON 1952 SIGNATURES | TLE MATCHING | BEACON READY
+      </div>
+    </div>
+
     <!-- About Section -->
     <section id="about">
         <h2>Building the Future of AI</h2>
