@@ -32,34 +32,37 @@ TANGNET (Tangential Network) is an ambitious project to create a fully offline-c
 ### Access the Current Node
 
 ```bash
-# SSH into the primary Pi
-ssh brand@192.168.1.31
+# SSH into the primary Pi (replace with your Pi's IP)
+ssh user@<pi-ip-address>
 
 # Run inference using the tangnet alias
 tangnet "What is the meaning of life?"
 ```
 
-### AI Interface (Coming Soon)
+### AI Interface
 
-New chat interface under development. The legacy tanchat system has been archived.
+The project includes:
+- FastAPI-based chat server with WebSocket support
+- Legacy tanchat system (archived in `/archive/`)
+- Direct llama.cpp command-line interface
 
 ## 🌐 Live Mesh Network Status
 
 View the [Live Mesh Inventory](docs/mesh-inventory-auto.md) for real-time node status.
 
-### Current Nodes
-- **tangent-brain** (RTX 3070 Ti) - Central orchestration
-- **tangent-node-01** (Pi 5, 8GB) - TinyLlama server
-- **tangent-node-02** (Pi 5, 16GB) - Llama 2 7B inference
+### Network Architecture
+- **Control Node** - Central orchestration with GPU acceleration
+- **Edge Nodes** - Raspberry Pi 5 units for distributed inference
+- **Mesh Network** - Tailscale VPN for secure node communication
 
 ## 📊 Current Progress
 
 ### ✅ Phase 1: Single Node (Complete)
 - Raspberry Pi 5 (8GB) operational
-- TinyLlama 1.1B model deployed
+- TinyLlama 1.1B model deployed (Q4_K_M quantization)
 - ~10-15 tokens/second inference
 - Custom chat API with WebSocket support
-- SSH/VNC remote access configured
+- Remote access configured via SSH/VNC
 
 ### 🔄 Phase 2: Mini Cluster (In Progress)
 - Adding 4 additional Pi nodes
@@ -157,10 +160,23 @@ TANGNET Infrastructure
 
 ## 📚 Documentation
 
+### Core Documentation
 - [Project Overview](docs/index.html) - Vision and goals
 - [Setup Guide](docs/guide.html) - Step-by-step Pi configuration
 - [Hardware Specs](docs/materials.html) - Complete parts list
 - [Mesh Network](docs/architecture/mesh/mesh_network.md) - Node inventory and topology
+
+### Additional Resources
+- **Setup Guides**: Model setup, Tailscale configuration, hardware integration
+- **Architecture Docs**: 2-Pi setup, future cluster designs, mesh networking
+- **API Documentation**: Chat server, WebSocket interfaces, inference endpoints
+
+### Project Structure
+- `llama.cpp/` - Core inference engine (gitignored submodule)
+- `docs/` - All project documentation
+- `archive/` - Legacy systems and deprecated code
+- `inventory/` - Hardware inventory and network configurations
+- `UFOglintdetector/` - Experimental modules
 
 ## 🤝 Contributing
 
